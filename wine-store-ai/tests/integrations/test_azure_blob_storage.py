@@ -37,3 +37,52 @@ def test_upload_file(azure_storage_manager):
         # Clean up: delete the local file and the uploaded blob
         os.remove(test_file_name)
         azure_storage_manager.delete_file(test_file_name)
+
+def test_list_blobs(azure_storage_manager):
+    # Upload a test file
+    test_file_name = "test_list.txt"
+    test_file_content = b"This is a test file for Azure Blob Storage list operation"
+    azure_storage_manager.upload_file(test_file_name, test_file_content)
+    
+    try:
+        # List blobs
+        blobs = azure_storage_manager.list_blobs()
+        
+        # Assert that the test file is in the list
+        assert any(blob.name == test_file_name for blob in blobs)
+    
+    finally:
+        # Clean up
+        azure_storage_manager.delete_file(test_file_name)
+
+def test_blob_exists(azure_storage_manager):
+    # Upload a test file
+    test_file_name = "test_exists.txt"
+    test_file_content = b"This is a test file for Azure Blob Storage exists operation"
+    azure_storage_manager.upload_file(test_file_name, test_file_content)
+    
+    try:
+        # Check if the blob exists
+        assert azure_storage_manager.blob_exists(test_file_name)
+        
+        # Check for a non-existent blob
+        assert not azure_storage_manager.blob_exists("non_existent_file.txt")
+    
+    finally:
+        # Clean up
+        azure_storage_manager.delete_file(test_file_name)
+
+def test_delete_file(azure_storage_manager):
+    # Upload a test file
+    test_file_name = "test_delete.txt"
+    test_file_content = b"This is a test file for Azure Blob Storage delete operation"
+    azure_storage_manager.upload_file(test_file_name, test_file_content)
+    
+    # Delete the file
+    result = azure_storage_manager.delete_file(test_file_name)
+    
+    # Assert that the deletion was successful
+    assert result == True
+    
+    # Verify that the file no longer exists
+    assert not azure_storage_manager.blob_exists(test_file_name)
