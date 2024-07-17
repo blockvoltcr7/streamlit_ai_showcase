@@ -18,3 +18,7 @@ def document_upload_page():
             return False
 
     return None  # Return None if the upload button wasn't clicked
+
+# Ensure the page is run when this script is the main program
+if __name__ == "__main__":
+    document_upload_page()
