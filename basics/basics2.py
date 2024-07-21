@@ -32,3 +32,13 @@ st.header("Correlation Heatmap")
 fig, ax = plt.subplots(figsize=(8, 6))
 sns.heatmap(df.corr(), annot=True, cmap="coolwarm", ax=ax)
 st.pyplot(fig)
+
+# Create and display a bar chart
+st.header("Bar Chart")
+mean_values = df.mean()
+fig, ax = plt.subplots(figsize=(10, 6))
+mean_values.plot(kind='bar', ax=ax)
+plt.title("Mean Values of A, B, and C")
+plt.xlabel("Columns")
+plt.ylabel("Mean Value")
+st.pyplot(fig)
