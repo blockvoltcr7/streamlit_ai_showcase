@@ -1,11 +1,13 @@
 from openai import OpenAI
 import streamlit as st
+import os
 
 # Set up the Streamlit application title
 st.title("ChatGPT-like clone")
 
+api_key = os.getenv('OPENAI_API_KEY')
 # Initialize the OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+client = OpenAI(api_key=api_key)
 
 # Set up session state variables
 if "openai_model" not in st.session_state:
