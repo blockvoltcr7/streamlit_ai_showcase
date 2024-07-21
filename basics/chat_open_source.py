@@ -7,23 +7,24 @@ st.title("ChatGPT-like clone")
 
 model_provider = st.selectbox(
     "Select model provider:",
-    ("OpenAI", "ClaudeAI", "Together AI")
+    ("OpenAI", "Anyscale", "Together AI")
 )
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
-TOGETHER_API_KEY = os.getenv('TOGETHER_API_KEY')
+# Initialize the client based on the selected model provider
+if model_provider == "OpenAI":
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+elif model_provider == "Anyscale":
+    client = OpenAI(api_key=os.getenv("ANYSCALE_API_KEY"), base_url=os.getenv("ANYSCALE_BASE_URL"))
+    st.session_state["openai_model"] = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+elif model_provider == "Together AI":
+    client = OpenAI(api_key=os.getenv("TOGETHER_API_KEY"), base_url=os.getenv("TOGETHER_BASE_URL"))
+    st.session_state["openai_model"] = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 
-
-# Initialize the OpenAI client
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-
-
-# Set up session state variables
+# Set a default OpenAI model if not already set
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-3.5-turbo"
 
+# Initialize the message history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
