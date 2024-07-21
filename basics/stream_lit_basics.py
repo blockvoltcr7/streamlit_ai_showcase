@@ -6,7 +6,19 @@ if 'counter' not in st.session_state:
 
 # Function to increment the counter
 def increment_counter():
+    """
+    Function to increment the counter in the session state.
+
+    This function increments the value of the counter variable in the session state by 1.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     st.session_state.counter += 1
+    
 page = st.radio("Select a page", ("Home", "About", "Contact"))
 
 if page == "Home":
@@ -35,3 +47,5 @@ if page == "Home":
     st.write("Selected value:", slider_value)
     st.write("Selected option:", selected_option)
     st.write("Selected date:", selected_date)
+
+
