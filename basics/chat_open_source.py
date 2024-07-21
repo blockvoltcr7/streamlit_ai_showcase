@@ -1,28 +1,36 @@
-from openai import OpenAI
 import streamlit as st
 import os
-import anthropic
+from openai import OpenAI
+from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
 
 # Set up the Streamlit application title
-st.title("ChatGPT-like clone")
+st.title("Multi-AI Provider Chat Clone")
 
 model_provider = st.selectbox(
     "Select model provider:",
-    ("OpenAI", "Claude Anthropic", "Together AI")
+    ("OpenAI", "Claude AI", "Together AI")
 )
 
-# Initialize the client based on the selected model provider
-if model_provider == "OpenAI":
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    st.session_state["model"] = "gpt-3.5-turbo"
-elif model_provider == "Claude Anthropic":
-    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-    st.session_state["model"] = "claude-2"
-elif model_provider == "Together AI":
-    client = OpenAI(api_key=os.getenv("TOGETHER_API_KEY"), base_url=os.getenv("TOGETHER_BASE_URL"))
-    st.session_state["model"] = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
+TOGETHER_API_KEY = os.getenv('TOGETHER_API_KEY')
 
-# Initialize the message history
+print(OPENAI_API_KEY)
+print(ANTHROPIC_API_KEY)
+print(TOGETHER_API_KEY)
+
+# Initialize the appropriate client based on the selected provider
+if model_provider == "OpenAI":
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    model = "gpt-3.5-turbo"
+elif model_provider == "Claude AI":
+    client = Anthropic(api_key=ANTHROPIC_API_KEY)
+    model = "claude-2"
+elif model_provider == "Together AI":
+    client = OpenAI(api_key=TOGETHER_API_KEY, base_url="https://api.together.xyz")
+    model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+
+# Set up session state variables
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -42,20 +50,10 @@ if prompt:
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        
-        if model_provider == "Claude Anthropic":
-            response = client.completions.create(
-                model=st.session_state["model"],
-                prompt=f"Human: {prompt}\n\nAssistant:",
-                max_tokens_to_sample=300,
-                stream=True
-            )
-            for chunk in response:
-                full_response += (chunk.completion or "")
-                message_placeholder.markdown(full_response + "▌")
-        else:
+
+        if model_provider in ["OpenAI", "Together AI"]:
             for response in client.chat.completions.create(
-                model=st.session_state["model"],
+                model=model,
                 messages=[
                     {"role": m["role"], "content": m["content"]}
                     for m in st.session_state.messages
@@ -64,7 +62,25 @@ if prompt:
             ):
                 full_response += (response.choices[0].delta.content or "")
                 message_placeholder.markdown(full_response + "▌")
-        
+        elif model_provider == "Claude AI":
+            prompt = ""
+            for m in st.session_state.messages:
+                if m["role"] == "user":
+                    prompt += f"{HUMAN_PROMPT} {m['content']}"
+                else:
+                    prompt += f"{AI_PROMPT} {m['content']}"
+            prompt += f"{HUMAN_PROMPT} {st.session_state.messages[-1]['content']}{AI_PROMPT}"
+            
+            stream = client.completions.create(
+                model=model,
+                prompt=prompt,
+                max_tokens_to_sample=300,
+                stream=True,
+            )
+            for completion in stream:
+                full_response += (completion.completion or "")
+                message_placeholder.markdown(full_response + "▌")
+
         message_placeholder.markdown(full_response)
     
     # Append assistant's response to session state
