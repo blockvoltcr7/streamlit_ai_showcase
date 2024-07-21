@@ -1,9 +1,19 @@
 import streamlit as st
 
-# Multi-page layout simulation using radio buttons
+# Initialize session state for counter
+if 'counter' not in st.session_state:
+    st.session_state.counter = 0
+
+# Function to increment the counter
+def increment_counter():
+    st.session_state.counter += 1
 page = st.radio("Select a page", ("Home", "About", "Contact"))
 
 if page == "Home":
+    st.write(f"Counter value: {st.session_state.counter}")
+    if st.button("Increment Counter"):
+        increment_counter()
+        
     st.write("Welcome to my home page")
 elif page == "About":
     st.write("This is the about section")
