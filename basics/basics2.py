@@ -22,3 +22,7 @@ st.table(df.head(10))
 # Display the DataFrame in a more interactive format
 st.header("Displaying DataFrames in Streamlit")
 st.write(df.head(10))
+
+# Create and display a line chart
+st.header("Line Chart")
+st.line_chart(df)
