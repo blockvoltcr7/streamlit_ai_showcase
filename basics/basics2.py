@@ -26,3 +26,9 @@ st.write(df.head(10))
 # Create and display a line chart
 st.header("Line Chart")
 st.line_chart(df)
+
+# Create and display a correlation heatmap
+st.header("Correlation Heatmap")
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm", ax=ax)
+st.pyplot(fig)
