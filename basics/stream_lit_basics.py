@@ -1,26 +1,51 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 
-# Set the title of the Streamlit app
-st.title("Data Display with Streamlit")
+# Initialize session state for counter
+if 'counter' not in st.session_state:
+    st.session_state.counter = 0
 
-# Create a sample DataFrame
-data = {
-    "A": np.random.randn(50),
-    "B": np.random.randn(50),
-    "C": np.random.randn(50)
-}
-df = pd.DataFrame(data)
+# Function to increment the counter
+def increment_counter():
+    """
+    Function to increment the counter in the session state.
 
-# Display a table using Streamlit
-st.header("Displaying Tables in Streamlit")
-st.table(df.head(10))
+    This function increments the value of the counter variable in the session state by 1.
 
-# Display the DataFrame in a more interactive format
-st.header("Displaying DataFrames in Streamlit")
-st.write(df.head(10))
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
+    st.session_state.counter += 1
+    
+page = st.radio("Select a page", ("Home", "About", "Contact"))
+
+if page == "Home":
+    st.write(f"Counter value: {st.session_state.counter}")
+    if st.button("Increment Counter"):
+        increment_counter()
+        
+    st.write("Welcome to my home page")
+elif page == "About":
+    st.write("This is the about section")
+elif page == "Contact":
+    st.write("Feel free to contact us")
+
+if page == "Home":
+    # Slider widget
+    slider_value = st.slider("Select a value", 0, 100, 50)
+
+    # Dropdown select box
+    options = ["Option 1: Cats", "Option 2: Dogs", "Option 3: Birds"]
+    selected_option = st.selectbox("Choose an option", options)
+
+    # Date input widget
+    selected_date = st.date_input("Select a date")
+
+    # Display the selected values
+    st.write("Selected value:", slider_value)
+    st.write("Selected option:", selected_option)
+    st.write("Selected date:", selected_date)
 
 
