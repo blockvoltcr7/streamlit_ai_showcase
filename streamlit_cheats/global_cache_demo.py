@@ -2,20 +2,60 @@ import streamlit as st
 import time
 
 class SimulatedDatabaseConnection:
+    """
+    A class to simulate a database connection.
+    
+    This class is used to demonstrate how st.cache_resource works with
+    non-data objects like database connections.
+    """
+
     def __init__(self, connection_string):
+        """
+        Initialize the simulated database connection.
+
+        Args:
+            connection_string (str): A string representing the database connection details.
+        """
         self.connection_string = connection_string
         self.connected_at = time.time()
 
     def query(self, sql):
+        """
+        Simulate executing a SQL query.
+
+        Args:
+            sql (str): The SQL query to execute.
+
+        Returns:
+            str: A string representing the execution of the query.
+        """
         return f"Executing '{sql}' on connection established at {self.connected_at}"
 
 @st.cache_resource
 def get_database_connection(connection_string):
+    """
+    Get or create a database connection.
+
+    This function is cached using st.cache_resource. It will return the same
+    connection object for the same connection_string, simulating connection pooling.
+
+    Args:
+        connection_string (str): The connection string for the database.
+
+    Returns:
+        SimulatedDatabaseConnection: A simulated database connection object.
+    """
     # Simulate an expensive connection process
     time.sleep(2)
     return SimulatedDatabaseConnection(connection_string)
 
 def main():
+    """
+    Main function to run the Streamlit app.
+
+    This function sets up the Streamlit interface and demonstrates the use of
+    st.cache_resource with a simulated database connection.
+    """
     st.title("Streamlit Cache Resource Demo")
 
     st.write("This demo shows how `st.cache_resource` works with a simulated database connection.")
