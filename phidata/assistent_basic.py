@@ -7,4 +7,4 @@ assistant = Assistant(
     tools=[DuckDuckGo()],
     show_tool_calls=True
 )
-assistant.print_response("Whats happening in France?", markdown=True)
+assistant.print_response("what is the latest news on gpt search engine?", markdown=True)

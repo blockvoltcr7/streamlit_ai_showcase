@@ -1,46 +1,33 @@
-import google.generativeai as genai
-from google.generativeai import GenerationConfig, GenerativeModel, TextGenerationConfig
-from dotenv import load_dotenv
 import os
-import wave
+from google.cloud import texttospeech
 
-load_dotenv()
+# Set up your environment variables
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path/to/your/service_account_key.json"
 
-# Fetch the API key from environment variables
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_API_KEY is None:
-    raise ValueError("GEMINI_API_KEY environment variable is not set")
+# Create a Text-to-Speech client
+client = texttospeech.TextToSpeechClient()
 
-genai.configure(api_key=GEMINI_API_KEY)
+# Construct the request
+synthesis_input = texttospeech.SynthesisInput(text="Hello, world!")
 
-model = GenerativeModel("gemini-pro")
-text = "Hello, world! This is a test of text-to-speech."
-
-generation_config = TextGenerationConfig(
-    voice="en-US-Standard-A",  # Choose a voice
-    language="en-US"
+# Select the voice
+voice = texttospeech.VoiceSelectionParams(
+    name="en-US-Standard-A",  # Choose a voice (see documentation for options)
+    ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,
 )
 
-response = model.generate_content(
-    prompt=text,
-    generation_config=generation_config
+# Set the audio configuration
+audio_config = texttospeech.AudioConfig(
+    audio_encoding=texttospeech.AudioEncoding.MP3,
 )
 
-#verify response is 200 status code
-print(response.status_code)
+# Perform the text-to-speech request
+response = client.synthesize_speech(
+    input=synthesis_input, voice=voice, audio_config=audio_config
+)
 
-# # Process the audio data
-# audio_data = b''
-# for chunk in response:
-#     if hasattr(chunk, 'audio'):
-#         audio_data += chunk.audio
+# Save the audio file
+with open("output.mp3", "wb") as out:
+    out.write(response.audio_content)
 
-# # Save the audio data to a WAV file
-# output_file = "output.wav"
-# with wave.open(output_file, 'wb') as wav_file:
-#     wav_file.setnchannels(1)  # Mono audio
-#     wav_file.setsampwidth(2)  # 16-bit audio
-#     wav_file.setframerate(24000)  # Sample rate (you may need to adjust this)
-#     wav_file.writeframes(audio_data)
-
-# print(f"Audio saved to {output_file}")
+print("Audio content written to file 'output.mp3'")

@@ -24,3 +24,8 @@ Thumbs.db
 
 # Temporary files
 *.tmp
+
+# Audio files
+*.mp3
+*.wav
+audio/
