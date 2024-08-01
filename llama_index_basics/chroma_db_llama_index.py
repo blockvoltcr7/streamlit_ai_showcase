@@ -23,7 +23,7 @@ os.environ["GOOGLE_API_KEY"] = api_key
 # set maximum context window size
 context_window = 4096
 # set number of output tokens - this is done to limit the output size
-num_output = 500
+num_output = 20
 """
 Settings.llm = OpenAI(temperature=0.5,
     model="gpt-3.5-turbo",

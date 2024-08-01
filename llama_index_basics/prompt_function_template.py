@@ -38,3 +38,5 @@ Our models outperform open-source chat models on most benchmarks we tested, and 
 fmt_prompt = prompt_tmpl.format(
     context_str=context_str, query_str="How many params does llama 2 have"
 )
+
+print(fmt)
