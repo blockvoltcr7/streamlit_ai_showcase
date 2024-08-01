@@ -5,6 +5,8 @@ from llama_index.llms.groq import Groq
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Settings
 from llama_index.core import SimpleDirectoryReader
+from llama_index.core.llms import ChatMessage
+
 
 # Print current working directory
 print("Current working directory:", os.getcwd())
@@ -47,4 +49,24 @@ Settings.embed_model = embed_model
 
 # Test the LLM
 response = llm.complete("Do you like Drake or Kendrick better?")
+print(response)
+
+
+
+print("Kendrick vs Drake --- continued conversation")
+#stream and continue the conversation
+stream_response = llm.stream_complete(
+    "I think drake is way better, but some say that in california that kendrick is better. do you think people in california like kendrick more than drake? also tell me why kendrick is better at story telling."
+)
+
+for t in stream_response:
+    print(t.delta, end="")
+
+
+messages = [
+    ChatMessage(role="system", content="You are Kendrick."),
+    ChatMessage(role="user", content="Write a verse."),
+]
+response = llm.chat(messages)
+
 print(response)
