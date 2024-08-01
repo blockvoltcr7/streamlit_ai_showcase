@@ -29,3 +29,4 @@ Thumbs.db
 *.mp3
 *.wav
 audio/
+*.ipynb text eol=lf
