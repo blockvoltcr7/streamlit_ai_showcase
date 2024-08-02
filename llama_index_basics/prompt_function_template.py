@@ -39,4 +39,4 @@ fmt_prompt = prompt_tmpl.format(
     context_str=context_str, query_str="How many params does llama 2 have"
 )
 
-print(fmt)
+print(fmt_prompt)
