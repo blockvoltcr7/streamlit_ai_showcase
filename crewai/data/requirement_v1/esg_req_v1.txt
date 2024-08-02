@@ -246,4 +246,33 @@ Updated Test Plan Considerations:
    - Ensure that the holdings in the response match those in the request
    - Verify that no additional holdings appear in the response that weren't in the request
 
-This revised API structure provides a more flexible and robust solution for portfolio ESG analysis, while still maintaining ease of understanding and testability. It allows for a wide range of test scenarios and provides a clear, self-contained interface for clients to interact with.
+
+ESG stands for Environmental, Social, and Governance.
+
+To break it down further:
+
+1. Environmental (E): This aspect considers how a company performs as a steward of nature. It looks at factors such as:
+   - Energy use and efficiency
+   - Waste management
+   - Natural resource conservation
+   - Treatment of animals
+   - Climate change policies
+
+2. Social (S): This aspect examines how a company manages relationships with its employees, suppliers, customers, and the communities where it operates. It includes factors like:
+   - Employee relations and diversity
+   - Working conditions, including child labor and slavery
+   - Local community impact and involvement
+   - Health and safety
+   - Conflict resolution
+
+3. Governance (G): This aspect deals with a company's leadership, executive pay, audits, internal controls, and shareholder rights. It looks at:
+   - Executive compensation
+   - Board diversity and structure
+   - Corruption and bribery
+   - Lobbying
+   - Political contributions
+   - Tax strategy
+
+ESG factors are used by investors and organizations to evaluate companies and countries on how far advanced they are with sustainability. In addition to traditional financial analysis, these non-financial factors are increasingly used in assessing potential investments or evaluating the overall ethical impact and sustainability practices of companies.
+
+In the context of our API, the ESG scores provide a quantitative measure of how well the companies in the portfolio are performing in these three critical areas of corporate responsibility and sustainability.
