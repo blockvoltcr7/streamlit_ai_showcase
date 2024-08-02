@@ -2,11 +2,10 @@
 This script reads documents from the data folder, loads them into a VectorStoreIndex,
 and then queries the index with a question to return a response.
 """
-
+import os
 from llama_index.llms.openai import OpenAI
 from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
