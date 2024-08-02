@@ -23,7 +23,11 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = os.path.join(os.path.dirname(current_dir), "data")
 # Load data using SimpleDirectoryReader
 documents = SimpleDirectoryReader(input_dir=data_dir).load_data()
+print(len(documents))
 
+print(documents[0])
+print(documents[1])
+print(documents[3])
 
 index = VectorStoreIndex.from_documents(documents)
 query_engine = index.as_query_engine()
