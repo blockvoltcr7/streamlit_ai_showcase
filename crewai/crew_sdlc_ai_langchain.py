@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process
 from langchain_community.chat_models import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_anthropic import ChatAnthropic
 
 
 # Load environment variables
@@ -12,6 +13,7 @@ load_dotenv()
 # Set up API keys
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 if OPENAI_API_KEY is None:
     raise ValueError("API keys not found. Please set the OPENAI_API_KEY environment variables.")
@@ -19,12 +21,13 @@ if OPENAI_API_KEY is None:
 if GOOGLE_API_KEY not in os.environ:
     os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 
-gemini_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-001")
-result = gemini_llm.invoke("Write a ballad about LangChain")
-print(result)
+if ANTHROPIC_API_KEY not in os.environ:
+    os.environ["ANTHROPIC_API_KEY"] = ANTHROPIC_API_KEY
 
 # Initialize LLMs
-llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.7, openai_api_key=OPENAI_API_KEY)
+gemini_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-001")
+claude_llm = ChatAnthropic(model="claude-3-sonnet-20240229", api_key=ANTHROPIC_API_KEY)
+openai_llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.7, openai_api_key=OPENAI_API_KEY)
 
 def read_markdown_file(file_path):
     print(f"Reading file: {file_path}")
@@ -47,7 +50,7 @@ product_owner = Agent(
     backstory='Experienced in financial products with a keen eye for market needs',
     verbose=True,
     allow_delegation=False,
-    llm=llm
+    llm=claude_llm
 )
 
 business_analyst = Agent(
@@ -56,7 +59,7 @@ business_analyst = Agent(
     backstory='Skilled in translating business requirements into technical specifications',
     verbose=True,
     allow_delegation=False,
-    llm=llm
+    llm=openai_llm
 )
 
 qa_engineer = Agent(
