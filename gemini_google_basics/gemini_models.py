@@ -19,7 +19,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 # gemini-1.5-flash-001
 
 
-model = genai.GenerativeModel('gemini-1.0-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
 response = model.generate_content("Give me python code to sort a list")
 
 # Check if the response contains a valid Part
