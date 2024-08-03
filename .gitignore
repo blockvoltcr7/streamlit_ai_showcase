@@ -32,3 +32,5 @@ audio/
 *.ipynb text eol=lf
 llama_index_basics/chroma_db/
 chroma_db/
+
+llama_index_basics/storage/
