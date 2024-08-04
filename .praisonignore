@@ -1,0 +1,11 @@
+.*
+*.pyc
+pycache
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+.lock
+.pyc
+.env
