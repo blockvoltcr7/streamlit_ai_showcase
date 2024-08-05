@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
 
+
 load_dotenv()
 
 # ElevenLabs setup
@@ -26,7 +27,7 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
         IO[bytes]: A BytesIO stream containing the audio data.
     """
     response = client.text_to_speech.convert(
-        voice_id="pNInz6obpgDQGcFmaJgB",  # Adam pre-made voice
+        voice_id="txaks9Y4DguQLag5WHgP",  # custom mental health voice
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=text,
@@ -59,7 +60,7 @@ def save_audiostream_to_file(audio_stream: IO[bytes]) -> str:
     Returns:
         str: The file path where the audio file has been saved.
     """
-    file_name = f"{uuid.uuid4()}.mp3"
+    file_name = f"kratos{uuid.uuid4()}.mp3"
     save_file_path = os.path.join(os.getcwd(), '..', 'audio', file_name)
     print(f"Saving audio file to: {save_file_path}")
     
@@ -75,4 +76,4 @@ def main(text: str):
     print(f"Audio file saved at: {file_path}")
 
 if __name__ == "__main__":
-    main("This is a test of the ElevenLabs API.")
+    main("I recall the faces of the gods I have slain: Ares, Persephone, Athena, Poseidon, Hades, and now, Zeus. Each of their deaths was a testament to my unyielding resolve, my unrelenting fury, and my unshakeable conviction. I have walked among the gods, and I have emerged victorious.")
