@@ -2,7 +2,7 @@ import uuid
 from pathlib import Path
 from crewai import Agent, Task, Crew, Process
 from crewai_tools import YoutubeVideoSearchTool
-from langchain.llms import OpenAI  # Import the LLM you want to use
+from langchain_community.chat_models.openai import ChatOpenAI
 
 # Get the directory of the current script
 current_dir = Path(__file__).resolve().parent
@@ -49,11 +49,19 @@ def main():
         search_query = input("Enter a topic to search for YouTube videos: ")
         youtube_video_url = input("Enter the YouTube video URL (optional, press Enter to skip): ").strip() or None
 
-        # Set up a specific LLM (example with OpenAI)
-        openai_llm = OpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
+        # Set up a specific LLM using ChatOpenAI
+        custom_llm = ChatOpenAI(
+            temperature=0.7,
+            model_name="gpt-3.5-turbo",
+            # You can add more parameters here, such as:
+            # max_tokens=150,
+            # top_p=1,
+            # frequency_penalty=0,
+            # presence_penalty=0
+        )
 
         # Create and run the crew with the custom LLM
-        crew = create_youtube_search_crew(search_query, youtube_video_url, llm=openai_llm)
+        crew = create_youtube_search_crew(search_query, youtube_video_url, llm=custom_llm)
         result = crew.kickoff()
 
         print("\nSearch Results:")
