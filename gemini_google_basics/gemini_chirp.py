@@ -1,19 +1,32 @@
 import os
 from google.cloud import texttospeech
 
-# Set up your environment variables
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path/to/your/service_account_key.json"
+# Correct the path to your Google Cloud service account key
+credentials_path = os.path.abspath("../google_cloud_keys/ssi-automations-827bdc794623.json")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
 # Create a Text-to-Speech client
 client = texttospeech.TextToSpeechClient()
 
-# Construct the request
-synthesis_input = texttospeech.SynthesisInput(text="Hello, world!")
+# Get the list of voices
+voices_response = client.list_voices()
 
-# Select the voice
+# Iterate over the voices in the response
+for voice in voices_response.voices:
+    print(f"Name: {voice.name}")
+    print(f"Language Code: {voice.language_codes}")
+    print(f"Gender: {voice.ssml_gender}")
+    print(f"Naturalness: {voice.natural_sample_rate_hertz}")
+    print("-" * 20)
+    
+# Construct the request
+synthesis_input = texttospeech.SynthesisInput(text="We all have to battle our demons, it tests our resilience and determination. Each of us, at some point in our lives, faces challenges that seem insurmountable. It is during these times that the principles of Stoicism offer us a guiding light, a beacon of hope that helps us navigate through the storm.")
+
+# Select the voice (with language code)
 voice = texttospeech.VoiceSelectionParams(
     name="en-US-Standard-A",  # Choose a voice (see documentation for options)
     ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL,
+    language_code="en-US"  # Add the language code here
 )
 
 # Set the audio configuration
