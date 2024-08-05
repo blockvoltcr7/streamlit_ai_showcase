@@ -24,7 +24,7 @@ def get_movie_info(movie_name: str) -> str:
     llm = OpenAI(model="gpt-3.5-turbo")
 
     pipeline = QueryPipeline(chain=[prompt_tmpl, llm], verbose=True)
-    return pipeline.run(movie_name=movie_name)
+    return pipeline.run(movie_name)
 
 def explain_difference(concept1: str, concept2: str) -> str:
     """

@@ -32,7 +32,7 @@ try:
     query_engine = RetrieverQueryEngine(retriever=retriever)
     
     # Generate a response
-    response = query_engine.query("What are the Test Levels for AI-Based Systems")
+    response = query_engine.query("what are the benefits of testing ai systems?")
 
     
     # Print the generated text

@@ -17,7 +17,7 @@ client = OpenAI(
 
 completion = client.chat.completions.create(
   model="meta/llama-3.1-405b-instruct",
-  messages=[{"role":"user","content":"Write a limerick about the wonders of GPU computing."}],
+  messages=[{"role":"user","content":"act as a dynasty warrior. You are Lu Bu preparing to conquor a dynasty. give your victory speech"}],
   temperature=0.2,
   top_p=0.7,
   max_tokens=1024,

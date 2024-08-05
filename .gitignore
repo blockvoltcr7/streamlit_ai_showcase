@@ -33,5 +33,6 @@ audio/
 llama_index_basics/chroma_db/
 chroma_db/
 google_cloud_keys/
+videos/
 
 llama_index_basics/storage/

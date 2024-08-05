@@ -24,5 +24,5 @@ st.write("Boost the search engine visibility of your real estate listings with o
 # Conclusion or Call to Action
 st.write("Take your real estate social media strategy to the next level with our all-in-one automation platform. Sign up today and experience the convenience of managing your online presence effortlessly.")
 
-with open("tiktok_video_with_text.mp4", 'rb') as v:
+with open("../videos/A moment of compassion and tenderness, it won't hurt you to watch..mp4", 'rb') as v:
     st.video(v)

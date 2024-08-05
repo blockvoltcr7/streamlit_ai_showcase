@@ -1,16 +1,25 @@
 import streamlit as st
-import openai
 import os
 import dotenv
 import json
 import requests
 import base64
-import json
-import requests
 from PIL import Image
 from io import BytesIO
 from concurrent.futures import ThreadPoolExecutor
 import math
+import google.generativeai as genai
+import tempfile
+
+dotenv.load_dotenv()
+
+# Fetch the API key from environment variables
+GEMINI_KEY = os.getenv("GEMINI_API_KEY")
+if GEMINI_KEY is None:
+    raise ValueError("GEMINI_API_KEY environment variable is not set")
+
+genai.configure(api_key=GEMINI_KEY)
+
 hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -18,10 +27,8 @@ hide_streamlit_style = """
             </style>
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-    # Get the original property listing description from the user
 
 st.title('Facebook Post Generator')
-
 
 # Function to get an image from a URL
 @st.cache_data
@@ -38,7 +45,6 @@ def download_images_concurrently(image_urls):
 # Function to create a grid of images
 @st.cache_data
 def create_image_grid(image_urls, grid_max_width=4):
-    
     images = download_images_concurrently(image_urls)  # This will download all images concurrently
 
     if not images:
@@ -64,7 +70,7 @@ def create_image_grid(image_urls, grid_max_width=4):
         grid_image.paste(image, (col * img_width, row * img_height))
 
     return grid_image
-# Function to encode the image
+
 # Function to encode the image to base64
 def encode_image(image):
     # Convert the PIL Image to bytes
@@ -72,7 +78,6 @@ def encode_image(image):
     image.save(buffered, format="JPEG")
     # Encode the bytes in base64
     return base64.b64encode(buffered.getvalue()).decode('utf-8')
-
 
 address = st.text_input('Address', '126 Glenrose Ave')
 community_name = st.text_input('Community Name', 'Rosedale-Moore Park')
@@ -92,49 +97,31 @@ if property_desciption and address and image_urls:
     # Encode the grid image to base64
     base64_image = encode_image(grid_image)
 
-    # Prepare the headers and payload for the OpenAI API call
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"  # Use Streamlit secrets to store API key securely
-    }
-    payload = {
-        "model": "gpt-4-vision-preview",
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": f'''You are a realtor and social media marketing expert. Write a highly captivating Facebook post for the real estate listing. Do not state anything that may be untrue. Use the photos and information to the best of your ability. Use emojis. I have attached the photos, listing description and some other pieces of info about the property that you might find helpful. 
+    # Save the grid image to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
+        grid_image.save(temp_file, format="JPEG")
+        temp_file_path = temp_file.name
+
+    # Upload the image to Gemini Vision Pro
+    sample_file = genai.upload_file(path=temp_file_path, display_name="grid_image.jpg")
+    file = genai.get_file(name=sample_file.name)
+
+    # Choose a Gemini API model
+    model = genai.GenerativeModel(model_name="gemini-1.5-pro-latest")
+
+    # Prepare the prompt
+    prompt = f'''You are a realtor and social media marketing expert. Write a highly captivating Facebook post for the real estate listing. Do not state anything that may be untrue. Use the photos and information to the best of your ability. Use emojis. I have attached the photos, listing description and some other pieces of info about the property that you might find helpful. 
     house-address_navigation:   {address}
     house-community_name:  {community_name}
     house-municipality_name: {municipality_name}   
     house-house_type: {house_type}               
     Listing description: {property_desciption}
     '''
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{base64_image}"
-                        }
-                    }
-                ]
-            }
-        ],
-        "max_tokens": 500
-    }
+
     if st.button('Generate Facebook Post'):
-        # Make the OpenAI API call
-        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        # Prompt the model with text and the previously uploaded image
+        response = model.generate_content([file, prompt])
 
-        # Check if the response is successful
-        if response.status_code == 200:
-            # Extract the generated post from the response
-            generated_post = response.json()['choices'][0]['message']['content']
-
-            # Display the generated Facebook post
-            st.subheader("Generated Facebook Post:")
-            st.write(generated_post)
-        else:
-            st.error("Failed to generate post. Error: " + response.text)
+        # Display the generated Facebook post
+        st.subheader("Generated Facebook Post:")
+        st.write(response.text)
