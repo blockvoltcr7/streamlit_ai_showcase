@@ -16,7 +16,7 @@ invoke_url = "https://ai.api.nvidia.com/v1/vlm/adept/fuyu-8b"
 stream = True
 
 # Resize the image and convert to JPEG before encoding to base64
-with Image.open(r"..\eraserio\output\sequence-diagram\sequence_diagram-1.png") as img:
+with Image.open("../eraserio/output/sequence-diagram/sequence_diagram-1.png") as img:
     # Resize the image, maintaining aspect ratio
     img.thumbnail((1024, 1024))  # Adjust the size as needed
     

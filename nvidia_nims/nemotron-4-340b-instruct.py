@@ -17,7 +17,7 @@ client = OpenAI(
 
 completion = client.chat.completions.create(
   model="nvidia/nemotron-4-340b-instruct",
-  messages=[{"role":"user","content":"Write a limerick about the wonders of GPU computing."}],
+  messages=[{"role":"user","content":"write a poem about snake from Solid Snake the video game"}],
   temperature=0.2,
   top_p=0.7,
   max_tokens=1024,

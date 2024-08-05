@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
 
+
 load_dotenv()
 
 # ElevenLabs setup
@@ -26,15 +27,15 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
         IO[bytes]: A BytesIO stream containing the audio data.
     """
     response = client.text_to_speech.convert(
-        voice_id="pNInz6obpgDQGcFmaJgB",  # Adam pre-made voice
+        voice_id="txaks9Y4DguQLag5WHgP",  # custom mental health voice
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=text,
         model_id="eleven_multilingual_v2",
         voice_settings=VoiceSettings(
-            stability=0.0,
+            stability=1.0,
             similarity_boost=1.0,
-            style=0.0,
+            style=.80,
             use_speaker_boost=True,
         ),
     )
@@ -59,7 +60,7 @@ def save_audiostream_to_file(audio_stream: IO[bytes]) -> str:
     Returns:
         str: The file path where the audio file has been saved.
     """
-    file_name = f"{uuid.uuid4()}.mp3"
+    file_name = f"kratos{uuid.uuid4()}.mp3"
     save_file_path = os.path.join(os.getcwd(), '..', 'audio', file_name)
     print(f"Saving audio file to: {save_file_path}")
     
@@ -73,6 +74,17 @@ def main(text: str):
     audio_stream = text_to_speech_stream(text)
     file_path = save_audiostream_to_file(audio_stream)
     print(f"Audio file saved at: {file_path}")
+    
+    
 
 if __name__ == "__main__":
-    main("This is a test of the ElevenLabs API.")
+    
+    text  = """
+
+We all have to battle our demons, it tests our resilience and determination.
+Each of us, at some point in our lives, faces challenges that seem insurmountable.
+It is during these times that the principles of Stoicism offer us a guiding light, a beacon of hope that
+helps us navigate through the storm.
+
+    """
+    main(text)

@@ -92,4 +92,4 @@ print("Tool Names: ", [tool.metadata.name for tool in query_engine_tools])
 
 # agent.query("at what age did Drake start acting? what tv show did he star in?")
 
-agent.query("tell me about J.cole collab with kendrick").response
+agent.query("tell me a fun fact about kendrick lamar").response

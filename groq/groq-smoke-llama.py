@@ -29,7 +29,7 @@ chat_completion = client.chat.completions.create(
         },
         {
             "role": "user",
-            "content": "Explain the importance of fast language models",
+            "content": "Explain the importance of this quote 'You must be strong. Determination, perseverance, and a strong will to overcome any obstacle. These are the pillars upon which your mental fortress is built. When the storms of life batter against your walls, remember that each challenge is an opportunity to prove your resilience. Embrace the struggle, for it is in the crucible of hardship that true strength is forged. Keep your eyes fixed on your goals, and let no setback deter you. Every step forward, no matter how small, brings you closer to the warrior within. Stand tall, remain unwavering, and let your inner fire burn brightly. This is your journey, and you are the hero of your own story.'",
         }
     ],
     model=LLAMA3_70B,

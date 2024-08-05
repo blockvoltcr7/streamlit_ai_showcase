@@ -12,9 +12,9 @@ AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID")
 AZURE_SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID")
 
 # Azure configuration
-RESOURCE_GROUP = "dev_env_learning"
+RESOURCE_GROUP = "dev_env_aug_test"
 LOCATION = "eastus"
-STORAGE_ACCOUNT_BASE = "devenvstreamlitappsai"
+STORAGE_ACCOUNT_BASE = "devenvaitest"
 
 def generate_random_sequence(length):
     return ''.join(random.choices('0123456789', k=length))

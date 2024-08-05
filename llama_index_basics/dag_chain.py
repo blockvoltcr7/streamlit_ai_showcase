@@ -83,6 +83,6 @@ p.add_link("reranker", "summarizer", dest_key="nodes")
 p.add_link("llm", "summarizer", dest_key="query_str")
 
 # run the pipeline
-output = p.run(topic="michael jackson")
+output = p.run(topic="sami sabir-idrissi")
 
 print(output)

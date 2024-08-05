@@ -31,7 +31,7 @@ stream = True
 #     image_bytes = buf.getvalue()
 
 # Open the image sequence diagream
-with Image.open(r"..\eraserio\output\sequence-diagram\sequence_diagram-1.png") as img:
+with Image.open("../eraserio/output/sequence-diagram/sequence_diagram-1.png") as img:
     # Resize the image, maintaining aspect ratio
     img.thumbnail((1024, 1024))  # Example size, adjust as needed
     

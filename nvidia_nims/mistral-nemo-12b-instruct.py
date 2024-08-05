@@ -17,7 +17,7 @@ client = OpenAI(
 
 completion = client.chat.completions.create(
   model="nv-mistralai/mistral-nemo-12b-instruct",
-  messages=[{"role":"user","content":"Write a limerick about the wonders of GPU computing."}],
+  messages=[{"role":"user","content":"write a code for streamlit for a login page"}],
   temperature=0.2,
   top_p=0.7,
   max_tokens=1024,

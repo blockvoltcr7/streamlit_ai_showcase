@@ -1,5 +1,6 @@
 import requests
 import os
+import uuid
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,33 +13,16 @@ if api_key is None:
 
 url = "https://app.eraser.io/api/render/prompt"
 
+
+text_body = """
+
+create a sequence diagram that for a streamlit app that processes text which then calls
+the elevenlabs api to convert the text to speech and then plays the audio.
+
+"""
+
 payload = {
-    "text": """title ESG-Focused Wealth Management Process
-
-actor Client
-participant "Wealth Management System" as WMS
-participant "Financial Data API" as FDA
-participant "Custom ESG Calculation API" as CECA
-
-Client->WMS: Request portfolio analysis
-WMS->FDA: Request stock data with ESG scores
-FDA-->WMS: Return stock data with ESG scores
-WMS->Client: Prompt for ESG preferences
-Client-->WMS: Select focus area (Environmental/Social/Governance/All)
-WMS->CECA: Send selected ESG scores based on focus
-CECA-->WMS: Return tailored portfolio score
-WMS->WMS: Generate portfolio report
-WMS->Client: Present portfolio report
-Client->WMS: Decision on portfolio changes
-alt Client wants changes
-    WMS->WMS: Generate recommendations
-    WMS->Client: Present recommendations
-    Client->WMS: Approve changes
-    WMS->WMS: Implement portfolio adjustments
-else Client doesn't want changes
-    WMS->WMS: Finalize report
-end
-WMS->Client: Confirm process completion""",
+    "text": text_body,
     "diagramType": "sequence-diagram",
     "background": True,
     "theme": "dark",
@@ -64,13 +48,14 @@ try:
     output_dir = os.path.join("output", "sequence-diagram")
     os.makedirs(output_dir, exist_ok=True)
     
-
+    # Generate a random file name
+    random_file_name = f"sequence_{uuid.uuid4().hex}.png"
+    output_path = os.path.join(output_dir, random_file_name)
+    
     # Save the image
-    output_path = os.path.join(output_dir, "sequence_diagram-1.png")
     with open(output_path, "wb") as f:
         f.write(response.content)
     print(f"Image saved successfully at: {output_path}")
-
 except requests.RequestException as e:
     print(f"Error making request: {e}")
 except IOError as e:

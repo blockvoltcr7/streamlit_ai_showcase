@@ -48,6 +48,7 @@ Settings.llm = llm
 Settings.embed_model = embed_model
 
 # Test the LLM
+print("Kendrick vs Drake --- single response")
 response = llm.complete("Do you like Drake or Kendrick better?")
 print(response)
 
@@ -63,6 +64,7 @@ for t in stream_response:
     print(t.delta, end="")
 
 
+print("Kendrick vs Drake --- multiple responses")
 messages = [
     ChatMessage(role="system", content="You are Kendrick."),
     ChatMessage(role="user", content="Write a verse."),
