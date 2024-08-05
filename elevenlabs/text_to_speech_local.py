@@ -33,9 +33,9 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
         text=text,
         model_id="eleven_multilingual_v2",
         voice_settings=VoiceSettings(
-            stability=0.0,
+            stability=1.0,
             similarity_boost=1.0,
-            style=0.0,
+            style=.80,
             use_speaker_boost=True,
         ),
     )
@@ -74,6 +74,17 @@ def main(text: str):
     audio_stream = text_to_speech_stream(text)
     file_path = save_audiostream_to_file(audio_stream)
     print(f"Audio file saved at: {file_path}")
+    
+    
 
 if __name__ == "__main__":
-    main("I recall the faces of the gods I have slain: Ares, Persephone, Athena, Poseidon, Hades, and now, Zeus. Each of their deaths was a testament to my unyielding resolve, my unrelenting fury, and my unshakeable conviction. I have walked among the gods, and I have emerged victorious.")
+    
+    text  = """
+
+We all have to battle our demons, it tests our resilience and determination.
+Each of us, at some point in our lives, faces challenges that seem insurmountable.
+It is during these times that the principles of Stoicism offer us a guiding light, a beacon of hope that
+helps us navigate through the storm.
+
+    """
+    main(text)
