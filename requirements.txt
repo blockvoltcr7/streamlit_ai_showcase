@@ -326,6 +326,7 @@ soupsieve==2.5
 SQLAlchemy==2.0.31
 stack-data==0.6.3
 starlette==0.37.2
+stqdm==0.0.5
 streamlit==1.36.0
 striprtf==0.0.26
 sympy==1.13.1

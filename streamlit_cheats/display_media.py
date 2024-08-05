@@ -4,7 +4,7 @@ import os
 # Define file paths
 image_path = os.path.join('..','images', 'angelic_warrior.png')
 audio_path = os.path.join('..', 'audio', 'bf05d57b-b3d3-4b1f-a257-651721b25973.mp3')
-video_path = 'path_to_your_video_file.mp4'  # Replace with your actual video file path
+video_path = "../videos/A moment of compassion and tenderness, it won't hurt you to watch..mp4"  # Replace with your actual video file path
 
 def main():
     st.title("Streamlit Media Display Demo")
