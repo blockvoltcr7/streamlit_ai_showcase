@@ -16,8 +16,7 @@ url = "https://app.eraser.io/api/render/prompt"
 
 text_body = """
 
-create a sequence diagram that for a streamlit app that processes text which then calls
-the elevenlabs api to convert the text to speech and then plays the audio.
+create a cloud architecture diagram for google cloud login system within a streamlit app
 
 """
 
@@ -45,11 +44,11 @@ try:
     print(response.headers)
 
     # Create the output directory if it doesn't exist
-    output_dir = os.path.join("output", "sequence-diagram")
+    output_dir = os.path.join("output", "cloud-architecture-diagram")
     os.makedirs(output_dir, exist_ok=True)
     
     # Generate a random file name
-    random_file_name = f"sequence_{uuid.uuid4().hex}.png"
+    random_file_name = f"cloud_arch_{uuid.uuid4().hex}.png"
     output_path = os.path.join(output_dir, random_file_name)
     
     # Save the image
