@@ -2,12 +2,13 @@ import uuid
 from pathlib import Path
 from crewai import Agent, Task, Crew, Process
 from crewai_tools import YoutubeVideoSearchTool
-from langchain_community.chat_models.openai import ChatOpenAI
+from langchain_openai import ChatOpenAI
+from langchain_core.language_models import BaseLLM
 
 # Get the directory of the current script
 current_dir = Path(__file__).resolve().parent
 
-def write_to_file(content, directory=current_dir / 'file_output'):
+def write_to_file(content: str, directory=current_dir / 'file_output'):
     """Write content to a file with a unique name in the specified directory."""
     unique_filename = f"youtube_search_{uuid.uuid4()}.txt"
     file_path = directory / unique_filename
@@ -17,7 +18,7 @@ def write_to_file(content, directory=current_dir / 'file_output'):
     print(f"Output written to: {file_path}")
     return file_path
 
-def create_youtube_search_crew(search_query, youtube_video_url=None, llm=None):
+def create_youtube_search_crew(search_query: str, youtube_video_url: str = None, llm: BaseLLM = None):
     """Create and return a Crew for YouTube video search and analysis."""
     youtube_tool = YoutubeVideoSearchTool(youtube_video_url=youtube_video_url)
 
@@ -52,23 +53,21 @@ def main():
         # Set up a specific LLM using ChatOpenAI
         custom_llm = ChatOpenAI(
             temperature=0.7,
-            model_name="gpt-3.5-turbo",
-            # You can add more parameters here, such as:
-            # max_tokens=150,
-            # top_p=1,
-            # frequency_penalty=0,
-            # presence_penalty=0
+            model="gpt-4o-mini",
         )
 
         # Create and run the crew with the custom LLM
         crew = create_youtube_search_crew(search_query, youtube_video_url, llm=custom_llm)
         result = crew.kickoff()
 
+        # Extract the string representation of the result
+        result_string = str(result)
+
         print("\nSearch Results:")
-        print(result)
+        print(result_string)
 
         # Write results to a file
-        output_file = write_to_file(result)
+        output_file = write_to_file(result_string)
         print(f"\nResults have been saved to: {output_file}")
 
     except Exception as e:
