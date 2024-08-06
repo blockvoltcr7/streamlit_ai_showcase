@@ -1,0 +1,35 @@
+- Title: How, when and why top QA Engineers use AI in testing
+Link: https://aqua-cloud.io/ai-for-top-qa-engineers/
+Snippet: Another way that QA engineers use AI is by using machine learning models to help them identify problems with the software being tested. Machine ...
+
+- Title: Top 6 Quality Engineering Trends for 2024 to Stay Ahead of the Curve
+Link: https://www.testingxperts.com/blog/quality-engineering-trends
+Snippet: Read our blog to explore 2024's top Quality Engineering trends: Big Data, AI, DevOps, and more. Drive innovation and efficiency in software ...
+
+- Title: The Future of QA Engineering: How AI is Empowering Software ...
+Link: https://medium.com/@ulissesbgd/the-future-of-qa-engineering-how-ai-is-empowering-software-testers-922c84fd14f1
+Snippet: By leveraging AI's capabilities, QA engineers can optimize their testing efforts, enhance collaboration, and gain valuable insights from test ...
+
+- Title: Quality Assurance & Software Testing Trends for 2024 – The Year of ...
+Link: https://www.linkedin.com/pulse/quality-assurance-software-testing-trends-2024-year-qa-done-kvhuf
+Snippet: ... QA engineers can do. ... Working on proper development pathways and establishing valuable AI implementations will be the new trend for 2024.
+
+- Title: How AI and ML are Changing Quality Engineering Trends
+Link: https://www.testingxperts.com/blog/ai-ml-changing-quality-engineering-trends
+Snippet: Read how AI and ML revolutionise Quality Engineering, reshape trends, and enhance efficiency in our latest insightful blog.
+
+- Title: Quality engineering: 6 trends in software testing - Expleo
+Link: https://expleo.com/global/en/insights/blog/quality-engineering-6-trends-software-testing/
+Snippet: Quality engineering: 6 trends in software testing to power your business in the next 12 months · #1. The rapid rise in AI software testing · FAST FACT · #2. QA ...
+
+- Title: Unlocking the Potential of AI in Quality Engineering Transformation
+Link: https://qualizeal.com/unlocking-the-potential-of-ai-in-quality-engineering-transformation/
+Snippet: Traditional test case development in quality engineering is time-consuming, needing frequent coding and updates. We can leverage AI to utilize ...
+
+- Title: Software Testing Trends to Watch in 2024
+Link: https://www.growthaccelerationpartners.com/blog/h2-2024-insights-emerging-software-testing-and-quality-assurance-trends-to-drive-innovation
+Snippet: Companies adopting AI- and ML-enabled testing will remain ahead in delivering robust software at a faster pace. This adoption especially makes ...
+
+- Title: Top 12 Automation Testing Trends Shaping 2024 - Test Guild
+Link: https://testguild.com/automation-testing-trends/
+Snippet: Explore 2024's top automation testing trends at Test Guild! AI, shift-left strategies, Playwright insights, and more. Click for expert tips!
