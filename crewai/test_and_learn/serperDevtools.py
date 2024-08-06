@@ -6,7 +6,6 @@ from langchain_openai import ChatOpenAI
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.outputs import LLMResult
 
-
 class TokenCounterCallback(BaseCallbackHandler):
     def __init__(self):
         self.token_count = 0
@@ -26,7 +25,7 @@ class FileWriterTool(BaseTool):
     description: str = "Writes the agent's output to a file"
 
     def _run(self, output: str, agent_name: str) -> str:
-        directory = "test_and_learn/file_output"
+        directory = "file_output"
         os.makedirs(directory, exist_ok=True)
         filename = os.path.join(directory, f"{agent_name}_output.txt")
         with open(filename, "w") as f:
@@ -47,10 +46,16 @@ gpt_3_5_turbo = ChatOpenAI(
     callbacks=[token_counter]
 )
 
+# Custom method to execute task and save output
+def execute_task_and_save(task, agent):
+    result = task.execute()
+    file_writer.run(str(result), agent.role)
+    return result
+
 # Define the Researcher agent
 researcher = Agent(
     role='Researcher',
-    goal='Find the most relevant and up-to-date information on the given topic',
+    goal='Find the most relevant and up-to-date information on the given topic. Write the results to the file.',
     backstory='You are an expert researcher with a knack for finding accurate information quickly.',
     tools=[search_tool, file_writer],
     verbose=True,
@@ -60,7 +65,7 @@ researcher = Agent(
 # Define the Analyst agent
 analyst = Agent(
     role='Analyst',
-    goal='Analyze and summarize the information provided by the Researcher',
+    goal='Analyze and summarize the information provided by the Researcher. Write the results to the file.',
     backstory='You are a skilled analyst with a talent for synthesizing complex information into clear insights.',
     tools=[file_writer],
     verbose=True,
@@ -71,14 +76,16 @@ analyst = Agent(
 research_task = Task(
     description='Search the latest trends on how QA engineers can become AI test engineers',
     agent=researcher,
-    expected_output="A comprehensive list of articles, blogs, and resources on how QA engineers can transition to AI test engineers."
+    expected_output="A comprehensive list of articles, blogs, and resources on how QA engineers can transition to AI test engineers.",
+    output_file="file_output/Researcher_output.txt"
 )
 
 # Define the analysis task
 analysis_task = Task(
     description='Analyze and summarize the research findings',
     agent=analyst,
-    expected_output="A detailed summary of the research findings, highlighting key insights and recommendations."
+    expected_output="A detailed summary of the research findings, highlighting key insights and recommendations.",
+    output_file="file_output/Analyst_output.txt"
 )
 
 # Create the crew
@@ -93,7 +100,7 @@ crew = Crew(
 result = crew.kickoff()
 
 # Write the final result to a file
-final_result_str = str(result)  # Convert CrewOutput to string
+final_result_str = str(result)
 file_writer.run(final_result_str, "Final_Result")
 
 print("Final Result:")
@@ -102,6 +109,6 @@ print(final_result_str)
 print(f"\nTotal tokens used: {token_counter.token_count}")
 
 print("\nIndividual agent outputs have been saved to separate files:")
-print("- Researcher_output.txt")
-print("- Analyst_output.txt")
-print("- Final_Result.txt")
+print("- file_output/Researcher_output.txt")
+print("- file_output/Analyst_output.txt")
+print("- file_output/Final_Result.txt")
