@@ -26,7 +26,7 @@ class FileWriterTool(BaseTool):
     description: str = "Writes the agent's output to a file"
 
     def _run(self, output: str, agent_name: str) -> str:
-        directory = "../crewai/test_and_learn/file_output"
+        directory = "test_and_learn/file_output"
         os.makedirs(directory, exist_ok=True)
         filename = os.path.join(directory, f"{agent_name}_output.txt")
         with open(filename, "w") as f:
