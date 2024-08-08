@@ -18,7 +18,7 @@ def write_to_file(content: str, directory=current_dir / 'file_output'):
     print(f"Output written to: {file_path}")
     return file_path
 
-def create_youtube_search_crew(search_query: str, youtube_video_url: str = None, llm: BaseLLM = None):
+def create_youtube_search_crew(youtube_video_url: str = None, llm: BaseLLM = None):
     """Create and return a Crew for YouTube video search and analysis."""
     youtube_tool = YoutubeVideoSearchTool(youtube_video_url=youtube_video_url)
 
@@ -32,7 +32,7 @@ def create_youtube_search_crew(search_query: str, youtube_video_url: str = None,
     )
 
     research_task = Task(
-        description=f'Search for and explain videos about: {search_query}',
+        description=f'Search for and explain video',
         expected_output='Provide a detailed explanation and analysis of the video content',
         agent=researcher
     )
@@ -47,7 +47,6 @@ def create_youtube_search_crew(search_query: str, youtube_video_url: str = None,
 def main():
     try:
         # Get user input
-        search_query = input("Enter a topic to search for YouTube videos: ")
         youtube_video_url = input("Enter the YouTube video URL (optional, press Enter to skip): ").strip() or None
 
         # Set up a specific LLM using ChatOpenAI
@@ -57,7 +56,7 @@ def main():
         )
 
         # Create and run the crew with the custom LLM
-        crew = create_youtube_search_crew(search_query, youtube_video_url, llm=custom_llm)
+        crew = create_youtube_search_crew(youtube_video_url, llm=custom_llm)
         result = crew.kickoff()
 
         # Extract the string representation of the result

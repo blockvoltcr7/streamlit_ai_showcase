@@ -10,8 +10,8 @@ if GEMINI_API_KEY is None:
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-your_file = genai.upload_file(path='../audio/kratosf169a149-5c03-41e2-ab3e-1bc5c960745e.mp3')
-prompt = "Listen carefully to the following audio file. Provide a brief summary."
+your_file = genai.upload_file(path='../audio/ai-agents-mark-jen.mp3')
+prompt = "Listen carefully to the following audio file. provide a full summary of the audio. be detailed and then elaborate on ai agents and their role in the future of work."
 model = genai.GenerativeModel('models/gemini-1.5-flash')
 response = model.generate_content([prompt, your_file])
 print(response.text)
