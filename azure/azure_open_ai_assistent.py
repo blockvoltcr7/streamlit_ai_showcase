@@ -14,7 +14,7 @@ client = AzureOpenAI(
 
 assistant = client.beta.assistants.create(
     instructions="you are an expert test engineer in software testing.",
-    model="gpt-4o", 
+    model="gpt-4o-mini", 
     tools=[{"type":"code_interpreter"}]
     )
 
