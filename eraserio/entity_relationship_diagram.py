@@ -86,6 +86,13 @@ try:
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()  # Raise an exception for bad status codes
 
+    #print status code
+    print(f"Status code: {response.status_code}")
+
+    # Print the response text
+    print("Response:")
+    print(response.content)
+    
     # Print response headers
     print("Response Headers:")
     print(response.headers)

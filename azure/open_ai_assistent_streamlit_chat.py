@@ -17,10 +17,11 @@ load_dotenv()
 #    AZURE_OPENAI_API_KEY=your_api_key_here
 #    AZURE_OPENAI_ENDPOINT=your_endpoint_here
 
+
 # Initialize the Azure OpenAI client
 client = AzureOpenAI(
     api_key=os.getenv("AZURE_OPENAI_API_KEY"),  # Get the API key from environment variable
-    api_version="2024-02-15-preview",  # Specify the API version
+    api_version="2024-05-01-preview",  # Specify the API version
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")  # Get the endpoint from environment variable
 )
 
@@ -28,7 +29,7 @@ client = AzureOpenAI(
 st.title("Azure OpenAI Test Engineer Assistant")  # Set the title of the app
 
 # Model selection
-available_models = ["gpt-4o"]  # List of available models, add or remove as needed
+available_models = ["gpt-4o-mini"]  # List of available models, add or remove as needed
 selected_model = st.sidebar.selectbox("Select Model", available_models)  # Create a dropdown to select the model
 
 # Initialize session state
