@@ -17,12 +17,12 @@ url = "https://app.eraser.io/api/render/prompt"
 
 
 text_body = """
-entity relationship diagram for a login system
+create a cloud architecture diagram for a google cloud login system with a user, a login, and a session to read from a vector database to execute quereis using llama index to query documents
 """
 
 payload = {
     "text": text_body,
-    "diagramType": "entity-relationship-diagram",
+    "diagramType": "cloud-architecture-diagram",
     "background": True,
     "theme": "dark",
     "scale": "3",
@@ -51,12 +51,12 @@ try:
     print(response.headers)
 
     # Create the output directory if it doesn't exist
-    output_dir = os.path.join("output", "entity-relationship-diagram")
+    output_dir = os.path.join("output", "cloud-architecture-diagram")
     os.makedirs(output_dir, exist_ok=True)
     print(f"Output directory: {output_dir}")
 
     # Generate a random file name
-    random_file_name = f"entity-diagram{uuid.uuid4().hex}.png"
+    random_file_name = f"cloud_arch_diagram_{uuid.uuid4().hex}.png"
     output_path = os.path.join(output_dir, random_file_name)
     
     # Save the image
