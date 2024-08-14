@@ -16,14 +16,3 @@ This repository contains multiple Python scripts that demonstrate the use of var
 
 The project uses Streamlit to create interactive web applications that showcase these AI models' capabilities.
 
-## Contributing
-
-Contributions to this project are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-[Specify your license here]
-
-## Acknowledgements
-
-This project uses various AI models and libraries. Please refer to their respective licenses and terms of use.
