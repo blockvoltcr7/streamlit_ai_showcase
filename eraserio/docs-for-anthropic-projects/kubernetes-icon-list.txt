@@ -1,0 +1,59 @@
+# Kubernetes Icons List
+
+## Core Components
+- `k8s-kubernetes`: Kubernetes
+- `k8s-api`: API server
+- `k8s-c-c-m`: Cloud controller manager
+- `k8s-c-m`: Controller manager
+- `k8s-k-proxy`: Kubernetes proxy
+- `k8s-kubelet`: Kubelet
+- `k8s-sched`: Scheduler
+- `k8s-control-plane`: Control plane
+- `k8s-node`: Node
+- `k8s-etcd`: etcd
+
+## Roles & Access Control
+- `k8s-c-role`: ClusterRole
+- `k8s-crb`: ClusterRoleBinding
+- `k8s-rb`: RoleBinding
+- `k8s-role`: Role
+- `k8s-sa`: ServiceAccount
+- `k8s-user`: User
+
+## Workloads
+- `k8s-deploy`: Deployment
+- `k8s-ds`: DaemonSet
+- `k8s-cronjob`: CronJob
+- `k8s-job`: Job
+- `k8s-rs`: ReplicaSet
+- `k8s-sts`: StatefulSet
+- `k8s-pod`: Pod
+
+## Configuration & Storage
+- `k8s-cm`: ConfigMap
+- `k8s-secret`: Secret
+- `k8s-pv`: PersistentVolume
+- `k8s-pvc`: PersistentVolumeClaim
+- `k8s-sc`: StorageClass
+- `k8s-vol`: Volume
+
+## Networking & Security
+- `k8s-ing`: Ingress
+- `k8s-netpol`: Network policy
+- `k8s-psp`: PodSecurityPolicy
+- `k8s-svc`: Service
+
+## Autoscaling & Monitoring
+- `k8s-hpa`: HorizontalPodAutoscaler
+- `k8s-limits`: Limits
+- `k8s-quota`: Quota
+
+## Custom Resources
+- `k8s-crd`: CustomRoleDefinition
+
+## Namespaces & Groups
+- `k8s-ns`: Namespace
+- `k8s-group`: Group
+
+## Miscellaneous
+- `k8s-ep`: Endpoint

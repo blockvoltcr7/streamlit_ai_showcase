@@ -1,0 +1,252 @@
+# Tech Logos List
+
+## A - B
+- `adobe`
+- `airflow`
+- `airplay-audio`
+- `airplay-video`
+- `algolia`
+- `alibaba-cloud`
+- `alibaba`
+- `alipay`
+- `amazon`
+- `alexa`
+- `amp`
+- `android`
+- `angular`
+- `ant`
+- `apache`
+- `apollo-graphql`
+- `apple`
+- `apple-pay`
+- `apple-podcasts`
+- `app-store`
+- `arduino`
+- `assemblyscript`
+- `atlassian`
+- `auth0`
+- `authy`
+- `babel`
+- `bitcoin`
+- `bluetooth`
+- `bootstrap`
+- `box`
+- `brave`
+- `bytedance`
+
+## C - D
+- `chromecast`
+- `circleci`
+- `clojure`
+- `cloudflare`
+- `cockroach-labs`
+- `codepen`
+- `codesandbox`
+- `coffeescript`
+- `confluence`
+- `couchbase`
+- `cpanel`
+- `css3`
+- `cypress`
+- `dart`
+- `databricks`
+- `datadog`
+- `dbt`
+- `debian`
+- `deno`
+- `discord`
+- `django`
+- `docker`
+- `dot-net`
+- `dropbox`
+- `drupal`
+- `dynamics-365`
+
+## E - G
+- `eclipse-ide`
+- `elastic`
+- `elasticsearch`
+- `electron`
+- `elixir`
+- `eslint`
+- `ethereum`
+- `facebook`
+- `fastly`
+- `figma`
+- `firebase`
+- `firefox`
+- `flask`
+- `flutter`
+- `gatsby`
+- `git`
+- `github`
+- `github-actions`
+- `gitlab`
+- `gmail`
+- `gnome`
+- `gnu`
+- `gnu-bash`
+- `gnu-emacs`
+- `go`
+- `google`
+- `google-analytics`
+- `google-calendar`
+- `chrome`
+- `google-cloud`
+- `google-drive`
+- `google-maps`
+- `google-meet`
+- `google-sheets`
+- `google-tag-manager`
+- `grafana`
+- `graphql`
+- `groovy`
+
+## H - J
+- `haskell`
+- `hasura`
+- `heroku`
+- `homebrew`
+- `html5`
+- `hubspot`
+- `ibm`
+- `ibm-cloud`
+- `ibm-watson`
+- `instagram`
+- `intellij-idea`
+- `intercom`
+- `internet-explorer`
+- `ios`
+- `jamstack`
+- `javascript`
+- `jekyll`
+- `jenkins`
+- `jest`
+- `jetbrains`
+- `jira`
+- `jquery`
+- `json`
+- `jupyter`
+
+## K - L
+- `kafka`
+- `kibana`
+- `kotlin`
+- `kubernetes`
+- `laravel`
+- `linkedin`
+- `linux`
+- `lodash`
+- `looker`
+- `loom`
+
+## M - N
+- `magento`
+- `mapbox`
+- `mariadb`
+- `markdown`
+- `marketo`
+- `messenger`
+- `meta`
+- `meteor`
+- `microsoft`
+  - `access`
+  - `azure`
+  - `bing`
+  - `edge`
+  - `excel`
+  - `exchange`
+  - `office`
+  - `outlook`
+  - `powerpoint`
+  - `sharepoint`
+  - `sql-server`
+  - `teams`
+  - `word`
+- `mongodb`
+- `mozilla`
+- `mysql`
+- `neo4j`
+- `netlify`
+- `next`
+- `nginx`
+- `nintendo`
+- `node`
+- `npm`
+
+## O - P
+- `oculus`
+- `okta`
+- `oracle`
+- `perl`
+- `php`
+- `playstation`
+- `postgres`
+- `postman`
+- `power-bi`
+- `powershell`
+- `prisma`
+- `pulumi`
+- `puppeteer`
+- `python`
+- `pytorch`
+
+## R - S
+- `rabbitmq`
+- `railway`
+- `raspberry-pi`
+- `react`
+- `red-hat`
+- `redis`
+- `redux`
+- `rocketmq`
+- `rss`
+- `rstudio`
+- `ruby-on-rails`
+- `rust`
+- `safari`
+- `salesforce`
+- `sap`
+- `scala`
+- `sentry`
+- `shopify`
+- `slack`
+- `snowflake`
+- `solr`
+- `spark`
+- `splunk`
+- `sqlite`
+- `square`
+- `stripe`
+- `svelte`
+- `swagger`
+- `swift`
+
+## T - V
+- `tableau`
+- `tencent-qq`
+- `tensorflow`
+- `terraform`
+- `tomcat`
+- `typescript`
+- `ubuntu`
+- `unity`
+- `vercel`
+- `vite`
+- `vs-code`
+- `vue`
+
+## W - Z
+- `webassembly`
+- `webflow`
+- `webgl`
+- `webpack`
+- `webrtc`
+- `wechat`
+- `whatsapp`
+- `windows`
+- `wordpress`
+- `xbox`
+- `youtube`
+- `zendesk`
+- `zoom`

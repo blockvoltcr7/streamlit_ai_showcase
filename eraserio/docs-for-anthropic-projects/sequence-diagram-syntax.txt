@@ -1,0 +1,134 @@
+# Sequence Diagram Syntax Guide
+
+## Basic Structure
+Each line in a sequence diagram consists of two columns (entities), an arrow (direction of flow), and a message. The two columns are separated by the `>` arrow, and the message is prepended with a `:`.
+
+- **Example**:
+  ```text
+  Web App > DB: Start transaction
+  ```
+
+## Arrows
+Arrows indicate the direction of flow between entities.
+
+| Arrow | Syntax | Description          |
+|-------|--------|----------------------|
+| `>`   | `>`    | Left-to-right arrow  |
+| `<`   | `<`    | Right-to-left arrow  |
+| `<->` | `<>`   | Bi-directional arrow |
+| `-`   | `-`    | Line                 |
+| `--`  | `--`   | Dotted line          |
+| `-->` | `-->`  | Dotted arrow         |
+
+- Each line is parsed in sequential order from top to bottom.
+- Column names must be unique. New columns are created if a line refers to a new name.
+
+## Properties
+Properties are key-value pairs enclosed in `[]` brackets that can be appended to column names. Properties are optional.
+
+- **Example**:
+  ```text
+  Web App [icon: monitor, color: blue] > DB [icon: database, color: green]: Start transaction
+  ```
+
+### Allowed Properties
+
+| Property   | Description         | Value                                    | Default Value |
+|------------|---------------------|------------------------------------------|---------------|
+| `icon`     | Attached icons       | Icon names (e.g., aws-ec2)               |               |
+| `color`    | Stroke and fill color| Color name (e.g., blue) or hex code      |               |
+| `label`    | Text label           | Any string, enclosed in double quotes if containing a space. | Name of column |
+| `colorMode`| Fill color lightness | pastel, bold, outline                    | pastel        |
+| `styleMode`| Embellishments       | shadow, plain, watercolor                | shadow        |
+| `typeface` | Text typeface        | rough, clean, mono                       | rough         |
+
+- **Label Property**: Useful when you want the column's label and name to be distinct.
+  - **Example**:
+    ```text
+    Server1 [label: server]
+    Server2 [label: server]
+    ```
+
+## Blocks
+Blocks represent control flow and can be used to express loops, if-else logic, parallel processing, and break execution.
+
+- **Definition**: Blocks are defined with a block type followed by `{}`. They can include an optional `label` property.
+- **Example**:
+  ```text
+  opt [label: if complete] {
+    Server > Client: Success
+  }
+  ```
+
+### Block Types
+
+| Type | Description        |
+|------|--------------------|
+| `loop` | Loop             |
+| `alt`  | Alternative (else)|
+| `opt`  | Optional         |
+| `par`  | Parallel (and)   |
+| `break`| Break            |
+
+- **Connected Blocks**: In the case of `alt` (paired with `else`) and `par` (paired with `and`), blocks can be connected.
+  - **Example**:
+    ```text
+    alt [label: if complete] {
+      Server > Client: Success
+    }
+    else [label: if failed] {
+      Server > Client: Failure
+    }
+    ```
+
+### Block Properties
+
+| Property | Description         | Value      |
+|----------|---------------------|------------|
+| `label`  | Adds a label to the block | Block label (any string) |
+| `icon`   | Adds an icon to the block label | Icon names (e.g., aws-ec2) |
+| `color`  | Specifies a color for the block | Color name or hex code |
+
+## Activations
+Activations represent the time during which a column (an actor or resource) is actively performing an action.
+
+- **Definition**: A pair of `activate` and `deactivate` statements define a single activation.
+- **Example**:
+  ```text
+  Client > Server: Data request
+  activate Server
+  Server > Client: Return data
+  deactivate Server
+  ```
+
+## Escape String
+Certain reserved characters are not allowed in column names. To use these characters, wrap the entire column name in quotes `" "`.
+
+- **Example**:
+  ```text
+  User > "https://localhost:8080": GET
+  ```
+
+## Direction
+The direction of the sequence diagram can be changed using the `direction` statement. Allowed directions are:
+
+- `direction down`
+- `direction up`
+- `direction right` (default)
+- `direction left`
+
+- **Example**:
+  ```text
+  direction down
+  ```
+
+## Styling
+Styles can be applied at the diagram level.
+
+### Style Properties
+
+| Property   | Values                   | Default Value | Syntax Example      |
+|------------|--------------------------|---------------|---------------------|
+| `colorMode`| pastel, bold, outline     | pastel        | `colorMode bold`    |
+| `styleMode`| shadow, plain, watercolor | shadow        | `styleMode shadow`  |
+| `typeface` | rough, clean, mono        | rough         | `typeface clean`    |
