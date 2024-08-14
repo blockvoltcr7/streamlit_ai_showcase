@@ -17,7 +17,64 @@ url = "https://app.eraser.io/api/render/prompt"
 
 
 text_body = """
-create a cloud architecture diagram for a google cloud login system with a user, a login, and a session to read from a vector database to execute quereis using llama index to query documents
+// Define groups and nodes
+Cloud Provider [icon: cloud]
+Kubernetes Cluster [icon: k8s-control-plane] {
+  Control Plane {
+    API Server [icon: k8s-api]
+    Scheduler [icon: k8s-sched]
+    Controller Manager [icon: k8s-c-m]
+    etcd [icon: k8s-etcd]
+  }
+  
+  Data Processing {
+    Data Ingestion [icon: k8s-node] {
+      Raw Data Pod [icon: database]
+      ETL Pod [icon: gcp-dataflow]
+    }
+    
+    Data Storage [icon: k8s-node] {
+      Persistent Volume [icon: azure-storage-accounts]
+    }
+  }
+  
+  ML Pipeline [icon: k8s-node] {
+    Feature Engineering [icon: gcp-dataprep]
+    Model Training [icon: tensorflow]
+    Model Evaluation [icon: chart]
+    Model Serving [icon: cloud]
+  }
+  
+  Analytics [icon: k8s-node] {
+    Visualization Pod [icon: chart]
+    Reporting Pod [icon: file-text]
+  }
+  
+  API Gateway [icon: k8s-node] {
+    Ingress Controller [icon: gcp-cloud-load-balancing]
+    Authentication [icon: lock]
+  }
+}
+
+External Services {
+  Medical Data Sources [icon: hospital]
+  Researchers [icon: users]
+  High-Performance Computing [icon: server]
+}
+
+// Define connections
+Cloud Provider <-> Kubernetes Cluster
+Medical Data Sources --> Data Ingestion
+Data Ingestion --> Data Storage
+Data Storage <--> ML Pipeline
+ML Pipeline --> Analytics
+Analytics --> API Gateway
+API Gateway <--> Researchers
+ML Pipeline <--> High-Performance Computing
+
+// Set diagram properties
+direction right
+
 """
 
 payload = {
