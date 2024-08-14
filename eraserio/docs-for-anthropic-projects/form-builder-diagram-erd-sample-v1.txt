@@ -1,0 +1,49 @@
+User [icon: user] {
+  id Int
+  firstname String
+  lastname String
+  email String
+  emailVerified DateTime
+}
+
+Form [icon: check-square] {
+  id String
+  ownerId Int
+  name String
+  formType FormType
+  createdAt DateTime
+}
+
+Pipeline [icon: filter] {
+  id String
+  name String
+  formId String
+  events PipelineEvent
+  createdAt DateTime
+}
+
+SessionEvent [icon: zap]{
+  id String
+  submissionSessionId String
+  type String
+  createdAt DateTime
+}
+
+SubmissionSession [icon: clock]{
+  id String
+  formId String
+  createdAt DateTime
+}
+
+NoCodeForm [icon: check-square] {
+  id String
+  published Boolean
+  closed Boolean
+  formId String
+}
+
+User.id < Form.ownerId
+Form.id < Pipeline.formId
+Form.id < SubmissionSession.formId
+Form.id < NoCodeForm.formId
+SubmissionSession.id < SessionEvent.submissionSessionId

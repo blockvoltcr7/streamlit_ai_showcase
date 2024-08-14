@@ -16,9 +16,42 @@ url = "https://app.eraser.io/api/render/prompt"
 
 text_body = """
 
-create a sequence diagram that for a streamlit app that processes text which then calls
-the elevenlabs api to convert the text to speech and then plays the audio.
+User > Frontend: Open application
+Frontend > User: Display login form
 
+User > Frontend: Enter credentials
+Frontend > Backend: Send login request
+
+Backend > Database: Verify credentials
+Database > Backend: Return user data
+
+alt [label: If credentials valid] {
+  Backend > Frontend: Send success response
+  Frontend > User: Display dashboard
+}
+else [label: If credentials invalid] {
+  Backend > Frontend: Send error response
+  Frontend > User: Display error message
+  Frontend > User: Prompt to try again
+}
+
+User > Frontend: Request to create AI image
+Frontend > Backend: Send image creation request
+
+Backend > AI Service: Request image generation
+activate AI Service
+AI Service > AI Service: Generate image
+AI Service > Backend: Return generated image
+deactivate AI Service
+
+Backend > Frontend: Send generated image
+Frontend > User: Display generated image
+
+User > Frontend: Save or share image
+Frontend > Backend: Send save/share request
+Backend > Database: Store image metadata
+Backend > Frontend: Confirm save/share
+Frontend > User: Display confirmation
 """
 
 payload = {

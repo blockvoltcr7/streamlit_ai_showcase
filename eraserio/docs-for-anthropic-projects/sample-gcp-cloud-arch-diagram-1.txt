@@ -1,0 +1,26 @@
+// Define groups and nodes
+Stream [icon: kafka, color: grey]
+Ingest {
+  Pub/Sub [icon: gcp-pubsub]
+  Logging [icon: gcp-cloud-logging]
+}
+Pipelines {
+  Dataflow [icon: gcp-dataflow]
+}
+Storage [icon: gcp-cloud-storage] {
+  Datastore [icon: gcp-datastore]
+  Bigtable [icon: gcp-bigtable]
+}
+Analytics {
+  BigQuery [icon: gcp-bigquery]
+}
+Application [icon: gcp-app-engine] {
+  App Engine [icon: gcp-app-engine]
+  Container Engine [icon: gcp-container-registry]
+  Compute Engine [icon: gcp-compute-engine]
+}
+
+// Define connections
+Stream > Ingest
+Logging > Analytics > Application
+Pub/Sub > Pipelines > Storage > Application

@@ -1,0 +1,202 @@
+Here's the list of Google Cloud Icons organized in markdown format:
+
+```markdown
+# Google Cloud Icons List
+
+## AI & Machine Learning
+- `gcp-ai-hub`
+- `gcp-ai-platform-unified`
+- `gcp-ai-platform`
+- `gcp-automl-natural-language`
+- `gcp-automl-tables`
+- `gcp-automl-translation`
+- `gcp-automl-video-intelligence`
+- `gcp-automl-vision`
+- `gcp-automl`
+- `gcp-document-ai`
+- `gcp-vertexai`
+- `gcp-video-intelligence-api`
+- `gcp-cloud-inference-api`
+- `gcp-healthcare-nlp-api`
+- `gcp-tensorflow-enterprise`
+- `gcp-text-to-speech`
+- `gcp-speech-to-text`
+- `gcp-recommendations-ai`
+
+## API Management
+- `gcp-api`
+- `gcp-api-analytics`
+- `gcp-api-monetization`
+- `gcp-apigee-api-platform`
+- `gcp-apigee-sense`
+- `gcp-cloud-api-gateway`
+- `gcp-cloud-apis`
+
+## Application Development
+- `gcp-app-engine`
+- `gcp-cloud-build`
+- `gcp-cloud-composer`
+- `gcp-cloud-functions`
+- `gcp-cloud-run-for-anthos`
+- `gcp-cloud-run`
+- `gcp-cloud-tasks`
+- `gcp-cloud-test-lab`
+- `gcp-cloud-shell`
+- `gcp-cloud-code`
+- `gcp-artifact-registry`
+
+## Compute
+- `gcp-compute-engine`
+- `gcp-container-optimized-os`
+- `gcp-container-registry`
+- `gcp-cloud-gpu`
+- `gcp-cloud-tpu`
+- `gcp-local-ssd`
+- `gcp-persistent-disk`
+
+## Data Analytics
+- `gcp-analytics-hub`
+- `gcp-bigquery`
+- `gcp-bigtable`
+- `gcp-data-catalog`
+- `gcp-data-labeling`
+- `gcp-data-layers`
+- `gcp-data-loss-prevention-api`
+- `gcp-data-qna`
+- `gcp-data-studio`
+- `gcp-data-transfer`
+- `gcp-dataflow`
+- `gcp-datalab`
+- `gcp-dataplex`
+- `gcp-datapol`
+- `gcp-dataprep`
+- `gcp-dataproc-metastore`
+- `gcp-dataproc`
+- `gcp-datashare`
+- `gcp-datastore`
+- `gcp-datastream`
+- `gcp-genomics`
+- `gcp-google-cloud-marketplace`
+
+## Database
+- `gcp-cloud-spanner`
+- `gcp-cloud-sql`
+- `gcp-cloud-firestore`
+- `gcp-cloud-datastore`
+- `gcp-cloud-bigtable`
+- `gcp-database-migration-service`
+- `gcp-managed-service-for-microsoft-active-directory`
+
+## DevOps
+- `gcp-cloud-deploy`
+- `gcp-cloud-deployment-manager`
+- `gcp-stackdriver`
+- `gcp-profiler`
+- `gcp-cloud-logging`
+- `gcp-cloud-monitoring`
+- `gcp-error-reporting`
+- `gcp-cloud-trace`
+- `gcp-cloud-audit-logs`
+
+## Identity & Security
+- `gcp-identity-and-access-management`
+- `gcp-identity-platform`
+- `gcp-identity-aware-proxy`
+- `gcp-key-management-service`
+- `gcp-key-access-justifications`
+- `gcp-binary-authorization`
+- `gcp-security-command-center`
+- `gcp-security-health-advisor`
+- `gcp-security-key-enforcement`
+- `gcp-security`
+- `gcp-security-scanner`
+- `gcp-cloud-ids`
+- `gcp-cloud-armor`
+- `gcp-cloud-hsm`
+- `gcp-cloud-firewall-rules`
+- `gcp-phishing-protection`
+
+## IoT
+- `gcp-iot-core`
+- `gcp-iot-edge`
+- `gcp-fleet-engine`
+- `gcp-fleet-routing-api`
+- `gcp-contact-center-ai`
+
+## Networking
+- `gcp-cloud-network`
+- `gcp-cloud-vpn`
+- `gcp-cloud-nat`
+- `gcp-cloud-interconnect`
+- `gcp-cloud-load-balancing`
+- `gcp-cloud-dns`
+- `gcp-cloud-domains`
+- `gcp-cloud-router`
+- `gcp-cloud-routes`
+- `gcp-network-connectivity-center`
+- `gcp-network-intelligence-center`
+- `gcp-network-security`
+- `gcp-network-tiers`
+- `gcp-network-topology`
+- `gcp-private-connectivity`
+- `gcp-private-service-connect`
+- `gcp-traffic-director`
+- `gcp-service-discovery`
+
+## Management Tools
+- `gcp-cloud-ops`
+- `gcp-cloud-healthcare-api`
+- `gcp-cloud-healthcare-marketplace`
+- `gcp-cloud-inference-api`
+- `gcp-cloud-for-marketing`
+- `gcp-cloud-scheduler`
+- `gcp-cloud-sql`
+- `gcp-cloud-storage`
+- `gcp-cloud-tasks`
+- `gcp-cloud-test-lab`
+- `gcp-cloud-vision-api`
+- `gcp-cloud-logging`
+- `gcp-cloud-monitoring`
+
+## Operations
+- `gcp-operations`
+- `gcp-profiler`
+- `gcp-cloud-debugger`
+
+## Security & Identity
+- `gcp-access-context-manager`
+- `gcp-advanced-agent-modeling`
+- `gcp-advanced-solutions-lab`
+- `gcp-agent-assist`
+- `gcp-billing`
+- `gcp-certificate-authority-service`
+- `gcp-certificate-manager`
+- `gcp-security-command-center`
+
+## Serverless
+- `gcp-cloud-functions`
+- `gcp-cloud-run`
+
+## Storage
+- `gcp-cloud-storage`
+- `gcp-filestore`
+- `gcp-storage-transfer`
+- `gcp-backup-and-dr`
+
+## Miscellaneous
+- `gcp-cloud-endpoints`
+- `gcp-early-access-center`
+- `gcp-financial-services-marketplace`
+- `gcp-game-servers`
+- `gcp-genomics`
+- `gcp-launcher`
+- `gcp-looker`
+- `gcp-recommendations-ai`
+- `gcp-retail-api`
+- `gcp-stream-suite`
+- `gcp-tools-for-powershell`
+- `gcp-user-preferences`
+- `gcp-workflows`
+```
+
+This markdown format organizes the Google Cloud Icons into categories, similar to the AWS icons list.
