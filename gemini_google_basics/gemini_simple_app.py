@@ -204,7 +204,7 @@ def main():
             if pdf_content:
                 st.success("PDF processed successfully!")
                 st.session_state.pdf_content = pdf_content
-                query = st.text_input("Enter your query about the PDF:")
+                query = st.text_area("Enter your query about the PDF:")
                 if st.button("Submit Query"):
                     if query:
                         full_prompt = f"{pdf_content}\n\nUser: {query}"

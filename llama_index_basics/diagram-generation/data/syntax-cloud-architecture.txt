@@ -1,0 +1,143 @@
+
+# Cloud Architecture Diagram Syntax Guide
+
+## Nodes
+A node is the most basic building block in a cloud architecture diagram.
+
+- **Definition**: Nodes are defined with a name followed by an optional set of properties.
+- **Example**:
+  ```text
+  compute [icon: aws-ec2]
+  ```
+- **Properties**: 
+  - **Icon**: Assigns an icon to the node (e.g., `aws-ec2`).
+  - **Color**: Sets the color of the node.
+- **Uniqueness**: Node names must be unique.
+
+## Groups
+A group is a container that can encapsulate nodes and other groups.
+
+- **Definition**: Groups are defined with a name followed by `{ }`.
+- **Example**:
+  ```text
+  Main Server {
+    Server [icon: aws-ec2]
+    Data [icon: aws-rds]
+  }
+  ```
+- **Nesting**: Groups can be nested within each other.
+  - Example:
+    ```text
+    VPC Subnet {
+      Main Server {
+        Server [icon: aws-ec2]
+        Data [icon: aws-rds]
+      }
+    }
+    ```
+- **Properties**: 
+  - **Icon**: Assigns an icon to the group.
+  - **Color**: Sets the color of the group.
+- **Uniqueness**: Group names must be unique.
+
+## Properties
+Properties are key-value pairs enclosed in `[]` that can be appended to node and group definitions. Properties are optional.
+
+- **Example**:
+  ```text
+  Main Server [icon: aws-ec2, color: blue] {
+    Server [icon: aws-ec2]
+    Data [icon: aws-rds]
+  }
+  ```
+- **Allowed Properties**:
+
+| Property   | Description        | Value                                        | Default Value |
+|------------|--------------------|----------------------------------------------|---------------|
+| `icon`     | Attached icons      | Icon names (e.g., aws-ec2)                   |               |
+| `color`    | Stroke and fill color | Color name (e.g., blue) or hex code (e.g., #000000) |               |
+| `label`    | Text label          | Any string. Enclose in double quotes if containing a space. | Name of node or group |
+| `colorMode`| Fill color lightness | pastel, bold, outline                        | pastel        |
+| `styleMode`| Embellishments      | shadow, plain, watercolor                    | shadow        |
+| `typeface` | Text typeface       | rough, clean, mono                           | rough         |
+
+### Usage of `label` Property
+The `label` property is useful if you want the node's (or group's) label and name to be distinct. By default, the label is set as the node name. Use the `label` property if you have two nodes with the same label.
+
+- **Example**:
+  ```text
+  Server_A [label: server]
+  Server_B [label: server]
+  ```
+
+You can set multiple properties by separating them with commas:
+```text
+Server [icon: server, typeface: mono]
+```
+
+## Connections
+Connections represent relationships between nodes and groups. They can be created between nodes, between groups, and between nodes and groups.
+
+- **Example**:
+  ```text
+  Compute > Storage
+  ```
+- **Types of Connectors**:
+
+| Connector | Syntax | Description         |
+|-----------|--------|---------------------|
+| `>`       | `>`    | Left-to-right arrow |
+| `<`       | `<`    | Right-to-left arrow |
+| `<->`     | `<>`   | Bi-directional arrow|
+| `-`       | `-`    | Line                |
+| `--`      | `--`   | Dotted line         |
+| `-->`     | `-->`  | Dotted arrow        |
+
+### Connection Labels
+It is possible to add a label to a connection.
+- **Example**:
+  ```text
+  Storage > Server: Cache Hit
+  ```
+
+### One-to-Many Connections
+You can create one-to-many connections in a single statement:
+- **Example**:
+  ```text
+  Server > Worker1, Worker2, Worker3
+  ```
+
+If a connection statement contains a name not previously defined as a node or group, a blank node with that name will be created.
+
+## Escape String
+Certain characters are reserved and not allowed in node or group names. To use these characters, wrap the entire name in quotes `" "`.
+
+- **Example**:
+  ```text
+  User > "https://localhost:8080": GET
+  ```
+
+## Direction
+The direction of the cloud architecture diagram can be changed using the `direction` statement. Allowed directions are:
+
+- `direction down`
+- `direction up`
+- `direction right` (default)
+- `direction left`
+
+The `direction` statement can be placed anywhere in the code:
+- **Example**:
+  ```text
+  direction down
+  ```
+
+## Styling
+Styles can be applied at the diagram level.
+
+### Style Properties
+
+| Property   | Values                   | Default Value | Syntax Example      |
+|------------|--------------------------|---------------|---------------------|
+| `colorMode`| pastel, bold, outline     | pastel        | `colorMode bold`    |
+| `styleMode`| shadow, plain, watercolor | shadow        | `styleMode shadow`  |
+| `typeface` | rough, clean, mono        | rough         | `typeface clean`    |

@@ -1,0 +1,173 @@
+# Eraser Syntax Guide
+
+## Nodes
+A node is the most basic building block in a flow chart.
+
+- **Definition**: A node is the most basic building block in a flow chart.
+- **Syntax**: 
+  ```text
+  NodeName [property: value]
+  ```
+  Example: `Start [shape: oval]`
+- **Properties**: 
+  - **Shape**: Defines the shape of the node (e.g., oval).
+  - **Icon**: Assigns an icon to the node.
+  - **Color**: Sets the color of the node.
+  - **Label**: Adds a label to the node.
+- **Uniqueness**: Node names must be unique.
+
+## Groups
+A group is a container that can encapsulate nodes and other groups.
+
+- **Definition**: A group is a container that can encapsulate nodes and other groups.
+- **Syntax**:
+  ```text
+  GroupName {
+    Node1, Node2, Node3
+  }
+  ```
+  Example: 
+  ```text
+  Loop {
+    Issue1, Issue2, Issue3
+  }
+  ```
+  Alternatively, nodes can be separated by new lines:
+  ```text
+  Loop {
+    Issue1
+    Issue2
+    Issue3
+  }
+  ```
+- **Nesting**: Groups can be nested within each other.
+  - Example:
+    ```text
+    Outer Loop {
+      Inner Loop {
+        Issue1
+        Issue2    
+      }
+      Issue3
+    }
+    ```
+- **Properties**: 
+  - **Icon**: Assigns an icon to the group.
+  - **Color**: Sets the color of the group.
+  - **Label**: Adds a label to the group.
+- **Uniqueness**: Group names must be unique.
+
+## Properties
+Properties are key-value pairs enclosed in `[]` brackets that can be appended to definitions of nodes and groups. Properties are optional.
+
+### Allowed Properties
+
+| Property  | Description                         | Value                                            | Default Value |
+|-----------|-------------------------------------|--------------------------------------------------|---------------|
+| `shape`   | Shape of node                       | Shape names (e.g., diamond or oval)              | rectangle     |
+| `icon`    | Icon                                | Icon names (e.g., aws-ec2)                       |               |
+| `color`   | Stroke and fill color               | Color name (e.g., blue) or hex code (e.g., #000000) |               |
+| `label`   | Text label                          | Any string. Enclose in double quotes if containing a space. | Name of node or group |
+| `colorMode` | Fill color lightness              | pastel, bold, outline                            | pastel        |
+| `styleMode` | Embellishments                    | shadow, plain, watercolor                        | shadow        |
+| `typeface`  | Text typeface                     | rough, clean, mono                               | rough         |
+
+### Shapes List
+- rectangle (default)
+- cylinder
+- diamond
+- document
+- ellipse
+- hexagon
+- oval
+- parallelogram
+- star
+- trapezoid
+- triangle
+
+### Usage of `label` Property
+The `label` property is useful if you want the node's (or group's) label and name to be distinct. By default, the label is set as the node name. But because node names are required to be distinct, you will need to use the `label` property if you have two nodes with the exact same label.
+
+Example:
+```text
+Start_A [label: start]
+Start_B [label: start]
+```
+
+You can set multiple properties by separating them using commas:
+```text
+Start [shape: oval, icon: flag]
+```
+
+## Relationships
+Connections represent relationships between nodes and groups. They can be created between nodes, between groups, and between nodes and groups.
+
+### Example of Connection Between Two Nodes:
+```text
+Issue > Bug
+```
+
+### Types of Connectors:
+
+| Connector | Syntax | Description            |
+|-----------|--------|------------------------|
+| `>`       | `>`    | Left-to-right arrow    |
+| `<`       | `<`    | Right-to-left arrow    |
+| `<->`     | `<>`   | Bi-directional arrow   |
+| `-`       | `-`    | Line                   |
+| `--`      | `--`   | Dotted line            |
+| `-->`     | `-->`  | Dotted arrow           |
+
+### Relationship Label
+It is possible to add a label to a relationship. Example:
+```text
+Issue > Bug: Triage
+```
+
+### Branching Relationships
+It is possible to create one-to-many connections in a single statement. Example:
+```text
+Issue > Bug, Feature
+```
+
+### Chained Relationships
+It is also possible to "chain" a sequence of relationship statements in a single statement. Example:
+```text
+Issue > Bug > Duplicate?
+```
+
+If a connection statement contains a name that has not been previously defined as a node or a group, a blank node with that name will be created.
+
+### Escape String
+Certain characters are not allowed in node and group names because they are reserved. To use these characters, you can wrap the entire node or group name in quotes `" "`.
+
+Example:
+```text
+User > "https://localhost:8080": GET
+```
+
+## Direction
+The direction of the flow chart can be changed using the `direction` statement. Allowed directions are:
+
+- `direction down` (default)
+- `direction up`
+- `direction right`
+- `direction left`
+
+The direction statement can be placed anywhere in the code like this:
+```text
+direction right
+```
+
+## Styling
+Styles can be applied at the diagram level. Below is an overview of the options and syntax.
+
+### Style Properties
+
+| Property   | Values            | Default value | Syntax example    |
+|------------|-------------------|---------------|-------------------|
+| `colorMode` | pastel, bold, outline | pastel        | `colorMode bold`  |
+| `styleMode` | shadow, plain, watercolor | shadow        | `styleMode shadow` |
+| `typeface`  | rough, clean, mono | rough         | `typeface clean`   |
+
+
