@@ -182,7 +182,7 @@ def main():
 
     elif input_type == "Image":
         uploaded_file = st.file_uploader("Choose an image file", type=["png", "jpg", "jpeg"])
-        prompt = st.text_input("Enter a prompt for the image:")
+        prompt = st.text_area("Enter a prompt for the image:")
         if st.button("Process Image"):
             if uploaded_file is not None and prompt:
                 response = process_image(uploaded_file, prompt, gemini_model, temperature, top_p, max_tokens)
