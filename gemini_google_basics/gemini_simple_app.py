@@ -182,7 +182,7 @@ def main():
 
     elif input_type == "Image":
         uploaded_file = st.file_uploader("Choose an image file", type=["png", "jpg", "jpeg"])
-        prompt = st.text_input("Enter a prompt for the image:")
+        prompt = st.text_area("Enter a prompt for the image:")
         if st.button("Process Image"):
             if uploaded_file is not None and prompt:
                 response = process_image(uploaded_file, prompt, gemini_model, temperature, top_p, max_tokens)
@@ -204,7 +204,7 @@ def main():
             if pdf_content:
                 st.success("PDF processed successfully!")
                 st.session_state.pdf_content = pdf_content
-                query = st.text_input("Enter your query about the PDF:")
+                query = st.text_area("Enter your query about the PDF:")
                 if st.button("Submit Query"):
                     if query:
                         full_prompt = f"{pdf_content}\n\nUser: {query}"

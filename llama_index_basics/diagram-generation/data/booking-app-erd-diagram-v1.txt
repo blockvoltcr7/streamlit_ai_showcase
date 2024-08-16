@@ -1,0 +1,66 @@
+User [icon: user] {
+  id Int pk
+  username String
+  email String
+  avatar String
+  createdDate DateTime
+}
+
+Booking [icon: clock] {
+  id Int pk
+  userId Int
+  title String
+  startTime DateTime
+  endTime DateTime
+  location String
+  eventTypeId Int
+  destinationCalendarId Int
+}
+
+EventType [icon: list] {
+  id Int pk
+  userId Int
+  teamId Int
+  hidden Boolean
+  length Int
+}
+
+ApiKey [icon: key]{
+  id String pk
+  userId Int
+  appId String
+  hashedKey String
+}
+
+App [icon: grid] {
+  slug String
+  dirName String
+  keys Json
+  createdAt DateTime
+}
+
+Webhook [icon: link] {
+  id String pk
+  userId Int
+  appId String
+  active Boolean
+}
+
+DestinationCalender [icon: calendar] {
+  id Int pk
+  userId Int
+  integration String
+  eventTypeId Int
+}
+
+// Booking.eventtType < EventType.id
+Webhook.appId > App.slug
+Webhook.userId > User.id
+// Webhook.eventTypeId > EventType.id
+App.slug > ApiKey.appId
+User.id < Booking.userId
+EventType.userId <> User.id
+User.id > ApiKey.userId
+DestinationCalender.id > Booking.destinationCalendarId
+DestinationCalender.userId < User.id
+DestinationCalender.eventTypeId < EventType.id

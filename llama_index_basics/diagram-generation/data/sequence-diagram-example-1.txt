@@ -1,0 +1,21 @@
+Web App [icon: layout] > DB [icon: database]: Start transaction
+Web App > Cloud Fx [icon: function]: Call function
+Cloud Fx > API [icon: cloud-cog]: Create session
+API > Cloud Fx: Session info
+Cloud Fx > DB: Create tx record
+Cloud Fx > API: Request access token
+API > Cloud Fx: Access token
+Cloud Fx > Web App: Token and transaction info
+Web App > API: Complete transaction
+alt [label: If successful]{
+  API > Web App: Transaction confirmation
+}
+else [label: If failed]{
+  API > Web App: Transaction cancellation
+}
+Web App > DB: Create tx record
+Web App > API: Subscribe to transaction changes
+activate API 
+API > API: Ongoing events
+API > Web App: Push events
+deactivate API

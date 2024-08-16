@@ -1,0 +1,103 @@
+
+# ERD Syntax Guide
+
+## Entities
+Entities correspond to database tables or similar. They contain attributes.
+
+- **Definition**: Entities are defined with a name followed by `{ }`.
+- **Example**:
+  ```text
+  users {
+    id string
+    displayName string
+  }
+  ```
+  Entities can also be empty:
+  ```text
+  users { }
+  ```
+- **Uniqueness**: Entity names must be unique.
+
+## Attributes
+Attributes correspond to database table columns or similar.
+
+- **Definition**: Attributes are defined within an entity with a name, type (optional), and metadata (optional), separated by spaces.
+- **Example**:
+  ```text
+  users {
+    id string pk
+  }
+  ```
+- **Referring to Attributes**: Outside of an entity definition, attributes are referred to by following the entity name, separated by a `.`.
+  - Example:
+    ```text
+    users.teamId > teams.id
+    ```
+- **Inline Relationship**: You can define an attribute and create a relationship in the same line within the entity definition.
+  - Example:
+    ```text
+    users {
+      teamId < teams.id
+    }
+    ```
+
+## Properties
+Properties are key-value pairs enclosed in `[]` that can be appended to entity definitions. Properties are optional.
+
+- **Example**:
+  ```text
+  users [icon: user, color: blue] {
+    teamId < teams.id
+  }
+  ```
+- **Allowed Properties**:
+
+| Property   | Description                    | Value                              | Default Value |
+|------------|--------------------------------|------------------------------------|---------------|
+| `icon`     | Attached icons                 | Icon names (e.g., aws-ec2)         |               |
+| `color`    | Stroke and fill color          | Color name (e.g., blue) or hex code |               |
+| `colorMode`| Fill color lightness           | pastel, bold, outline              | pastel        |
+| `styleMode`| Embellishments                 | shadow, plain, watercolor          | shadow        |
+| `typeface` | Text typeface                  | rough, clean, mono                 | rough         |
+
+## Relationships
+Relationships represent attribute-level relations between entities.
+
+- **Example**:
+  ```text
+  users.teamId > teams.id
+  ```
+- **Entity-Level Relations**: It is possible to show entity-level relations without specifying attributes.
+  - Example:
+    ```text
+    users > teams
+    ```
+- **Cardinality Types**:
+
+| Connector | Syntax | Description       |
+|-----------|--------|-------------------|
+| `<`       | `<`    | One-to-many       |
+| `>`       | `>`    | Many-to-one       |
+| `-`       | `-`    | One-to-one        |
+| `<->`     | `<>`   | Many-to-many      |
+
+- **Auto-Creation**: If a relationship statement contains a name not previously defined as an entity or attribute, it will be automatically created.
+
+## Escape String
+Certain reserved characters are not allowed in entity or attribute names. To use these characters, wrap the entire name in quotes `" "`.
+
+- **Example**:
+  ```text
+  "CI/CD" [icon: gear] {
+    id string pk
+  }
+  ```
+
+## Styling
+Styles can be applied at the diagram level. Below are the options and syntax:
+
+| Property   | Values                   | Default Value | Syntax Example       |
+|------------|--------------------------|---------------|----------------------|
+| `colorMode`| pastel, bold, outline     | pastel        | `colorMode bold`     |
+| `styleMode`| shadow, plain, watercolor | shadow        | `styleMode shadow`   |
+| `typeface` | rough, clean, mono        | rough         | `typeface clean`     |
