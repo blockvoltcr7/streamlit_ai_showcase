@@ -25,8 +25,8 @@ token_counter = TokenCounterCallback()
 search_tool = SerperDevTool()
 
 # Initialize the LLM model
-gpt_3_5_turbo = ChatOpenAI(
-    model_name="gpt-3.5-turbo",
+gpt_4o_mini = ChatOpenAI(
+    model_name="gpt-4o-mini",    # Changed from "gpt-3.5-turbo" to "gpt-4o-mini"
     temperature=0.7,
     callbacks=[token_counter]
 )
@@ -38,7 +38,7 @@ researcher = Agent(
     backstory='You are an expert researcher specializing in AI and emerging technologies.',
     tools=[search_tool],
     verbose=True,
-    llm=gpt_3_5_turbo
+    llm=gpt_4o_mini
 )
 
 # Define the Writer agent
@@ -47,7 +47,7 @@ writer = Agent(
     goal='Create engaging content about AI trends',
     backstory='You are a skilled writer with a talent for explaining complex tech concepts.',
     verbose=True,
-    llm=gpt_3_5_turbo
+    llm=gpt_4o_mini
 )
 
 # Define the Manager agent
@@ -57,7 +57,7 @@ manager = Agent(
     backstory='You are an experienced project manager with a background in tech and a keen eye for detail.',
     allow_delegation=True,
     verbose=True,
-    llm=gpt_3_5_turbo
+    llm=gpt_4o_mini
 )
 
 # Define the research task
