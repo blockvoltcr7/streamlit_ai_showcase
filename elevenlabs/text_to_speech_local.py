@@ -5,7 +5,7 @@ from typing import IO
 from dotenv import load_dotenv
 from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
-
+import streamlit as st
 
 load_dotenv()
 
@@ -27,7 +27,7 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
         IO[bytes]: A BytesIO stream containing the audio data.
     """
     response = client.text_to_speech.convert(
-        voice_id="txaks9Y4DguQLag5WHgP",  # custom mental health voice
+        voice_id="6FVMQT8QZi7fP00BUvK9",  # custom mental health voice
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=text,
@@ -40,7 +40,7 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
         ),
     )
 
-    print("Streaming audio data...")
+    st.write("Generating audio...")
 
     audio_stream = BytesIO()
     for chunk in response:
@@ -52,7 +52,7 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
 
 def save_audiostream_to_file(audio_stream: IO[bytes]) -> str:
     """
-    Saves an audio stream to a file in the project's root directory.
+    Saves an audio stream to a file in the project's audio directory.
 
     Args:
         audio_stream (IO[bytes]): The audio stream to save.
@@ -62,29 +62,42 @@ def save_audiostream_to_file(audio_stream: IO[bytes]) -> str:
     """
     file_name = f"kratos{uuid.uuid4()}.mp3"
     save_file_path = os.path.join(os.getcwd(), '..', 'audio', file_name)
-    print(f"Saving audio file to: {save_file_path}")
+    st.write(f"Saving audio file to: {save_file_path}")
     
     with open(save_file_path, "wb") as f:
         f.write(audio_stream.getvalue())
 
-    print(f"A new audio file was saved successfully at {save_file_path}")
+    st.success(f"Audio file saved successfully at {save_file_path}")
     return save_file_path
 
-def main(text: str):
-    audio_stream = text_to_speech_stream(text)
-    file_path = save_audiostream_to_file(audio_stream)
-    print(f"Audio file saved at: {file_path}")
+def main():
+    st.title("Text-to-Speech with ElevenLabs")
     
+    # Text input
+    text = st.text_area("Enter the text you want to convert to speech:", height=200)
     
+    # Generate button
+    if st.button("Generate Speech"):
+        if text:
+            try:
+                audio_stream = text_to_speech_stream(text)
+                file_path = save_audiostream_to_file(audio_stream)
+                
+                # Play the generated audio
+                st.audio(file_path, format="audio/mp3")
+                
+                # Provide download link
+                with open(file_path, "rb") as file:
+                    btn = st.download_button(
+                        label="Download Audio",
+                        data=file,
+                        file_name="generated_speech.mp3",
+                        mime="audio/mp3"
+                    )
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+        else:
+            st.warning("Please enter some text to convert to speech.")
 
 if __name__ == "__main__":
-    
-    text  = """
-
-We all have to battle our demons, it tests our resilience and determination.
-Each of us, at some point in our lives, faces challenges that seem insurmountable.
-It is during these times that the principles of Stoicism offer us a guiding light, a beacon of hope that
-helps us navigate through the storm.
-
-    """
-    main(text)
+    main()
