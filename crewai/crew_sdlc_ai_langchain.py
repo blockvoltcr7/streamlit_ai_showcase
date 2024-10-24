@@ -1,3 +1,15 @@
+"""
+crew_sdlc_ai_langchain.py
+
+This script sets up a simulated software development lifecycle (SDLC) process using the CrewAI framework. 
+It defines a series of tasks performed by different agents, each utilizing a specific language model (LLM) 
+to generate outputs based on a synthetic requirements document. The tasks include creating a product backlog, 
+functional specifications, technical design, test plan, and test strategy. The results of these tasks are saved 
+as artifacts.
+
+The script uses environment variables for API keys and ensures that all necessary keys are set before execution.
+"""
+
 import os
 from typing import List
 from dotenv import load_dotenv
@@ -6,17 +18,17 @@ from langchain_community.chat_models import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_anthropic import ChatAnthropic
 
-
-# Load environment variables
+# Load environment variables from a .env file
 load_dotenv()
 
-# Set up API keys
+# Set up API keys from environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
+# Ensure that the necessary API keys are available
 if OPENAI_API_KEY is None:
-    raise ValueError("API keys not found. Please set the OPENAI_API_KEY environment variables.")
+    raise ValueError("API keys not found. Please set the OPENAI_API_KEY environment variable.")
 
 if GOOGLE_API_KEY not in os.environ:
     os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
@@ -24,26 +36,28 @@ if GOOGLE_API_KEY not in os.environ:
 if ANTHROPIC_API_KEY not in os.environ:
     os.environ["ANTHROPIC_API_KEY"] = ANTHROPIC_API_KEY
 
-# Initialize LLMs
+# Initialize LLMs with specified models
 gemini_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-001")
 claude_llm = ChatAnthropic(model="claude-3-sonnet-20240229", api_key=ANTHROPIC_API_KEY)
 openai_llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.7, openai_api_key=OPENAI_API_KEY)
 
 def read_markdown_file(file_path):
+    """Reads and returns the content of a markdown file."""
     print(f"Reading file: {file_path}")
     with open(file_path, 'r') as file:
         return file.read()
 
-# Read the synthetic requirements document
+# Determine the path to the synthetic requirements document
 filepath = os.path.abspath("./data/synthetic_requirements.md")
 
-# Verify the file exists
+# Check if the file exists
 if not os.path.exists(filepath):
     raise FileNotFoundError(f"File not found: {filepath}")
 
+# Read the content of the requirements document
 brd_content = read_markdown_file(filepath)
 
-# Define agents with specific LLMs
+# Define agents with specific roles, goals, and language models
 product_owner = Agent(
     role='Product Owner',
     goal='Ensure the API meets business needs and create a product backlog',
@@ -89,7 +103,7 @@ tech_lead = Agent(
     llm=gemini_llm
 )
 
-# Define tasks
+# Define tasks associated with each agent
 task_create_backlog = Task(
     description=f"Review the following Business Requirements Document and create a product backlog. Ensure all requirements are addressed:\n\n{brd_content}",
     agent=product_owner,
@@ -120,7 +134,7 @@ task_create_test_strategy = Task(
     expected_output="High-level test strategy document in Markdown format"
 )
 
-# Create the crew
+# Create a crew to manage the execution of tasks
 api_design_crew = Crew(
     agents=[product_owner, business_analyst, qa_engineer, qa_lead, tech_lead],
     tasks=[task_create_backlog, task_create_func_spec, task_create_tech_design, task_create_test_plan, task_create_test_strategy],
@@ -128,16 +142,8 @@ api_design_crew = Crew(
     process=Process.sequential
 )
 
-
-# Run the crew
-result = api_design_crew.kickoff()
-
-# Print the result
-print("Crew execution completed. Results:")
-print(result)
-
-# Save artifacts
 def save_artifact(content, filename):
+    """Saves the given content to a file in the 'artifacts' directory."""
     directory = "artifacts"
     os.makedirs(directory, exist_ok=True)
     
@@ -148,26 +154,29 @@ def save_artifact(content, filename):
     with open(os.path.join(directory, filename), 'w', encoding='utf-8') as file:
         file.write(content)
 
-# Save the overall result
-save_artifact(str(result), "crew_execution_result.md")
-
-# Save individual artifacts
-artifact_names = ["product_backlog.md", "functional_specifications.md", "technical_design.md", "test_plan.md", "test_strategy.md"]
-
-for task, name in zip(api_design_crew.tasks, artifact_names):
-    if hasattr(task, 'output') and task.output:
-        save_artifact(task.output, name)
-    else:
-        print(f"Warning: No output found for task {name}")
-
-print("All artifacts have been saved in the 'artifacts' directory.")
-
+# Main execution block
 if __name__ == "__main__":
-    # You can add any additional setup or execution code here if needed
-    pass
+    # Run the crew
+    result = api_design_crew.kickoff()
 
-result = api_design_crew.kickoff()
+    # Print the result
+    print("Crew execution completed. Results:")
+    print(result)
 
-# Print the result
-print("Crew execution completed. Results:")
-print(result)
+    # Save the overall result
+    save_artifact(str(result), "crew_execution_result.md")
+
+    # Save individual task outputs
+    artifact_names = ["product_backlog.md", "functional_specifications.md", "technical_design.md", "test_plan.md", "test_strategy.md"]
+
+    for task, name in zip(api_design_crew.tasks, artifact_names):
+        if hasattr(task, 'output') and task.output:
+            save_artifact(task.output, name)
+        else:
+            print(f"Warning: No output found for task {name}")
+
+    print("All artifacts have been saved in the 'artifacts' directory.")
+
+    # Exit the program to prevent entering a new executor
+    import sys
+    sys.exit(0)
