@@ -1,179 +1,107 @@
-# Financial Report API Test Plan
+## ESG Ratings Batch Job API Test Plan
 
-## 1. Introduction
+**1. Introduction**
 
-This document outlines the test plan for the Financial Report API, a batch job designed to generate a daily comprehensive flat file containing ESG (Environmental, Social, Governance) ratings for all accounts within the firm. The test plan aims to ensure that the API meets the functional and non-functional requirements outlined in the requirement document and technical design document.
+This document outlines a comprehensive test plan for the ESG Ratings Batch Job API, ensuring its functionality, performance, security, and compliance meet the requirements outlined in the Functional Specifications and Technical Design documents. 
 
-## 2. Test Objectives
+**2. Test Objectives**
 
-The primary objectives of this test plan are to:
+* **Functionality:** Verify that the batch job correctly retrieves account data, processes ESG ratings from the API, generates the CSV output file, and stores it securely.
+* **Performance:** Evaluate the batch job's ability to process a large volume of accounts within the specified time window, minimizing resource consumption.
+* **Security:** Validate data protection measures, including encryption and access control, to ensure data integrity and confidentiality.
+* **Error Handling:** Test various error scenarios, including API failures, data inconsistencies, and system interruptions, to ensure proper error handling and recovery mechanisms.
+* **Compliance:** Verify that the batch job adheres to relevant regulations (e.g., GDPR, CCPA) and maintains an audit trail for data access.
+* **Integration:** Validate the integration of the batch job with the Account Management System, ESG Portfolio Analysis API, monitoring systems, and alerting systems.
 
-- Verify that the API correctly retrieves account data from the Account Management System.
-- Validate that the API successfully calls the Multi-Objective ESG Portfolio Analysis API and retrieves ESG ratings for each account.
-- Ensure that the API generates a CSV file with the correct format, data, and naming convention.
-- Test the API's ability to handle errors and exceptions gracefully, including retry mechanisms and error logging.
-- Assess the API's performance and scalability under various load conditions.
-- Evaluate the API's security measures to protect sensitive data.
-- Verify the functionality of the alerting system and ensure that alerts are sent promptly to the correct recipients.
+**3. Test Scope**
 
-## 3. Test Scope
+This test plan covers the following key areas:
 
-The test scope includes all aspects of the Financial Report API, including:
+* **Unit Testing:** Test individual components of the batch job, including data retrieval, API calls, error handling, and output file generation.
+* **Integration Testing:** Test the interaction between different components of the batch job, ensuring seamless data flow and communication.
+* **End-to-End Testing:** Simulate real-world scenarios to validate the entire batch job process from start to finish.
+* **Performance Testing:** Evaluate the batch job's performance under various load conditions, including peak account processing volumes.
+* **Security Testing:** Test vulnerability to security threats, including unauthorized access, data breaches, and data integrity issues.
+* **Regression Testing:** Ensure that changes to the batch job do not negatively impact existing functionality.
+* **Usability Testing:** Validate the clarity and accuracy of the output CSV file and the usability of the reporting and analytics features.
 
-- **Functionality:**
-    - Account retrieval
-    - ESG ratings retrieval
-    - CSV file generation
-    - Error handling and recovery
-    - Logging and monitoring
-    - Alerting system
-- **Performance:**
-    - Account processing volume
-    - Execution time
-    - Resource utilization
-- **Security:**
-    - Data encryption
-    - Access control
-    - Penetration testing
+**4. Test Environment**
 
-## 4. Test Environments
+* **Test Data:** Use a representative dataset of active accounts, including a range of account types and ESG rating scenarios.
+* **Mock API:** Create a mock version of the ESG Portfolio Analysis API to simulate different API responses, including successful calls, errors, and timeouts.
+* **Test Database:** Implement a test database to store account data and job performance metrics for testing purposes.
+* **Monitoring and Alerting Tools:** Utilize test instances of monitoring and alerting systems to simulate real-time monitoring and notification scenarios.
 
-- **Development Environment:** Used for unit testing and integration testing.
-- **Staging Environment:** Used for performance testing, security testing, and end-to-end testing.
-- **Production Environment:** Used for final testing and deployment.
+**5. Test Cases**
 
-## 5. Test Cases
+**5.1. Functionality Testing**
 
-### 5.1 Functional Tests
-
-**5.1.1 Account Retrieval**
-
-| Test Case | Description | Expected Result |
+| Test Case ID | Description | Expected Result |
 |---|---|---|
-| TC_AccountRetrieval_01 | Retrieve a list of active accounts from the Account Management System. | The API successfully retrieves a list of accounts with valid account IDs and names. |
-| TC_AccountRetrieval_02 | Retrieve a list of accounts with pagination. | The API successfully retrieves all accounts, including those on subsequent pages, using pagination. |
-| TC_AccountRetrieval_03 | Retrieve a list of accounts with filtering criteria. | The API successfully retrieves a filtered list of accounts based on specified criteria (e.g., account type, status). |
+| FT-01 | Retrieve account list from the Account Management System. | Successfully retrieves a list of active accounts. |
+| FT-02 | Call the ESG Portfolio Analysis API for a specific account. | Successfully retrieves ESG ratings for the account. |
+| FT-03 | Handle API errors gracefully with a retry mechanism. | Successfully retries API calls in case of transient errors. |
+| FT-04 | Generate the CSV output file with correct data and format. | Creates a CSV file with accurate account data, ESG ratings, and processing status. |
+| FT-05 | Store the CSV file securely with encryption and access control. | Stores the file in a designated secure location with appropriate encryption and access restrictions. |
+| FT-06 | Log job execution details, API calls, and errors. | Creates comprehensive logs capturing job progress, API call statistics, and error details. |
 
-**5.1.2 ESG Ratings Retrieval**
+**5.2. Performance Testing**
 
-| Test Case | Description | Expected Result |
+| Test Case ID | Description | Expected Result |
 |---|---|---|
-| TC_ESGRatingsRetrieval_01 | Retrieve ESG ratings for a valid account ID. | The API successfully retrieves ESG ratings for the specified account, including overall ESG score, environmental score, social score, governance score, primary ESG focus, primary focus score, and analysis date. |
-| TC_ESGRatingsRetrieval_02 | Handle API errors or timeouts gracefully. | The API implements a retry mechanism (3 attempts with exponential backoff) and logs any persistent failures for individual accounts. |
-| TC_ESGRatingsRetrieval_03 | Retrieve ESG ratings for multiple accounts concurrently. | The API efficiently retrieves ESG ratings for multiple accounts using parallel processing, respecting API rate limits. |
+| PT-01 | Process 100,000 accounts within the 4-hour window. | Successfully processes all accounts within the specified time limit. |
+| PT-02 | Measure memory usage and resource consumption during processing. | Optimize memory usage and resource consumption to ensure efficient performance. |
+| PT-03 | Test the impact of parallel processing on performance. | Evaluate the effectiveness of parallel processing in improving processing speed. |
 
-**5.1.3 CSV File Generation**
+**5.3. Security Testing**
 
-| Test Case | Description | Expected Result |
+| Test Case ID | Description | Expected Result |
 |---|---|---|
-| TC_CSVFileGeneration_01 | Generate a CSV file with the correct format and data. | The generated CSV file includes the correct header row, column names, data types, and formatting (e.g., decimal values to two decimal places). |
-| TC_CSVFileGeneration_02 | Handle accounts with failed API calls. | For accounts where API calls failed, the ESG fields are populated with "N/A" and the Processing Status is set to "Failed". |
-| TC_CSVFileGeneration_03 | Generate a CSV file with the correct naming convention. | The generated CSV file uses the naming convention "FirmESGRatings_YYYYMMDD.csv". |
+| ST-01 | Test encryption of data in transit and at rest. | Ensures data is securely encrypted during transmission and storage. |
+| ST-02 | Test access control mechanisms for the generated file. | Verifies that only authorized personnel can access the file. |
+| ST-03 | Test vulnerability to common security threats (e.g., SQL injection, cross-site scripting). | Ensures the batch job is protected against known security vulnerabilities. |
 
-**5.1.4 Error Handling and Recovery**
+**5.4. Error Handling Testing**
 
-| Test Case | Description | Expected Result |
+| Test Case ID | Description | Expected Result |
 |---|---|---|
-| TC_ErrorHandling_01 | Handle API connection errors. | The API gracefully handles API connection errors, logs the error, and attempts to retry the request. |
-| TC_ErrorHandling_02 | Handle invalid account IDs. | The API handles invalid account IDs, logs the error, and populates the corresponding ESG fields with "N/A". |
-| TC_ErrorHandling_03 | Handle data validation errors. | The API handles data validation errors (e.g., incorrect data format) and logs the error. |
+| EH-01 | Simulate API timeouts and errors. | Handles API timeouts and errors gracefully with retry mechanisms and logging. |
+| EH-02 | Introduce data inconsistencies in the account data. | Identifies and handles data inconsistencies, logging any errors or exceptions. |
+| EH-03 | Simulate system interruptions during job execution. | Resumes the job from the last successful point and logs any interruptions. |
+| EH-04 | Test the alert system for critical errors and failures. | Sends appropriate alerts to the development team and stakeholders in case of critical issues. |
 
-**5.1.5 Logging and Monitoring**
+**5.5. Compliance Testing**
 
-| Test Case | Description | Expected Result |
+| Test Case ID | Description | Expected Result |
 |---|---|---|
-| TC_Logging_01 | Verify that the API logs job start and end times. | The API logs the job start and end times in the designated logging system. |
-| TC_Logging_02 | Verify that the API logs the number of accounts processed. | The API logs the total number of accounts processed successfully and unsuccessfully. |
-| TC_Logging_03 | Verify that the API logs any errors or exceptions encountered. | The API logs any errors or exceptions encountered during the job execution, including error messages and timestamps. |
+| CT-01 | Verify compliance with GDPR and CCPA regulations. | Ensures data processing adheres to relevant privacy and security regulations. |
+| CT-02 | Validate the audit trail for data access. | Tracks all accesses to the generated file, ensuring accountability and transparency. |
+| CT-03 | Test data retention policies for historical files and logs. | Retains historical data for the required period, complying with the firm's data retention policy. |
 
-**5.1.6 Alerting System**
+**5.6. Integration Testing**
 
-| Test Case | Description | Expected Result |
+| Test Case ID | Description | Expected Result |
 |---|---|---|
-| TC_Alerting_01 | Send an alert when the job fails to start at the scheduled time. | The API sends an alert via email and integrates with the firm's incident management system. |
-| TC_Alerting_02 | Send an alert when the job exceeds the 4-hour execution window. | The API sends an alert via email and integrates with the firm's incident management system. |
-| TC_Alerting_03 | Send an alert when the job encounters a critical error. | The API sends an alert via email and integrates with the firm's incident management system. |
-| TC_Alerting_04 | Send an alert when more than 5% of account API calls fail. | The API sends an alert via email and integrates with the firm's incident management system. |
+| IT-01 | Test integration with the Account Management System. | Successfully retrieves account data from the Account Management System. |
+| IT-02 | Test integration with the ESG Portfolio Analysis API. | Successfully communicates with the API and retrieves ESG ratings. |
+| IT-03 | Test integration with monitoring and alerting systems. | Monitors job health, performance, and sends alerts in case of issues. |
 
-### 5.2 Performance Tests
+**6. Test Execution**
 
-**5.2.1 Account Processing Volume**
+* **Test Execution Plan:** Define a detailed test execution plan, including timelines, test environments, and test resources.
+* **Test Automation:** Utilize test automation tools to automate repetitive test cases and improve testing efficiency.
+* **Test Reporting:** Generate comprehensive test reports, including test results, defect logs, and performance metrics.
 
-| Test Case | Description | Expected Result |
-|---|---|---|
-| TC_Performance_01 | Process 100,000 accounts within the 4-hour window. | The API successfully processes 100,000 accounts within the 4-hour window without exceeding resource limits. |
-| TC_Performance_02 | Process a large number of accounts with different data characteristics. | The API handles accounts with varying data sizes and complexities efficiently. |
+**7. Test Acceptance Criteria**
 
-**5.2.2 Execution Time**
+* **Functionality:** All test cases related to functionality should pass successfully.
+* **Performance:** The batch job should process the expected volume of accounts within the specified time window, with minimal resource consumption.
+* **Security:** All security tests should pass, ensuring data protection and compliance with security standards.
+* **Error Handling:** Error handling mechanisms should function correctly, preventing data loss and alerting stakeholders of critical issues.
+* **Compliance:** All compliance tests should pass, ensuring adherence to relevant regulations and data privacy requirements.
+* **Integration:** All integration tests should pass, ensuring seamless interaction between the batch job and its dependent systems.
 
-| Test Case | Description | Expected Result |
-|---|---|---|
-| TC_Performance_03 | Measure the average execution time for processing a set of accounts. | The average execution time is within acceptable limits (e.g., less than 4 hours). |
-| TC_Performance_04 | Measure the execution time for different account volumes. | The execution time scales linearly with the number of accounts processed. |
+**8. Conclusion**
 
-**5.2.3 Resource Utilization**
-
-| Test Case | Description | Expected Result |
-|---|---|---|
-| TC_Performance_05 | Monitor CPU usage, memory usage, and disk I/O during job execution. | The API does not exceed resource limits (e.g., CPU usage, memory usage) and maintains optimal performance. |
-
-### 5.3 Security Tests
-
-**5.3.1 Data Encryption**
-
-| Test Case | Description | Expected Result |
-|---|---|---|
-| TC_Security_01 | Verify that the generated CSV file is encrypted at rest. | The CSV file is encrypted using AES-256 encryption and is only accessible to authorized personnel. |
-| TC_Security_02 | Verify that data is encrypted in transit. | Data is transmitted securely using HTTPS encryption. |
-
-**5.3.2 Access Control**
-
-| Test Case | Description | Expected Result |
-|---|---|---|
-| TC_Security_03 | Verify that only authorized personnel can access the generated CSV file. | Access to the CSV file is restricted to authorized users based on pre-defined permissions. |
-
-**5.3.3 Penetration Testing**
-
-| Test Case | Description | Expected Result |
-|---|---|---|
-| TC_Security_04 | Perform penetration testing to identify vulnerabilities. | The penetration testing identifies and addresses any security vulnerabilities in the API. |
-
-## 6. Test Data
-
-- **Account Data:** A representative sample of active accounts from the Account Management System.
-- **ESG Rating Data:** A set of ESG ratings for the selected accounts, including both successful and failed API calls.
-- **Error Data:** A set of error scenarios, including API connection errors, invalid account IDs, and data validation errors.
-
-## 7. Test Automation
-
-- **Test Automation Tools:** Selenium, pytest, JMeter, etc.
-- **Test Automation Framework:** A framework will be implemented to automate functional, performance, and security tests.
-- **Test Automation Scripts:** Automated test scripts will be developed to execute test cases and generate test reports.
-
-## 8. Test Reporting
-
-- **Test Reports:** Comprehensive test reports will be generated, including details on test cases executed, test results, and any identified defects.
-- **Defect Tracking:** Defects will be tracked and reported using a defect tracking system.
-
-## 9. Test Schedule
-
-| Test Phase | Duration |
-|---|---|
-| Unit Testing | 1 week |
-| Integration Testing | 1 week |
-| Performance Testing | 1 week |
-| Security Testing | 1 week |
-| End-to-End Testing | 1 week |
-
-## 10. Success Criteria
-
-- **Functional Tests:** All functional test cases pass successfully.
-- **Performance Tests:** The API meets the performance requirements outlined in the technical design document.
-- **Security Tests:** The API demonstrates robust security measures and passes all security tests.
-- **Defect Resolution:** All identified defects are resolved before deployment to production.
-
-## 11. Conclusion
-
-This test plan provides a comprehensive framework for testing the Financial Report API. By following the outlined test cases and procedures, we can ensure that the API meets the required functionality, performance, and security standards before it is deployed to production.
-
-This test plan will be reviewed and updated as needed throughout the development and testing process.
+This comprehensive test plan provides a framework for rigorously testing the ESG Ratings Batch Job API, ensuring its functionality, performance, security, and compliance meet the defined requirements. By following this plan, we can ensure that the batch job delivers accurate, reliable, and secure ESG ratings data, meeting the firm's reporting and compliance needs. 
+ Ratings Batch Job API, ensuring its functionality, performance, security, and compliance meet the defined requirements. By following this plan, we can ensure that the batch job delivers accurate, reliable, and secure ESG ratings data, meeting the firm's reporting and compliance needs.

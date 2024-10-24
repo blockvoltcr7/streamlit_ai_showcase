@@ -1,263 +1,121 @@
-# Financial Report API Technical Design Document
+# Technical Design Document for ESG Ratings Batch Job API
 
 ## 1. Introduction
 
-This document outlines the technical design for the Financial Report API, a batch job designed to generate a daily comprehensive flat file containing ESG (Environmental, Social, Governance) ratings for all accounts within the firm. This API will leverage the Multi-Objective ESG Portfolio Analysis API to provide a firm-wide view of ESG performance.
+This document details the technical design for the ESG Ratings Batch Job API, which will automate the daily generation of a comprehensive ESG ratings report for all active accounts within the firm. This design aims to meet the functional specifications outlined in the Functional Specifications Document for ESG Ratings Batch Job API, ensuring a robust and reliable solution for compliance and reporting purposes.
 
 ## 2. System Architecture
 
-The system architecture consists of the following components:
+The system architecture comprises the following key components:
 
-- **Account Management System (AMS):** Provides the list of active accounts.
-- **ESG Portfolio Analysis API:** Retrieves ESG ratings for each account.
-- **Financial Report API (Batch Job):** Orchestrates the data retrieval, processing, and file generation.
-- **Data Storage:** Securely stores the generated CSV file.
-- **Logging System:** Logs job execution details, errors, and performance metrics.
-- **Monitoring System:** Tracks job health and sends alerts for failures or critical issues.
-- **Alerting System:** Notifies relevant stakeholders via email and integrated incident management systems.
+**2.1. Data Sources**
+* **Account Management System:** This system provides the list of active accounts to be processed.
+* **ESG Portfolio Analysis API:** This external API provides ESG ratings for each account.
 
-## 3. Data Flow Diagram
+**2.2. Batch Job**
+* **Scheduling Service:** Responsible for triggering the batch job execution daily at 5:00 AM Central Time.
+* **Data Retrieval and Processing:** This component retrieves account data from the Account Management System and calls the ESG Portfolio Analysis API for each account to obtain ESG ratings.
+* **Error Handling and Retry Mechanism:** Implements a retry mechanism with exponential backoff for transient errors encountered during API calls.
+* **Parallel Processing:** Utilizes multithreading or multiprocessing to handle multiple account requests concurrently, maximizing efficiency while adhering to API rate limits.
+* **Output File Generation:** Generates the CSV file containing ESG ratings and processing status for each account.
 
-![Data Flow Diagram](data_flow_diagram.png)
+**2.3. File Storage and Security**
+* **Secure File Storage:** The generated CSV file is stored in a designated secure location within the firm's network or cloud storage.
+* **Encryption:** The file is encrypted both in transit and at rest using appropriate encryption protocols (e.g., AES-256).
+* **Access Control:** Access to the stored file is restricted to authorized personnel through appropriate permissions and authentication mechanisms.
 
-**Explanation:**
+**2.4. Logging and Monitoring**
+* **Logging Framework:** Captures comprehensive logs of job execution, including start and end times, processed accounts, API call success/failure statistics, and any errors or exceptions.
+* **Centralized Logging System:** Logs are stored in a centralized logging system for easy access and analysis.
+* **Monitoring System:** The batch job is integrated with the firm's monitoring system to track job health, performance metrics, and potential issues.
 
-1. The batch job starts at 5:00 AM Central Time.
-2. It retrieves a list of active accounts from the Account Management System.
-3. For each account, the batch job calls the ESG Portfolio Analysis API to fetch ESG ratings.
-4. The API responses are processed and stored in memory.
-5. A CSV file is generated containing the account details and ESG ratings.
-6. The CSV file is encrypted and stored in a secure location.
-7. Logs are written to a centralized logging system.
-8. The monitoring system tracks job execution and sends alerts for failures or issues.
+**2.5. Alerting System**
+* **Alerting Framework:** Defines alert triggers based on predefined criteria for job failures, critical errors, or significant API call failure rates.
+* **Notification Channels:** Alerts are sent via email and integrated with the firm's incident management system (e.g., PagerDuty).
+* **Alert Recipients:** Alerts are sent to the development team and designated business stakeholders.
 
-## 4. Detailed Design
+**2.6. Reporting and Analytics**
+* **Daily Summary Report:** Generates a daily report summarizing account processing statistics, success rates, average ESG scores, primary ESG focus distribution, and failed account list.
+* **Historical Data Storage:** Job performance data is stored for trend analysis and future insights.
 
-### 4.1 Scheduling and Execution
+## 3. Technical Details
 
-- The batch job will be scheduled using a cron job or similar mechanism to run daily at 5:00 AM Central Time.
-- The job will have a 4-hour execution window, terminating at 9:00 AM Central Time if not completed.
-- A dedicated process will monitor the job's execution status and send alerts if it fails to start or exceeds the time limit.
+**3.1. Technologies and Frameworks**
 
-### 4.2 Data Retrieval and Processing
+* **Programming Language:** Python (or any suitable language)
+* **Data Processing Library:** Pandas (for data manipulation and CSV generation)
+* **API Client:** Requests (or similar library) for API calls
+* **Scheduling Service:** Cron (or a similar scheduling service)
+* **File Storage:** Secure file storage solution (e.g., AWS S3, Google Cloud Storage)
+* **Encryption Library:** Cryptography (or similar library) for file encryption
+* **Logging Framework:** Logging (or a similar logging framework)
+* **Monitoring System:** Prometheus, Grafana (or similar monitoring tools)
+* **Alerting System:** PagerDuty, Slack (or similar alerting systems)
 
-- **Account Retrieval:**
-    - The batch job will use a RESTful API to retrieve a list of active accounts from the Account Management System.
-    - The API call will handle pagination to retrieve all accounts efficiently.
-    - The account data will be stored in memory as a list of account IDs and names.
-- **ESG Ratings Retrieval:**
-    - For each account, the batch job will call the Multi-Objective ESG Portfolio Analysis API to retrieve ESG ratings.
-    - The API calls will be made using a dedicated HTTP client library with built-in support for retry mechanisms and rate limiting.
-    - The retry mechanism will implement exponential backoff to avoid overwhelming the API in case of failures.
-    - Persistent failures for individual accounts will be logged with the specific error message.
-- **Parallel Processing:**
-    - The batch job will utilize multithreading to process multiple API calls concurrently, maximizing efficiency and reducing execution time.
-    - The number of threads will be configured to balance performance and resource utilization while adhering to API rate limits.
-    - A thread pool will be used to manage the threads and ensure efficient resource management.
+**3.2. Data Flow**
 
-### 4.3 Output File Generation
+1. **Schedule Trigger:** The scheduling service triggers the batch job execution at 5:00 AM Central Time.
+2. **Account Retrieval:** The batch job fetches the list of active accounts from the Account Management System.
+3. **API Calls:** For each account, the batch job calls the ESG Portfolio Analysis API to retrieve ESG ratings.
+4. **Error Handling:** If the API call fails, the batch job implements a retry mechanism with exponential backoff.
+5. **Parallel Processing:** The batch job uses parallel processing to handle multiple accounts concurrently.
+6. **Output File Generation:** The batch job generates a CSV file with the collected ESG ratings, account information, and processing status.
+7. **File Storage and Security:** The generated file is securely stored and encrypted.
+8. **Logging:** The batch job logs execution details, API calls, and any errors encountered.
+9. **Monitoring and Alerting:** Monitoring tools track job health, performance, and alert stakeholders of issues.
+10. **Reporting:** The batch job generates a daily summary report and stores historical performance data.
 
-- **CSV File Format:**
-    - The CSV file will contain the following columns:
-        - Account ID
-        - Account Name
-        - Overall ESG Score
-        - Environmental Score
-        - Social Score
-        - Governance Score
-        - Primary ESG Focus
-        - Primary Focus Score
-        - Analysis Date
-        - Processing Status (Successful/Failed/Partial)
-    - The file will include a header row with column names.
-    - The naming convention for the file will be "FirmESGRatings_YYYYMMDD.csv".
-    - Decimal values will be formatted consistently to two decimal places.
-    - For accounts with failed API calls, the ESG fields will be populated with "N/A" and the Processing Status will be set to "Failed".
-- **File Generation:**
-    - The CSV file will be generated using a dedicated library for CSV formatting and writing.
-    - The file will be written to a temporary location before being moved to the secure storage location.
+**3.3. API Integration**
 
-### 4.4 File Storage and Security
+* **Authentication:** The batch job uses the firm's authentication system to securely access the ESG Portfolio Analysis API.
+* **API Rate Limits:** The batch job respects the API rate limits to avoid overloading the API.
+* **Error Handling:** The batch job implements robust error handling and retry mechanisms to ensure data integrity and resilience.
 
-- **Storage Location:**
-    - The generated CSV file will be stored in a designated secure location on the firm's network or in a cloud storage service.
-    - The choice of location will depend on security policies and infrastructure considerations.
-- **Encryption:**
-    - The file will be encrypted both in transit (using HTTPS) and at rest (using AES-256 encryption).
-    - Encryption will be implemented using industry-standard cryptographic libraries and algorithms.
-- **Access Control:**
-    - Access to the stored file will be restricted to authorized personnel only.
-    - Access permissions will be configured to enforce these restrictions.
+**3.4. Security Measures**
 
-### 4.5 Logging and Monitoring
+* **Data Encryption:** Sensitive data, including account information and ESG ratings, is encrypted both in transit and at rest.
+* **Access Control:** Access to the generated file and stored data is restricted to authorized personnel through appropriate permissions and authentication.
+* **Secure API Communication:** Secure communication protocols (e.g., HTTPS) are used for all API interactions.
 
-- **Logging:**
-    - The batch job will implement comprehensive logging throughout its execution.
-    - Logs will include the following information:
-        - Job start and end times
-        - Number of accounts processed
-        - Number of successful/failed/partial API calls
-        - Any errors or exceptions encountered
-    - Logs will be stored in a centralized logging system for easy access and analysis.
-- **Monitoring:**
-    - The batch job will be integrated with the firm's monitoring system to track its performance and health.
-    - The monitoring system will track metrics such as job execution time, success rate, and resource utilization.
-    - Alerts will be triggered for critical issues or performance degradation.
+**3.5. Performance Optimization**
 
-### 4.6 Alerting System
+* **Parallel Processing:** Parallel processing is implemented to improve efficiency and reduce processing time.
+* **Data Caching:** Consider caching frequently accessed data to minimize API calls and improve performance.
+* **Database Optimization:** If a database is used for storing data, optimize database queries and indexes for faster retrieval.
 
-- **Alert Triggers:**
-    - Alerts will be sent in the following scenarios:
-        - Job fails to start at the scheduled time
-        - Job exceeds the 4-hour execution window
-        - Job encounters a critical error and terminates prematurely
-        - More than 5% of account API calls fail
-- **Alert Delivery:**
-    - Alerts will be sent via email and integrated with the firm's incident management system (e.g., PagerDuty).
-    - Alert recipients will include the development team and designated business stakeholders.
+**3.6. Error Handling and Recovery**
 
-### 4.7 Performance Requirements
+* **Retry Mechanism:** A retry mechanism with exponential backoff is implemented for transient API errors.
+* **Error Logging:** Detailed error logs are maintained to track and analyze failures.
+* **Job Resumption:** Implement a mechanism to track progress and allow the job to resume from the last successful state in case of interruption.
 
-- **Account Processing Volume:**
-    - The batch job must be capable of processing at least 100,000 accounts within the 4-hour window.
-- **Data Handling Efficiency:**
-    - The system will implement efficient data handling techniques to minimize memory usage and optimize performance.
-    - Data structures and algorithms will be selected to ensure efficient processing of large datasets.
-- **API Call Optimization:**
-    - The batch job will optimize API calls to minimize unnecessary requests.
-    - A mechanism will be implemented to track changes since the last run and only process accounts with updated data.
+## 4. Testing and Deployment
 
-### 4.8 Error Handling and Recovery
+**4.1. Testing**
 
-- **Progress Tracking:**
-    - The batch job will track its progress to allow resumption from the last successful point in case of interruption.
-    - This will enable the job to continue processing from where it left off without re-processing already completed accounts.
-- **Error Logging:**
-    - A separate error log file will be created to detail any accounts that could not be processed successfully.
-    - The error log will include the account ID, error message, and timestamp.
-- **Manual Override:**
-    - A manual override process will be implemented to allow re-running the job for specific accounts if needed.
-    - This will enable users to manually trigger the processing of specific accounts without affecting the scheduled batch job.
+* **Unit Tests:** Thorough unit tests will be developed to verify the functionality of individual components.
+* **Integration Tests:** Integration tests will ensure that different components work together seamlessly.
+* **End-to-End Tests:** End-to-end tests will simulate real-world scenarios to validate the entire batch job process.
+* **Performance Tests:** Performance tests will be conducted to measure the batch job's processing capabilities and resource usage.
+* **Security Tests:** Security tests will be performed to validate data protection measures and ensure compliance with security standards.
 
-### 4.9 Reporting and Analytics
+**4.2. Deployment**
 
-- **Daily Summary Report:**
-    - The batch job will generate a daily summary report including the following information:
-        - Total number of accounts processed
-        - Success rate
-        - Average ESG scores (Overall, E, S, G)
-        - Distribution of primary ESG focus areas
-        - List of accounts with failed processing
-- **Historical Data Storage:**
-    - Historical job performance data will be stored for trend analysis.
-    - This data will enable the identification of patterns, trends, and performance fluctuations over time.
+* **Environment Configuration:** The batch job will be deployed in a production-ready environment with appropriate resource allocation and monitoring.
+* **Version Control:** The batch job code will be managed using a version control system (e.g., Git) to track changes and facilitate collaboration.
+* **Deployment Automation:** Automated deployment tools will be used to streamline the deployment process and ensure consistency.
 
-### 4.10 Compliance and Audit
+## 5. Maintenance and Support
 
-- **Regulatory Compliance:**
-    - All data processing will comply with relevant regulations (e.g., GDPR, CCPA).
-    - Measures will be implemented to ensure data privacy, security, and compliance with applicable laws.
-- **Audit Trail:**
-    - An audit trail will be implemented to track access to the generated files.
-    - This will allow for the tracking of file access history, including timestamps, user identities, and actions performed.
-- **Data Retention:**
-    - Historical files and logs will be retained for a period specified by the firm's data retention policy.
-    - This will ensure that data is retained for the required duration for compliance, auditing, and historical analysis purposes.
+* **Documentation:** Comprehensive technical documentation will be maintained, including system architecture, data flow diagrams, API integration details, and user guides.
+* **Monitoring:** The batch job will be continuously monitored to track performance and identify potential issues.
+* **Alerting:** Alerting systems will be configured to notify the development team of any critical errors or failures.
+* **Support Process:** A support process will be established to handle inquiries and provide assistance for the batch job.
 
-## 5. Technology Stack
+## 6. Future Considerations
 
-- Programming Language: Python
-- Framework: Django/Flask (for API endpoints)
-- Database: PostgreSQL/MySQL (for logging and historical data)
-- Queueing System: Celery/Redis (for asynchronous tasks)
-- Scheduling: Cron/Celery Beat
-- Logging: Logstash/Elasticsearch
-- Monitoring: Prometheus/Grafana
-- Encryption: PyCryptodome
-- CSV Library: pandas/csv
-- HTTP Client: requests
+* **Real-Time ESG Data Integration:** Explore the integration of real-time ESG data feeds for more frequent updates.
+* **Web-Based Dashboard:** Develop a web-based dashboard for visualizing firm-wide ESG trends and performance.
+* **Additional ESG Metrics:** Consider expanding the batch job to include additional ESG metrics or alternative data sources.
 
-## 6. Testing and Deployment
-
-### 6.1 Testing
-
-- **Unit Tests:**
-    - Unit tests will be developed for individual components of the batch job.
-    - This will ensure that each component functions correctly in isolation.
-- **Integration Tests:**
-    - Integration tests will be implemented to verify the interactions between different components.
-    - This will ensure that the components work together as expected.
-- **End-to-End Tests:**
-    - End-to-end tests will be conducted to validate the entire workflow from account retrieval to file generation.
-    - This will ensure that the system functions as a whole.
-- **Performance Tests:**
-    - Performance tests will be performed to ensure that the batch job can handle the expected volume of accounts.
-    - This will involve simulating a large number of accounts and measuring the job's execution time and resource utilization.
-- **Security Tests:**
-    - Security tests will be conducted to validate data protection measures.
-    - This will include penetration testing to identify vulnerabilities and ensure data integrity.
-- **Failure Scenario Tests:**
-    - Tests will be implemented for various failure scenarios to ensure proper error handling and alerting.
-    - This will include simulating API failures, network outages, and other potential issues.
-
-### 6.2 Deployment
-
-- The batch job will be deployed on a secure server with sufficient resources to handle the expected workload.
-- The deployment process will involve setting up the necessary infrastructure, configuring the application, and scheduling the batch job.
-- Continuous integration and continuous delivery (CI/CD) practices will be implemented to automate the deployment process and ensure code quality.
-
-## 7. Documentation
-
-- **Technical Documentation:**
-    - Detailed technical documentation will be provided, including:
-        - System architecture diagrams
-        - Data flow diagrams
-        - API integration details
-        - Code documentation
-        - Configuration files
-- **User Guide:**
-    - A user guide will be created for business users explaining how to interpret the output file.
-    - The user guide will provide instructions on accessing the file, understanding the data fields, and using the report for analysis.
-- **Alert System Documentation:**
-    - The alert system will be documented, including:
-        - Escalation procedures
-        - Troubleshooting steps
-        - Contact information for support
-
-## 8. Training and Support
-
-- **Training Sessions:**
-    - Training sessions will be conducted for the operations team on job monitoring and basic troubleshooting.
-    - The training will cover topics such as:
-        - Monitoring the batch job's execution status
-        - Identifying and resolving common errors
-        - Using the logging system for debugging
-- **Support Process:**
-    - A support process will be established for handling inquiries related to the batch job and its output.
-    - This will involve providing timely assistance, troubleshooting issues, and addressing user concerns.
-
-## 9. Success Criteria
-
-- **Reliability:**
-    - The batch job runs successfully at 5:00 AM Central Time every day with 99.9% reliability.
-- **Account Processing:**
-    - All active accounts are processed within the 4-hour window.
-- **Output Accuracy:**
-    - The produced CSV file is accurate, consistent with individual API calls, and adheres to the specified format.
-- **Alerting:**
-    - Alerts are sent promptly and to the correct recipients in case of job failures or critical issues.
-- **Business Needs:**
-    - Firm administrators confirm that the file meets their needs for firm-wide ESG performance tracking.
-- **Scalability:**
-    - The system demonstrates the ability to scale as the number of accounts grows.
-
-## 10. Future Considerations
-
-- **Real-Time Data Integration:**
-    - Potential integration with real-time ESG data feeds for more frequent updates.
-- **Web-Based Dashboard:**
-    - Development of a web-based dashboard for visualizing firm-wide ESG trends.
-- **Additional ESG Metrics:**
-    - Expansion to include additional ESG metrics or alternative data sources.
-
-This technical design document provides a comprehensive overview of the Financial Report API, outlining its architecture, functionality, and implementation details. The system is designed to ensure reliable and efficient generation of ESG ratings for all accounts within the firm, providing valuable insights for compliance officers, firm administrators, and other authorized personnel.
+This technical design document provides a comprehensive framework for developing and deploying the ESG Ratings Batch Job API. By adhering to these specifications, we can ensure a robust, reliable, and secure system that meets the firm's reporting and compliance needs.

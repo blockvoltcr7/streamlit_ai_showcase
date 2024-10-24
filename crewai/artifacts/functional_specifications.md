@@ -1,146 +1,125 @@
 ```markdown
-# Functional Specifications for the Financial Report API
+# Functional Specifications Document for ESG Ratings Batch Job API
 
 ## 1. Overview
-This document outlines the functional specifications for the Financial Report API that will support the daily batch job generating ESG ratings for all accounts within the firm. The API will facilitate the retrieval and processing of ESG ratings, ensuring compliance and efficient reporting.
+This document outlines the functional specifications for the ESG Ratings Batch Job API, designed to generate a daily CSV file containing ESG ratings for all active accounts within the firm. The process aims to support compliance officers and firm administrators by providing timely and comprehensive ESG performance data.
 
-## 2. Functional Requirements
+## 2. Objectives
+- To ensure a daily automated process that generates and stores ESG ratings for all active accounts.
+- To provide timely and accurate data for compliance and auditing purposes.
 
-### 2.1 Scheduling and Execution
-- **Functionality**: The batch job must be scheduled to run automatically every day at 5:00 AM Central Time.
-- **Implementation**:
-  - Utilize a cron job or similar scheduling mechanism.
-  - Ensure that the job is configured to complete within a 4-hour execution window.
-  - If not completed by 9:00 AM Central Time, the job should terminate and send an alert.
+## 3. Detailed Functional Specifications
 
-### 2.2 Data Retrieval and Processing
-- **Functionality**: Retrieve a comprehensive list of active accounts and their corresponding ESG ratings.
-- **Implementation**:
-  - **Account Retrieval**: 
-    - Integrate with the firm's account management system using a RESTful API to fetch active accounts.
-    - Ensure that the API call returns a complete, paginated list of accounts.
-  - **ESG Ratings Retrieval**: 
-    - For each account, invoke the Multi-Objective ESG Portfolio Analysis API to obtain the latest ESG ratings.
-    - Implement a retry mechanism for API calls with up to 3 attempts and exponential backoff.
-    - Log failures for accounts that cannot be processed after retries.
-  - **Parallel Processing**: 
-    - Use multithreading to process multiple API calls simultaneously while adhering to rate limits.
+### 3.1 Scheduling and Execution
+- **Specification**: The batch job must run automatically every day at 5:00 AM Central Time.
+- **Execution Time Limit**: The job must complete within a 4-hour window.
+- **Failure Handling**: If the job has not completed by 9:00 AM Central Time, it should be terminated, and an alert is sent to the development team.
+- **Tasks**:
+  - Implement cron job or scheduling service to trigger execution.
+  - Monitor execution time and implement termination logic.
+  - Configure alerting for job failures.
 
-### 2.3 Output File Generation
-- **Functionality**: Generate a CSV file containing ESG ratings and related information.
-- **Implementation**:
-  - The CSV file must include the following columns:
-    - Account ID
-    - Account Name
-    - Overall ESG Score
-    - Environmental Score
-    - Social Score
-    - Governance Score
-    - Primary ESG Focus
-    - Primary Focus Score
-    - Analysis Date
-    - Processing Status (Successful/Failed/Partial)
-  - The file should include a header row with column names.
-  - Use the naming convention: `FirmESGRatings_YYYYMMDD.csv`.
-  - Ensure decimal values are formatted to two decimal places.
-  - Populate ESG fields with "N/A" for accounts with failed API calls and mark their Processing Status as "Failed".
+### 3.2 Data Retrieval and Processing
+- **Specification**: The API must retrieve a list of all active accounts and fetch ESG ratings for each account.
+- **Error Handling**: Implement a retry mechanism for API calls with exponential backoff for transient errors.
+- **Concurrency**: Utilize parallel processing to handle multiple account requests simultaneously without exceeding API rate limits.
+- **Tasks**:
+  - Integrate with the firm's account management system to retrieve active accounts.
+  - Call the Multi-Objective ESG Portfolio Analysis API for each account.
+  - Implement logging for errors and exceptions.
 
-### 2.4 File Storage and Security
-- **Functionality**: Securely store the generated CSV file.
-- **Implementation**:
-  - Store the file in a designated secure location (either on the firm’s network or cloud storage).
-  - Implement encryption for the file in transit (using HTTPS) and at rest (using AES-256).
-  - Set access permissions to restrict file access to authorized personnel only.
+### 3.3 Output File Generation
+- **Specification**: Generate a CSV file with specified columns including Account ID, Account Name, ESG scores, and Processing Status.
+- **File Naming Convention**: Use "FirmESGRatings_YYYYMMDD.csv".
+- **Data Formatting**: Ensure decimal values are formatted to two decimal places. For failed API calls, populate fields with "N/A" and set Processing Status to "Failed".
+- **Tasks**:
+  - Create CSV with a header row and required fields.
+  - Implement logic to handle formatting and include error handling in the output.
 
-### 2.5 Logging and Monitoring
-- **Functionality**: Provide comprehensive logging of the batch job execution.
-- **Implementation**:
-  - Log the following details:
-    - Job start and end times
-    - Number of accounts processed
-    - Success/Failure counts of API calls
-    - Detailed error messages and stack traces for any exceptions
-  - Store logs in a centralized logging system for analysis.
-  - Integrate with the firm’s monitoring system to track job health and performance.
+### 3.4 File Storage and Security
+- **Specification**: The generated file must be securely stored and encrypted both in transit and at rest.
+- **Access Control**: Set permissions to restrict access to authorized personnel only.
+- **Tasks**:
+  - Store the file in a designated secure location determined by the firm.
+  - Implement encryption protocols for file storage and transfer.
 
-### 2.6 Alerting System
-- **Functionality**: Notify relevant stakeholders of job failures and performance issues.
-- **Implementation**:
-  - Send alerts in the following scenarios:
-    - Job fails to start at the scheduled time.
-    - Job execution exceeds the 4-hour window.
-    - The job encounters critical errors leading to premature termination.
-    - More than 5% of API calls fail.
-  - Alerts should be sent via email and integrated with the firm's incident management system (e.g., PagerDuty).
+### 3.5 Logging and Monitoring
+- **Specification**: Comprehensive logging must capture job execution details, including start and end times, processing statistics, and errors.
+- **Centralized Logging**: Store logs in a centralized logging system for access and analysis.
+- **Tasks**:
+  - Configure logging framework to capture relevant job metrics.
+  - Integrate with monitoring tools to report job health.
 
-### 2.7 Performance Requirements
-- **Functionality**: Ensure the job can handle a high volume of accounts efficiently.
-- **Implementation**:
-  - The system must process at least 100,000 accounts within the 4-hour window.
-  - Optimize API calls to track changes since the last run to minimize unnecessary requests.
+### 3.6 Alerting System
+- **Specification**: Implement an alerting mechanism to notify stakeholders of job failures, critical errors, or significant API call failures.
+- **Notification Channels**: Use email and integrate with incident management systems (e.g., PagerDuty).
+- **Tasks**:
+  - Define alerting criteria based on job execution outcomes.
+  - Configure alert recipients and messages.
 
-### 2.8 Error Handling and Recovery
-- **Functionality**: Implement robust error handling and recovery mechanisms.
-- **Implementation**:
-  - Track job progress to allow resumption from the last successful point in case of interruption.
-  - Create an error log file detailing any accounts that could not be processed.
-  - Allow manual overrides for specific accounts that require reprocessing.
+### 3.7 Performance Requirements
+- **Specification**: The batch job must process at least 100,000 accounts within the 4-hour window.
+- **Efficiency**: Implement data handling techniques to minimize memory usage and optimize API calls.
+- **Tasks**:
+  - Conduct performance testing to validate processing capabilities.
+  - Monitor resource usage during execution.
 
-### 2.9 Reporting and Analytics
-- **Functionality**: Generate a daily summary report of the batch job outcomes.
-- **Implementation**:
-  - The report should include metrics such as:
-    - Total accounts processed
-    - Success rate
-    - Average ESG scores (Overall, Environmental, Social, Governance)
-    - Distribution of primary ESG focus areas
-    - List of accounts with processing failures
-  - Store historical job performance data for trend analysis.
+### 3.8 Error Handling and Recovery
+- **Specification**: Implement a progress tracking mechanism to allow job resumption from the last successful state.
+- **Error Logging**: Maintain a separate error log file for accounts that failed processing.
+- **Tasks**:
+  - Develop recovery procedures to handle job interruptions.
+  - Create a manual override process for re-running specific accounts.
 
-### 2.10 Compliance and Audit
-- **Functionality**: Ensure compliance with relevant regulations and maintain an audit trail.
-- **Implementation**:
-  - Implement measures to comply with GDPR, CCPA, and other relevant regulations.
-  - Create an audit trail for access to generated files.
-  - Retain historical files and logs according to the firm’s data retention policy.
+### 3.9 Reporting and Analytics
+- **Specification**: Generate a daily summary report detailing account processing statistics and success rates.
+- **Historical Data**: Store job performance data for further analysis.
+- **Tasks**:
+  - Define report format and metrics to be included.
+  - Schedule report generation after each job execution.
 
-## 3. Integration Points
-- **Account Management System**: For retrieving a list of active accounts.
-- **Multi-Objective ESG Portfolio Analysis API**: For fetching ESG ratings.
+### 3.10 Compliance and Audit
+- **Specification**: Ensure compliance with relevant regulations (e.g., GDPR, CCPA) and maintain an audit trail for file access.
+- **Retention Policy**: Retain historical files and logs as per the firm’s data retention policy.
+- **Tasks**:
+  - Implement access logs and audit trails for generated files.
+  - Review retention requirements and configure storage policies.
+
+## 4. Integration Points
+- **Account Management System**: For retrieving active accounts.
+- **ESG Portfolio Analysis API**: For fetching ratings.
 - **Authentication System**: For secure API access.
-- **Monitoring and Alerting Systems**: For tracking job health and notifications.
-- **Data Warehouse/Business Intelligence Tools**: For potential integration of the output file.
+- **Monitoring and Alerting Systems**: For job performance tracking.
 
-## 4. Testing Requirements
-- Develop a comprehensive suite of tests, including:
-  - Unit tests for individual components.
-  - Integration tests for interactions between systems.
-  - End-to-end tests for the entire flow from account retrieval to file generation.
-  - Performance testing to validate that the job can handle the expected volume.
-  - Security testing to verify data protection measures.
-  - Tests for various failure scenarios to ensure proper error handling.
+## 5. Testing Requirements
+- **Specification**: Develop and execute a comprehensive test suite including unit, integration, and end-to-end tests.
+- **Performance Testing**: Validate the job can handle the expected volume of accounts effectively.
+- **Security Testing**: Ensure data protection measures are effective.
+- **Failure Scenario Testing**: Verify error handling and alerting functionalities.
 
-## 5. Documentation
-- Provide detailed technical documentation, including:
-  - System architecture and data flow diagrams.
-  - API integration details.
-  - User guides for business users to interpret the output file.
-  - Documentation for the alert system, including escalation procedures.
+## 6. Documentation
+- **Technical Documentation**: Include system architecture, data flow diagrams, and integration details.
+- **User Guide**: Provide instructions for business users on file interpretation.
+- **Alert System Documentation**: Outline escalation procedures and troubleshooting steps.
 
-## 6. Training and Support
-- Conduct training sessions for the operations team on monitoring the job and troubleshooting.
-- Establish a support process for inquiries related to the batch job and its output.
+## 7. Training and Support
+- **Specification**: Conduct training sessions for the operations team.
+- **Support Process**: Establish a support mechanism for inquiries related to the batch job.
+- **Tasks**:
+  - Develop training materials and host sessions.
+  - Document support procedures for ongoing assistance.
 
-## 7. Success Criteria
-- The batch job runs successfully at 5:00 AM Central Time every day with a reliability of 99.9%.
+## 8. Success Criteria
+- The batch job runs successfully at 5:00 AM Central Time every day with 99.9% reliability.
 - All active accounts are processed within the 4-hour window.
-- The generated CSV file is accurate and adheres to the specified format.
-- Alerts are sent promptly and to the correct recipients in case of failures or issues.
-- The output meets the needs of firm administrators for tracking ESG performance.
-- The system demonstrates scalability as the number of accounts increases.
+- The produced CSV file is accurate and formatted correctly.
+- Alerts are sent promptly in case of issues.
+- User feedback confirms the file meets requirements.
 
-## 8. Future Considerations
-- Explore integration with real-time ESG data feeds for more frequent updates.
-- Develop a web-based dashboard for visualizing firm-wide ESG trends.
-- Consider expanding to include additional ESG metrics or alternative data sources.
+## 9. Future Considerations
+- Explore integration with real-time ESG data feeds.
+- Develop a web-based dashboard for visualizing ESG trends.
+- Consider expanding metrics to include additional ESG data sources.
 ```
+
+This detailed functional specifications document serves as a comprehensive guide for the development and implementation of the ESG Ratings Batch Job API, ensuring alignment with business objectives and technical requirements.
