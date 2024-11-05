@@ -1,0 +1,31 @@
+  """Initialize session state variables with default values."""
+    if "analysis_prompt" not in st.session_state:
+        st.session_state.analysis_prompt = """Analyze this image as an expert art critic, following this structure:
+        1. Subject Matter and Content
+        2. Composition and Framing
+        3. Color and Lighting
+        4. Style and Artistic Techniques
+        5. Emotional Tone and Viewer Interaction
+        6. Technical Quality and Realism
+        7. Symbolism and Deeper Meanings
+        
+        Summarize the image in great detail. describe the expressions and how it makes the viewer feel.
+        Additionally, recommend 6 ideal sizes"""
+
+    if "media_prompt" not in st.session_state:
+        st.session_state.media_prompt = """
+        Based on the following details of the image: {analysis_result}
+        
+        You are a Print Media Specialist tasked with recommending optimal print media for a given artwork. 
+        Please choose 4 media types from the following options based on their characteristics and suitability 
+        for vibrant color reproductions and artistic effects.
+
+        [List of media types and their characteristics...]
+
+        Finally, act as an expert artist and social media expert to create:
+        1. Title
+        2. Description
+        3. Short Description
+        4. Social Media Description
+        5. Catalog Description
+        """

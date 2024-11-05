@@ -20,6 +20,7 @@ class ImageAnalysisState(BaseModel):
     analysis_result: str = ""
     error_message: Optional[str] = None
     media_recommendation: Optional[str] = None
+    seo_metadata: Optional[str] = None
 
 
 def encode_image(image_path: str) -> str:
@@ -85,13 +86,52 @@ def generate_media_recommendations(analysis_result: str, client: OpenAI) -> str:
         return ""
 
 
-def save_results(analysis_result: str, media_recommendation: str) -> tuple:
+def generate_seo_metadata(analysis_result: str, client: OpenAI) -> str:
+    """Generate SEO metadata based on analysis."""
+    seo_prompt = f"""
+    Based on the following image analysis:
+    {analysis_result}
+
+    Please generate the following SEO metadata:
+    1. SEO Title (50-60 characters)
+    2. Meta Description (150-160 characters)
+    3. Meta Keywords (8-10 relevant keywords, comma-separated)
+
+    Format the response as:
+    SEO Title: [title]
+    Meta Description: [description]
+    Meta Keywords: [keywords]
+
+    Ensure the metadata is optimized for search engines while accurately representing the image content.
+    """
+
+    try:
+        response = client.chat.completions.create(
+            model=st.session_state.selected_model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [{"type": "text", "text": seo_prompt}],
+                }
+            ],
+            max_tokens=st.session_state.seo_max_tokens,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        st.error(f"Error generating SEO metadata: {str(e)}")
+        return ""
+
+
+def save_results(
+    analysis_result: str, media_recommendation: str, seo_metadata: str
+) -> tuple:
     """Save results to files and return filenames."""
     os.makedirs("output", exist_ok=True)
     random_number = random.randint(1000, 9999)
 
     analysis_filename = f"output/image_analysis_{random_number}.md"
     media_filename = f"output/media_recommendation_{random_number}.md"
+    seo_filename = f"output/seo_metadata_{random_number}.md"
 
     with open(analysis_filename, "w") as file:
         file.write("# Image Analysis Results\n\n")
@@ -101,7 +141,11 @@ def save_results(analysis_result: str, media_recommendation: str) -> tuple:
         file.write("# Media Recommendation\n\n")
         file.write(f"{media_recommendation}\n\n")
 
-    return analysis_filename, media_filename
+    with open(seo_filename, "w") as file:
+        file.write("# SEO Metadata\n\n")
+        file.write(f"{seo_metadata}\n\n")
+
+    return analysis_filename, media_filename, seo_filename
 
 
 def read_prompt_file(filename: str) -> str:
@@ -131,6 +175,9 @@ def initialize_session_state():
     if "max_tokens" not in st.session_state:
         st.session_state.max_tokens = 4096
 
+    if "seo_max_tokens" not in st.session_state:
+        st.session_state.seo_max_tokens = 1000
+
 
 def main():
     st.title("Art Store Front Image Analysis Content Generator")
@@ -148,11 +195,19 @@ def main():
         )
 
         st.session_state.max_tokens = st.slider(
-            "Max Tokens",
+            "Max Tokens (Analysis & Media)",
             min_value=1000,
             max_value=8192,
             value=4096,
-            help="Maximum number of tokens for the response",
+            help="Maximum number of tokens for analysis and media recommendations",
+        )
+
+        st.session_state.seo_max_tokens = st.slider(
+            "Max Tokens (SEO)",
+            min_value=500,
+            max_value=2000,
+            value=1000,
+            help="Maximum number of tokens for SEO metadata generation",
         )
 
     # Main content area
@@ -166,8 +221,13 @@ def main():
         st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
 
         # Create tabs for different sections
-        prompt_tab, analysis_tab, media_tab = st.tabs(
-            ["Customize Prompts", "Image Analysis", "Media Recommendations"]
+        prompt_tab, analysis_tab, media_tab, seo_tab = st.tabs(
+            [
+                "Customize Prompts",
+                "Image Analysis",
+                "Media Recommendations",
+                "SEO Metadata",
+            ]
         )
 
         with prompt_tab:
@@ -236,19 +296,45 @@ def main():
                         "Please analyze the image first before generating media recommendations."
                     )
 
+        # SEO metadata section
+        with seo_tab:
+            if st.button("Generate SEO Metadata"):
+                if hasattr(st.session_state, "analysis_result"):
+                    with st.spinner("Generating SEO metadata..."):
+                        client = OpenAI()
+                        seo_metadata = generate_seo_metadata(
+                            st.session_state.analysis_result, client
+                        )
+
+                        if seo_metadata:
+                            st.session_state.seo_metadata = seo_metadata
+                            st.markdown("### SEO Metadata")
+                            st.text_area(
+                                "SEO Output",
+                                seo_metadata,
+                                height=300,
+                            )
+                else:
+                    st.warning(
+                        "Please analyze the image first before generating SEO metadata."
+                    )
+
         # Save results
-        if hasattr(st.session_state, "analysis_result") and hasattr(
-            st.session_state, "media_recommendation"
+        if all(
+            hasattr(st.session_state, attr)
+            for attr in ["analysis_result", "media_recommendation", "seo_metadata"]
         ):
             if st.button("Save Results"):
-                analysis_file, media_file = save_results(
+                analysis_file, media_file, seo_file = save_results(
                     st.session_state.analysis_result,
                     st.session_state.media_recommendation,
+                    st.session_state.seo_metadata,
                 )
                 st.success(
                     f"""Results saved successfully!
                 Analysis: {analysis_file}
-                Media Recommendations: {media_file}"""
+                Media Recommendations: {media_file}
+                SEO Metadata: {seo_file}"""
                 )
 
 
