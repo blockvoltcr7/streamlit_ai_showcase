@@ -6,7 +6,7 @@ The Luma Dream Machine prompt structure can be broken down into the following el
 #### Example Prompt Structure:
 **[Camera type/shot], [Main subject], [Subject action], [Camera movement], [Lighting], [Mood]**
 
-#### Components Breakdown:
+#### Components Breakdown to use in prompts:
 1. **Camera type/shot**: The style of shot or type of camera movement (e.g., "360 video," "steady camera," "tracking shot").
 2. **Main subject**: The primary focus of the scene (e.g., "a cat," "a flying car").
 3. **Subject action**: What the subject is doing (e.g., "chasing butterflies," "soaring through the clouds").
@@ -70,8 +70,6 @@ Discover the ultimate step-by-step guide to crafting compelling Luma Dream Machi
 ### More Prompt Examples
 - **Luma AI Dream Machine Prompt**: "Slow motion camera, a vibrant street performer stands in a graffiti-adorned alley. The camera starts with a low-angle shot, capturing the performer’s colorful outfit, then transitions to a wide shot showing the graffiti and urban surroundings. Energetic, lively, urban."
 
-### Summary
-The Luma Dream Machine prompts allow for creativity by combining camera types, subjects, actions, movements, lighting, and moods in a structured way to achieve cinematic effects. Use this guide to craft compelling prompts for Luma AI to create stunning image-to-video or text-to-image projects.
-
-
+#### instructions
+only return the prompt. do not return any other details except the final optimized prompt
 
