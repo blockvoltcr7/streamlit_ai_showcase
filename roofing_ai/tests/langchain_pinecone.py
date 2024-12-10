@@ -1,4 +1,5 @@
 import os
+import re
 
 import langchain
 from dotenv import load_dotenv
@@ -37,26 +38,44 @@ def setup_pinecone(index_name):
     return embeddings
 
 
+def preprocess_text(text: str) -> str:
+    """
+    Clean and preprocess extracted text.
+
+    Args:
+        text (str): Raw text to process
+
+    Returns:
+        str: Cleaned and preprocessed text
+    """
+    # Replace common artifacts
+    text = text.replace("\n", " ")
+    text = text.replace("\r", " ")
+    text = text.replace("\t", " ")
+    text = text.replace("\xa0", " ")  # Replace non-breaking spaces
+    text = text.replace("\u200b", "")  # Remove zero-width spaces
+
+    # Fix spacing issues
+    text = re.sub(r"\s+", " ", text)
+
+    # Fix common PDF artifacts
+    text = re.sub(r"(?<=[a-z])-\s+(?=[a-z])", "", text)  # Fix hyphenation
+    text = re.sub(r"([a-z])- ([a-z])", r"\1\2", text)  # Fix broken words
+    text = re.sub(r"([a-z])_([a-z])", r"\1\2", text)  # Fix underscores between words
+
+    # Clean up punctuation
+    text = re.sub(r"\s+([.,!?])", r"\1", text)
+
+    return text.strip()
+
+
 def create_document_search(texts, embeddings, index_name):
+    # Preprocess the text content before creating embeddings
+    cleaned_texts = [preprocess_text(t.page_content) for t in texts]
+
     return LangchainPinecone.from_texts(
-        [t.page_content for t in texts], embeddings, index_name=index_name
+        cleaned_texts, embeddings, index_name=index_name
     )
-
-
-def process_text_file(file_path):
-    # Open and read the text file
-    with open(file_path, "r") as file_data:
-        file_content = file_data.read()
-
-    # Set up the text splitter
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=2000,
-        chunk_overlap=0,
-        length_function=len,
-    )
-
-    # Split the text into chunks
-    return text_splitter.create_documents([file_content])
 
 
 def process_pdf_file(pdf_path):
@@ -64,11 +83,19 @@ def process_pdf_file(pdf_path):
     loader = PyPDFLoader(pdf_path)
     file_content = loader.load()
 
+    # Clean the text content before splitting
+    for doc in file_content:
+        doc.page_content = preprocess_text(doc.page_content)
+
     # Split the content
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=2000,
+        chunk_size=1000,
         chunk_overlap=0,
         length_function=len,
+    )
+
+    print(
+        f"Splitting {len(file_content)} documents into {len(text_splitter.split_documents(file_content))} chunks"
     )
 
     return text_splitter.split_documents(file_content)
@@ -97,8 +124,7 @@ def main():
     pdf_docs = process_pdf_file("files/common-questions-roofing.pdf")
     pdf_docsearch = create_document_search(pdf_docs, embeddings, index_name)
 
-    print(query_document(pdf_docsearch, "Do you offer free roof inspections?"))
-    print(query_document(pdf_docsearch, "How often should I get my roof inspected?"))
+    print(query_document(pdf_docsearch, "How much does a roof replacement cost?"))
 
 
 if __name__ == "__main__":
