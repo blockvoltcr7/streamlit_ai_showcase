@@ -25,7 +25,14 @@ def reset_form():
 
 
 def read_file_content(uploaded_file):
-    """Read content from uploaded file based on its type."""
+    """Read content from uploaded file based on its type.
+
+    Args:
+        uploaded_file: The file uploaded by the user.
+
+    Returns:
+        str: The text content extracted from the uploaded file.
+    """
     file_type = uploaded_file.type
 
     if file_type == "application/pdf":
@@ -41,6 +48,11 @@ def read_file_content(uploaded_file):
 
 
 def document_upload_page():
+    """Render the document upload page for users to upload documents and metadata.
+
+    This function allows users to upload documents, input metadata, and upload the
+    document to a specified Pinecone index.
+    """
     st.title("Upload Documents")
 
     # Add reset button at the top
