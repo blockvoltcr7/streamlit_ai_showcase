@@ -1,5 +1,7 @@
 import os
+
 from dotenv import load_dotenv
+
 import openai
 from openai import OpenAI  # New import
 
@@ -19,8 +21,8 @@ response = client.chat.completions.create(  # Updated API call
     model="gpt-4o-mini",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "What is a LLM?"}
-    ]
+        {"role": "user", "content": "What is a LLM?"},
+    ],
 )
 
 # Check for errors (this may not be necessary with the new client)

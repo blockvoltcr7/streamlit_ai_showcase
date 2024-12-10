@@ -1,5 +1,59 @@
 import streamlit as st
-from utils.pinecone_utils import format_stats, get_active_indexes, get_index_stats
+from utils.pinecone_utils import (
+    format_stats,
+    get_active_indexes,
+    get_index_stats,
+    query_index,
+)
+
+
+def display_search_results(results):
+    """Display search results in a formatted way."""
+    st.subheader(f"Search Results ({results['total_results']} matches)")
+
+    if not results.get("matches"):
+        st.info("No matching documents found.")
+        return
+
+    # Display query information
+    st.write(f"**Query:** {results['query']}")
+    if results.get("namespace"):
+        st.write(f"**Namespace:** {results['namespace']}")
+
+    # Display results
+    for i, match in enumerate(results["matches"], 1):
+        with st.expander(
+            f"#{i} - {match['metadata']['title']} (Score: {match['score']:.4f})"
+        ):
+            col1, col2 = st.columns([2, 1])
+
+            with col1:
+                # Main content
+                if description := match["metadata"].get("description"):
+                    st.markdown(f"**Description:**\n{description}")
+
+                if snippet := match["metadata"].get("content_snippet"):
+                    st.markdown(f"**Content Preview:**\n{snippet}")
+
+            with col2:
+                # Metadata sidebar
+                st.markdown("**Document Info:**")
+                st.write(f"Category: {match['metadata']['category']}")
+                st.write(f"Type: {match['metadata']['document_type']}")
+                st.write(f"Author: {match['metadata']['author']}")
+                st.write(f"Last Updated: {match['metadata']['date_last_updated']}")
+
+            # Tags and Keywords
+            if tags := match["metadata"].get("tags"):
+                st.markdown("**Tags:**")
+                st.write(", ".join(tags))
+
+            if keywords := match["metadata"].get("keywords"):
+                st.markdown("**Keywords:**")
+                st.write(", ".join(keywords))
+
+            # Document ID for reference
+            st.caption(f"Document ID: {match['id']}")
 
 
 def view_indexes_page():
@@ -25,7 +79,6 @@ def view_indexes_page():
                 try:
                     # Get and format index statistics
                     stats = get_index_stats(index)
-
                     formatted_stats = format_stats(stats)
 
                     # Display basic stats
@@ -56,18 +109,45 @@ def view_indexes_page():
                         st.json(stats)
 
                     # Add query interface
-                    st.subheader("Query Index")
+                    st.divider()
+                    st.subheader("🔍 Search Documents")
+
+                    # Query input
                     query = st.text_area(
-                        "Enter your query",
-                        placeholder="Type your search query here...",
+                        "Enter your question",
+                        placeholder="Type your question here to search through the documents...",
                         key=f"query_{index}",
+                        help="Enter a natural language question or search term. The system will find the most relevant documents.",
                     )
 
-                    if st.button("Search", key=f"search_{index}"):
+                    # Search options
+                    col1, col2, col3 = st.columns([1, 1, 2])
+                    with col1:
+                        top_k = st.number_input(
+                            "Number of results",
+                            min_value=1,
+                            max_value=20,
+                            value=5,
+                            key=f"top_k_{index}",
+                        )
+
+                    # Search button
+                    if st.button("🔍 Search", key=f"search_{index}", type="primary"):
                         if query:
-                            st.info("Query functionality coming soon!")
+                            try:
+                                with st.spinner("Searching documents..."):
+                                    # Perform semantic search
+                                    results = query_index(index, query, top_k=top_k)
+
+                                    # Display results
+                                    st.divider()
+                                    display_search_results(results)
+
+                            except Exception as e:
+                                st.error("Error executing semantic search")
+                                st.exception(e)
                         else:
-                            st.warning("Please enter a query first")
+                            st.warning("Please enter a question or search term first")
 
                 except Exception as e:
                     st.error(f"Error retrieving stats for {index}")

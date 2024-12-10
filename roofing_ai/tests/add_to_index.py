@@ -1,10 +1,11 @@
 import os
+import re
 from pathlib import Path
 from typing import Any, Dict, List
 
+import pdfplumber
 from dotenv import load_dotenv
 from pinecone import Pinecone
-from PyPDF2 import PdfReader
 from tqdm import tqdm
 
 from openai import OpenAI
@@ -84,11 +85,92 @@ def create_chunk_metadata(
     return chunk_metadata
 
 
-def read_pdf(file_path: str) -> str:
-    """Reads and extracts text from a PDF file."""
-    reader = PdfReader(file_path)
-    text = " ".join(page.extract_text() for page in reader.pages)
-    return text
+def read_pdf_with_pdfplumber(file_path: str) -> str:
+    """
+    Extract text from a PDF file using pdfplumber with improved handling.
+
+    Args:
+        file_path (str): Path to the PDF file
+
+    Returns:
+        str: Extracted and cleaned text
+    """
+    with pdfplumber.open(file_path) as pdf:
+        text_parts = []
+        for page in pdf.pages:
+            if text := page.extract_text():
+                # Clean the extracted text
+                cleaned_text = text.replace("\x0c", " ")  # Remove form feed characters
+                cleaned_text = " ".join(cleaned_text.split())  # Normalize whitespace
+                text_parts.append(cleaned_text)
+
+        return "\n".join(text_parts)
+
+
+def preprocess_text(text: str) -> str:
+    """
+    Clean and preprocess extracted text.
+
+    Args:
+        text (str): Raw text to process
+
+    Returns:
+        str: Cleaned and preprocessed text
+    """
+    # Replace common artifacts
+    text = text.replace("\n", " ")
+    text = text.replace("\r", " ")
+    text = text.replace("\t", " ")
+
+    # Fix spacing issues
+    text = re.sub(r"\s+", " ", text)
+
+    # Fix common PDF artifacts
+    text = re.sub(r"(?<=[a-z])-\s+(?=[a-z])", "", text)  # Fix hyphenation
+    text = re.sub(r"([a-z])- ([a-z])", r"\1\2", text)  # Fix broken words
+
+    # Clean up punctuation
+    text = re.sub(r"\s+([.,!?])", r"\1", text)
+
+    return text.strip()
+
+
+def chunk_text(text: str, max_tokens: int = 500) -> List[str]:
+    """
+    Chunk text into smaller segments, preserving sentence boundaries.
+
+    Args:
+        text (str): Text to chunk
+        max_tokens (int): Maximum tokens per chunk
+
+    Returns:
+        List[str]: List of text chunks
+    """
+    # Split into sentences
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+
+    chunks = []
+    current_chunk = []
+    current_length = 0
+
+    for sentence in sentences:
+        # Estimate token count (rough approximation)
+        sentence_length = len(sentence.split())
+
+        if current_length + sentence_length > max_tokens:
+            if current_chunk:  # Add the current chunk if it's not empty
+                chunks.append(" ".join(current_chunk))
+                current_chunk = []
+                current_length = 0
+
+        current_chunk.append(sentence)
+        current_length += sentence_length
+
+    # Add any remaining sentences
+    if current_chunk:
+        chunks.append(" ".join(current_chunk))
+
+    return chunks
 
 
 def read_file(file_path: str) -> str:
@@ -100,7 +182,7 @@ def read_file(file_path: str) -> str:
 
     # Handle different file types
     if path.suffix.lower() == ".pdf":
-        return read_pdf(file_path)
+        return read_pdf_with_pdfplumber(file_path)
     elif path.suffix.lower() in [".txt", ".md"]:
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
@@ -108,43 +190,15 @@ def read_file(file_path: str) -> str:
         raise ValueError(f"Unsupported file type: {path.suffix}")
 
 
-def chunk_text(text: str, max_tokens: int = 500) -> List[str]:
-    """
-    Chunks text into smaller segments of a specified token length.
-
-    Args:
-        text (str): The text to chunk
-        max_tokens (int): Maximum number of tokens per chunk
-
-    Returns:
-        List[str]: List of text chunks
-    """
-    # Simple word-based chunking
-    words = text.split()
-    chunks = [
-        " ".join(words[i : i + max_tokens]) for i in range(0, len(words), max_tokens)
-    ]
-    return chunks
-
-
 def get_embedding(text: str, model: str = "text-embedding-3-small") -> List[float]:
-    """
-    Generates an embedding for the given text using OpenAI.
-
-    Args:
-        text (str): Text to embed
-        model (str): OpenAI embedding model to use
-
-    Returns:
-        List[float]: The embedding vector
-    """
+    """Generate embeddings using OpenAI."""
     response = openai_client.embeddings.create(input=text, model=model)
     return response.data[0].embedding
 
 
 def add_document_to_pinecone(file_path: str, metadata: Dict[str, Any]) -> List[str]:
     """
-    Reads, chunks, embeds, and uploads a document to Pinecone with consistent metadata.
+    Process and upload a document to Pinecone with improved text handling.
 
     Args:
         file_path (str): Path to the document
@@ -156,11 +210,12 @@ def add_document_to_pinecone(file_path: str, metadata: Dict[str, Any]) -> List[s
     # Validate base metadata
     validate_metadata(metadata)
 
-    # Read the document
-    content = read_file(file_path)
+    # Read and preprocess the document
+    raw_text = read_file(file_path)
+    clean_text = preprocess_text(raw_text)
 
     # Chunk the content
-    chunks = chunk_text(content)
+    chunks = chunk_text(clean_text)
     chunk_ids = []
 
     print(f"\nProcessing document: {metadata['title']}")

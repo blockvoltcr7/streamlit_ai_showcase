@@ -17,6 +17,73 @@ def generate_embedding(text: str, model: str = "text-embedding-3-small") -> list
     return response.data[0].embedding
 
 
+def query_index(index_name: str, query_text: str, top_k: int = 5):
+    """
+    Query a Pinecone index using semantic search with OpenAI embeddings.
+
+    Args:
+        index_name (str): Name of the Pinecone index to query
+        query_text (str): The query text to search for
+        top_k (int): Number of results to return
+
+    Returns:
+        dict: Search results including matches and their metadata
+    """
+    try:
+        # Initialize Pinecone
+        pc = init_pinecone()
+        index = pc.Index(index_name)
+
+        # Generate query embedding using OpenAI
+        xq = generate_embedding(query_text)
+
+        # Query Pinecone index with the embedding
+        results = index.query(
+            vector=xq,
+            top_k=top_k,
+            include_values=True,
+            include_metadata=True,
+            namespace="",  # Use default namespace
+        )
+
+        # Format results for display
+        formatted_results = []
+        for match in results.matches:
+            # Extract and format the metadata
+            metadata = match.metadata or {}
+
+            # Format the result
+            formatted_match = {
+                "id": match.id,
+                "score": float(match.score),
+                "metadata": {
+                    "title": metadata.get("title", "Untitled"),
+                    "description": metadata.get(
+                        "description", "No description available"
+                    ),
+                    "category": metadata.get("category", "Uncategorized"),
+                    "tags": metadata.get("tags", []),
+                    "keywords": metadata.get("keywords", []),
+                    # Include other metadata fields
+                    "content_snippet": metadata.get("content_snippet", ""),
+                    "document_type": metadata.get("document_type", ""),
+                    "date_last_updated": metadata.get("date_last_updated", ""),
+                    "author": metadata.get("author", "Unknown"),
+                },
+            }
+            formatted_results.append(formatted_match)
+
+        return {
+            "query": query_text,
+            "matches": formatted_results,
+            "namespace": "",  # Include namespace info
+            "total_results": len(formatted_results),
+        }
+
+    except Exception as e:
+        raise Exception(f"Error querying index: {str(e)}")
+
+
 def init_pinecone():
     load_dotenv()
     api_key = os.getenv("PINECONE_API_KEY")
