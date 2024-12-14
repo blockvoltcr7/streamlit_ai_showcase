@@ -47,24 +47,57 @@ def view_indexes_page():
         with search_tab:
             # Select index and namespace
             selected_index = st.selectbox("Select Index", indexes)
-            namespace = st.text_input("Namespace (optional)")
 
-            # Search interface
-            query = st.text_area("Enter your search query")
-            top_k = st.slider("Number of results", 1, 20, 5)
+            # Get available namespaces for the selected index
+            try:
+                stats = get_index_stats(selected_index)
+                available_namespaces = list(stats.namespaces.keys())
+                # Replace empty namespace with "default" for display
+                available_namespaces = [
+                    "default" if ns == "" else ns for ns in available_namespaces
+                ]
 
-            if st.button("Search", type="primary"):
-                if query:
-                    try:
-                        with st.spinner("Searching..."):
-                            results = query_index(
-                                selected_index, query, namespace, top_k
-                            )
-                            display_search_results(results)
-                    except Exception as e:
-                        st.error(f"Search error: {str(e)}")
+                if available_namespaces:
+                    # Show dropdown if namespaces exist
+                    namespace = st.selectbox(
+                        "Select Namespace",
+                        options=available_namespaces,
+                        help="Select a namespace to search within",
+                        key="search_namespace",
+                    )
+                    # Convert "default" back to empty string for Pinecone
+                    namespace = "" if namespace == "default" else namespace
                 else:
-                    st.warning("Please enter a search query")
+                    # Show input field if no namespaces exist
+                    namespace = st.text_input(
+                        "Create New Namespace",
+                        help="No existing namespaces found. Please create a new one.",
+                        key="new_namespace",
+                    )
+
+                # Search interface
+                query = st.text_area("Enter your search query")
+                top_k = st.slider("Number of results", 1, 20, 5)
+
+                # Only show search button if namespace is provided
+                if namespace.strip():
+                    if st.button("Search", type="primary"):
+                        if query:
+                            try:
+                                with st.spinner("Searching..."):
+                                    results = query_index(
+                                        selected_index, query, namespace, top_k
+                                    )
+                                    display_search_results(results)
+                            except Exception as e:
+                                st.error(f"Search error: {str(e)}")
+                        else:
+                            st.warning("Please enter a search query")
+                else:
+                    st.error("Please enter a namespace before searching")
+
+            except Exception as e:
+                st.error(f"Error fetching namespaces: {str(e)}")
 
         with manage_tab:
             # Namespace management

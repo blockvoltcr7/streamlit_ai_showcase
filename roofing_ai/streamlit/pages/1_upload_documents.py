@@ -1,6 +1,7 @@
 import streamlit as st
 from utils.pinecone_utils import (
     get_active_indexes,
+    get_index_stats,
     process_document,
     upload_to_pinecone,
 )
@@ -46,13 +47,6 @@ def get_metadata():
 def upload_documents_page():
     st.title("Upload Documents")
 
-    # Reset button
-    col1, col2 = st.columns([6, 1])
-    with col2:
-        if st.button("Reset Form"):
-            reset_form()
-            st.rerun()
-
     # Get active indexes
     try:
         indexes = get_active_indexes()
@@ -79,55 +73,104 @@ def upload_documents_page():
             st.write(f"**File Type:** {uploaded_file.type}")
         with col2:
             st.write(f"**File Size:** {uploaded_file.size / 1024:.2f} KB")
+            # Add reset button here for when a file is uploaded
+            if st.button("Clear Form", type="secondary"):
+                reset_form()
+                st.rerun()
 
         # Select index and namespace
         selected_index = st.selectbox("Select Index", indexes)
-        namespace = st.text_input(
-            "Namespace", help="Optional: Enter a namespace to organize your documents"
-        )
 
-        # Get metadata
-        st.subheader("Document Metadata")
-        metadata = get_metadata()
+        # Get available namespaces for the selected index
+        try:
+            stats = get_index_stats(selected_index)
+            available_namespaces = list(stats.namespaces.keys())
+            # Replace empty namespace with "default" for display
+            available_namespaces = [
+                "default" if ns == "" else ns for ns in available_namespaces
+            ]
 
-        # Upload button
-        if st.button("Upload Document"):
-            try:
-                with st.spinner("Processing document..."):
-                    # Process document
-                    chunks = process_document(uploaded_file, metadata, namespace)
-
-                    # Show chunk information
-                    st.info(f"Document split into {len(chunks)} chunks")
-
-                    with st.spinner("Uploading to Pinecone..."):
-                        # Upload to Pinecone
-                        vectorstore = upload_to_pinecone(
-                            chunks, selected_index, namespace
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                if available_namespaces:
+                    use_existing = st.checkbox("Use existing namespace", value=True)
+                    if use_existing:
+                        # Show dropdown if namespaces exist
+                        namespace = st.selectbox(
+                            "Select Namespace",
+                            options=available_namespaces,
+                            help="Select a namespace to upload to",
+                            key="upload_namespace",
                         )
-
-                    st.success("Document uploaded successfully!")
-
-                    # Show document details
-                    with st.expander("Document Details"):
-                        st.json(
-                            {
-                                "file_name": uploaded_file.name,
-                                "chunks": len(chunks),
-                                "index": selected_index,
-                                "namespace": namespace or "default",
-                                "metadata": metadata,
-                            }
+                        # Convert "default" back to empty string for Pinecone
+                        namespace = "" if namespace == "default" else namespace
+                    else:
+                        # Show input field for new namespace
+                        namespace = st.text_input(
+                            "Create New Namespace",
+                            help="Enter a name for the new namespace",
+                            key="new_namespace",
                         )
+                else:
+                    # Show input field if no namespaces exist
+                    namespace = st.text_input(
+                        "Create New Namespace",
+                        help="No existing namespaces found. Please create a new one.",
+                        key="new_namespace",
+                    )
 
-                    # Show upload another button
-                    if st.button("Upload Another Document"):
-                        reset_form()
-                        st.rerun()
+            # Get metadata
+            st.subheader("Document Metadata")
+            metadata = get_metadata()
 
-            except Exception as e:
-                st.error(f"Error uploading document: {str(e)}")
-                st.exception(e)  # Show detailed error in development
+            # Upload button - only show if namespace is provided
+            if namespace.strip():
+                if st.button("Upload Document"):
+                    try:
+                        with st.spinner("Processing document..."):
+                            # Process document
+                            chunks = process_document(
+                                uploaded_file, metadata, namespace
+                            )
+
+                            # Show chunk information
+                            st.info(f"Document split into {len(chunks)} chunks")
+
+                            with st.spinner("Uploading to Pinecone..."):
+                                # Upload to Pinecone
+                                vectorstore = upload_to_pinecone(
+                                    chunks, selected_index, namespace
+                                )
+
+                            st.success("Document uploaded successfully!")
+
+                            # Show document details
+                            with st.expander("Document Details"):
+                                st.json(
+                                    {
+                                        "file_name": uploaded_file.name,
+                                        "chunks": len(chunks),
+                                        "index": selected_index,
+                                        "namespace": (
+                                            "default" if namespace == "" else namespace
+                                        ),
+                                        "metadata": metadata,
+                                    }
+                                )
+
+                            # Show upload another button
+                            if st.button("Upload Another Document"):
+                                reset_form()
+                                st.rerun()
+
+                    except Exception as e:
+                        st.error(f"Error uploading document: {str(e)}")
+                        st.exception(e)  # Show detailed error in development
+            else:
+                st.error("Please enter a namespace before uploading")
+
+        except Exception as e:
+            st.error(f"Error fetching namespaces: {str(e)}")
 
 
 if __name__ == "__main__":

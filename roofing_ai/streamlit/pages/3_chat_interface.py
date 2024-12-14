@@ -6,7 +6,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI  # Use this for chat models
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
-from utils.pinecone_utils import get_active_indexes
+from utils.pinecone_utils import get_active_indexes, get_index_stats
 
 
 def init_session_state():
@@ -20,9 +20,9 @@ def query_vector_store(vector_store, query: str, metadata_filter: Dict = None):
     try:
         # Initialize OpenAI chat model with specific parameters
         llm = ChatOpenAI(
-            temperature=0.7,  # Add some creativity
+            temperature=0.4,  # Add some creativity 0.0 - 1.0
             openai_api_key=os.getenv("OPENAI_API_KEY"),
-            model="gpt-4o",  # Use a valid chat model
+            model="gpt-4o-mini",
         )
 
         # Get relevant documents with more context
@@ -93,20 +93,40 @@ def chat_interface_page():
             st.header("Settings")
             selected_index = st.selectbox("Select Index", indexes)
 
-            # Make namespace optional with a checkbox
-            use_namespace = st.checkbox("Filter by Namespace")
-            namespace = None
-            if use_namespace:
-                namespace = st.text_input(
-                    "Namespace", help="Filter documents by namespace"
+            # Get available namespaces for the selected index
+            try:
+                stats = get_index_stats(selected_index)
+                available_namespaces = list(stats.namespaces.keys())
+
+                # Replace empty namespace with "default" for display
+                available_namespaces = [
+                    "default" if ns == "" else ns for ns in available_namespaces
+                ]
+
+                if not available_namespaces:
+                    st.warning("No namespaces found in this index")
+                    return
+
+                # Namespace selection dropdown
+                namespace = st.selectbox(
+                    "Select Namespace",
+                    options=available_namespaces,
+                    help="Select a namespace to chat with",
                 )
+
+                # Convert "default" back to empty string for Pinecone
+                namespace = "" if namespace == "default" else namespace
+
+            except Exception as e:
+                st.error(f"Error fetching namespaces: {str(e)}")
+                return
 
         # Initialize vector store
         embeddings = OpenAIEmbeddings()
         vector_store = Pinecone.from_existing_index(
             index_name=selected_index,
             embedding=embeddings,
-            namespace=namespace,  # Will be None by default
+            namespace=namespace,
         )
 
         # Render chat interface

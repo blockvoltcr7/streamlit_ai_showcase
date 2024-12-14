@@ -130,7 +130,7 @@ def create_document_search(texts, embeddings, index_name):
 
     # Create vector store with documents and metadata
     return LangchainPinecone.from_documents(
-        documents, embeddings, index_name=index_name
+        documents, embeddings, index_name=index_name, namespace="default"
     )
 
 
