@@ -15,11 +15,17 @@ Query: {query_str}
 Answer: \
 """
 
+
 def format_context_fn(**kwargs):
     # format context with bullet points
-    context_list = kwargs["context_str"].split("\n\n")   # split context into list of paragraphs
-    fmtted_context = "\n\n".join([f"- {c}" for c in context_list])  # create bullet points from each paragraph
+    context_list = kwargs["context_str"].split(
+        "\n\n"
+    )  # split context into list of paragraphs
+    fmtted_context = "\n\n".join(
+        [f"- {c}" for c in context_list]
+    )  # create bullet points from each paragraph
     return fmtted_context
+
 
 # Create a prompt template with the template var mappings
 prompt_tmpl = PromptTemplate(

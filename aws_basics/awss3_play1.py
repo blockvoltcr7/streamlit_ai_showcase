@@ -11,6 +11,59 @@ st.set_page_config(page_title="S3 Bucket Manager", page_icon="🪣", layout="wid
 # Constants
 API_BASE_URL = "http://127.0.0.1:8000"  # Update with your actual API base URL
 
+"""
+S3 Bucket Manager Application
+
+This application provides a user interface for managing Amazon S3 buckets. 
+It allows users to perform various operations such as listing buckets, 
+creating new buckets, viewing bucket details, and creating buckets with folders.
+
+Modules:
+- json: For formatting JSON data.
+- time: For handling time-related functions (currently unused).
+- typing: For type hinting in function signatures.
+- requests: For making HTTP requests to the API.
+- streamlit: For creating the web application interface.
+
+Functions:
+1. make_api_request(endpoint: str, method: str = "GET", params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+   Makes API requests to the specified endpoint using the given HTTP method and parameters.
+   Returns the JSON response as a dictionary.
+
+2. format_json(data: Dict[str, Any]) -> str:
+   Formats the given dictionary into a pretty-printed JSON string.
+
+3. check_api_status() -> bool:
+   Checks if the API is accessible by sending a GET request to the /buckets/ endpoint.
+   Returns True if the API is reachable, otherwise returns False.
+
+4. render_sidebar():
+   Renders the sidebar of the application, displaying the API status and additional information.
+
+5. list_buckets_tab():
+   Renders the tab for listing all S3 buckets. 
+   Provides a button to refresh the bucket list and displays the retrieved buckets.
+
+6. create_bucket_tab():
+   Renders the tab for creating a new S3 bucket. 
+   Allows users to input a bucket name and select a region, then submits the data to create the bucket.
+
+7. bucket_details_tab():
+   Renders the tab for viewing details of a specific S3 bucket. 
+   Users can input a bucket name to retrieve and display its details.
+
+8. create_bucket_with_folder_tab():
+   Renders the tab for creating a new S3 bucket along with a folder. 
+   Users can input a bucket name, select a region, and specify a folder name.
+
+9. main():
+   The main function that initializes the Streamlit application, 
+   renders the sidebar, and sets up the main content tabs.
+
+Usage:
+Run this script to start the S3 Bucket Manager application. 
+Ensure that the API is running and accessible at the specified API_BASE_URL.
+"""
 
 # Helper functions
 def make_api_request(
