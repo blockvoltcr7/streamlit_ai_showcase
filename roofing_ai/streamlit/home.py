@@ -3,7 +3,11 @@ import os
 from pathlib import Path
 
 import streamlit as st
+from dotenv import load_dotenv
 from utils.pinecone_utils import init_pinecone
+
+# Load environment variables
+load_dotenv()
 
 
 def main():

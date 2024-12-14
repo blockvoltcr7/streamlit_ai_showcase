@@ -2,11 +2,15 @@ import os
 from typing import Dict
 
 import streamlit as st
+from dotenv import load_dotenv
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI  # Use this for chat models
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
 from utils.pinecone_utils import get_active_indexes, get_index_stats
+
+# Load environment variables
+load_dotenv()
 
 
 def init_session_state():

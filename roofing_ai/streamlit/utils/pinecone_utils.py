@@ -14,10 +14,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Pinecone
 from pinecone import Pinecone as PineconeClient
 
+# Load environment variables
+load_dotenv()
+
 
 def init_pinecone():
     """Initialize Pinecone client."""
-    load_dotenv()
     api_key = os.getenv("PINECONE_API_KEY")
     if not api_key:
         raise ValueError("PINECONE_API_KEY not found in environment variables")
