@@ -1,6 +1,6 @@
 import streamlit as st
 from utils.pinecone_utils import (
-    format_stats,
+    delete_namespace,
     get_active_indexes,
     get_index_stats,
     query_index,
@@ -8,154 +8,187 @@ from utils.pinecone_utils import (
 
 
 def display_search_results(results):
-    """Display search results in a formatted way."""
+    """Display search results."""
     st.subheader(f"Search Results ({results['total_results']} matches)")
 
-    if not results.get("matches"):
+    if not results["matches"]:
         st.info("No matching documents found.")
         return
 
-    # Display query information
-    st.write(f"**Query:** {results['query']}")
-    if results.get("namespace"):
-        st.write(f"**Namespace:** {results['namespace']}")
-
-    # Display results
     for i, match in enumerate(results["matches"], 1):
-        with st.expander(
-            f"#{i} - {match['metadata']['title']} (Score: {match['score']:.4f})"
-        ):
-            col1, col2 = st.columns([2, 1])
+        with st.expander(f"Result #{i} - {match['metadata'].get('title', 'Untitled')}"):
+            st.write("**Content:**")
+            st.write(match["content"])
 
-            with col1:
-                # Main content
-                if description := match["metadata"].get("description"):
-                    st.markdown(f"**Description:**\n{description}")
-
-                if snippet := match["metadata"].get("content_snippet"):
-                    st.markdown(f"**Content Preview:**\n{snippet}")
-
-            with col2:
-                # Metadata sidebar
-                st.markdown("**Document Info:**")
-                st.write(f"Category: {match['metadata']['category']}")
-                st.write(f"Type: {match['metadata']['document_type']}")
-                st.write(f"Author: {match['metadata']['author']}")
-                st.write(f"Last Updated: {match['metadata']['date_last_updated']}")
-
-            # Tags and Keywords
-            if tags := match["metadata"].get("tags"):
-                st.markdown("**Tags:**")
-                st.write(", ".join(tags))
-
-            if keywords := match["metadata"].get("keywords"):
-                st.markdown("**Keywords:**")
-                st.write(", ".join(keywords))
-
-            # Document ID for reference
-            st.caption(f"Document ID: {match['id']}")
+            st.write("**Metadata:**")
+            metadata = match["metadata"]
+            cols = st.columns(2)
+            with cols[0]:
+                st.write(f"Category: {metadata.get('category', 'N/A')}")
+                st.write(f"Author: {metadata.get('author', 'N/A')}")
+            with cols[1]:
+                st.write(f"Date: {metadata.get('date_created', 'N/A')}")
+                if tags := metadata.get("tags"):
+                    st.write(f"Tags: {', '.join(tags)}")
 
 
 def view_indexes_page():
-    st.title("View Indexes")
+    st.title("View & Manage Indexes")
 
     try:
         indexes = get_active_indexes()
-
         if not indexes:
             st.warning("No active indexes found")
             return
 
-        # Display total number of indexes
-        st.subheader(
-            f"Found {len(indexes)} active {'index' if len(indexes) == 1 else 'indexes'}"
-        )
+        # Create tabs for Search and Management
+        search_tab, manage_tab = st.tabs(["Search Documents", "Manage Namespaces"])
 
-        # Create tabs for each index
-        tabs = st.tabs(indexes)
+        with search_tab:
+            # Select index and namespace
+            selected_index = st.selectbox("Select Index", indexes)
+            namespace = st.text_input("Namespace (optional)")
 
-        for index, tab in zip(indexes, tabs):
-            with tab:
-                try:
-                    # Get and format index statistics
-                    stats = get_index_stats(index)
-                    formatted_stats = format_stats(stats)
+            # Search interface
+            query = st.text_area("Enter your search query")
+            top_k = st.slider("Number of results", 1, 20, 5)
 
-                    # Display basic stats
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        st.metric(
-                            "Total Vectors", formatted_stats.get("Total Vectors", 0)
-                        )
-                    with col2:
-                        st.metric("Dimension", formatted_stats.get("Dimension", 0))
-                    with col3:
-                        st.metric(
-                            "Index Fullness",
-                            formatted_stats.get("Index Fullness", "0%"),
-                        )
-
-                    # Display namespaces if any
-                    if formatted_stats.get("Namespaces"):
-                        st.subheader("Namespaces")
-                        for ns_name, ns_data in formatted_stats["Namespaces"].items():
-                            st.metric(
-                                f"Namespace: {ns_name}",
-                                f"Vectors: {ns_data['Vector Count']}",
+            if st.button("Search", type="primary"):
+                if query:
+                    try:
+                        with st.spinner("Searching..."):
+                            results = query_index(
+                                selected_index, query, namespace, top_k
                             )
+                            display_search_results(results)
+                    except Exception as e:
+                        st.error(f"Search error: {str(e)}")
+                else:
+                    st.warning("Please enter a search query")
 
-                    # Display raw stats in expander
-                    with st.expander("Raw Statistics"):
-                        st.json(stats)
+        with manage_tab:
+            # Namespace management
+            st.subheader("Manage Namespaces")
 
-                    # Add query interface
-                    st.divider()
-                    st.subheader("🔍 Search Documents")
+            # Select index
+            selected_index = st.selectbox("Select Index", indexes, key="manage_index")
 
-                    # Query input
-                    query = st.text_area(
-                        "Enter your question",
-                        placeholder="Type your question here to search through the documents...",
-                        key=f"query_{index}",
-                        help="Enter a natural language question or search term. The system will find the most relevant documents.",
+            # Show index stats
+            try:
+                stats = get_index_stats(selected_index)
+                st.write("### Index Statistics")
+
+                # Create metrics row
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric(
+                        "Total Vectors",
+                        f"{stats.total_vector_count:,}",
+                        help="Total number of vectors in the index",
+                    )
+                with col2:
+                    st.metric(
+                        "Dimension",
+                        stats.dimension,
+                        help="Vector dimension size",
+                    )
+                with col3:
+                    st.metric(
+                        "Index Fullness",
+                        f"{stats.index_fullness:.1%}",
+                        help="Percentage of index capacity used",
                     )
 
-                    # Search options
-                    col1, col2, col3 = st.columns([1, 1, 2])
-                    with col1:
-                        top_k = st.number_input(
-                            "Number of results",
-                            min_value=1,
-                            max_value=20,
-                            value=5,
-                            key=f"top_k_{index}",
-                        )
+                # Display namespace information
+                if stats.namespaces:
+                    st.write("#### Namespace Distribution")
 
-                    # Search button
-                    if st.button("🔍 Search", key=f"search_{index}", type="primary"):
-                        if query:
+                    # Create a bar chart for namespace vector counts
+                    namespace_data = {
+                        ns: ns_stats.vector_count
+                        for ns, ns_stats in stats.namespaces.items()
+                    }
+
+                    # Handle empty namespace key
+                    if "" in namespace_data:
+                        namespace_data["default"] = namespace_data.pop("")
+
+                    # Create chart data
+                    chart_data = {
+                        "Namespace": list(namespace_data.keys()),
+                        "Vectors": list(namespace_data.values()),
+                    }
+
+                    # Display bar chart
+                    st.bar_chart(
+                        chart_data, x="Namespace", y="Vectors", use_container_width=True
+                    )
+
+                    # Display detailed namespace information in an expander
+                    with st.expander("Detailed Namespace Information"):
+                        # Create a table for namespace details
+                        namespace_table = []
+                        for ns, ns_stats in stats.namespaces.items():
+                            namespace_table.append(
+                                {
+                                    "Namespace": "default" if ns == "" else ns,
+                                    "Vector Count": f"{ns_stats.vector_count:,}",
+                                    "Percentage": f"{ns_stats.vector_count / stats.total_vector_count:.1%}",
+                                }
+                            )
+
+                        st.table(namespace_table)
+                else:
+                    st.info("No namespaces found in this index")
+
+                # Show raw stats in expander
+                with st.expander("Raw Statistics"):
+                    formatted_stats = {
+                        "total_vector_count": stats.total_vector_count,
+                        "dimension": stats.dimension,
+                        "index_fullness": stats.index_fullness,
+                        "namespaces": {
+                            ns: {"vector_count": ns_stats.vector_count}
+                            for ns, ns_stats in stats.namespaces.items()
+                        },
+                    }
+                    st.json(formatted_stats)
+
+            except Exception as e:
+                st.error(f"Error retrieving index statistics: {str(e)}")
+
+            # Delete namespace
+            st.subheader("Delete Namespace")
+            namespace_to_delete = st.text_input(
+                "Enter namespace to delete",
+                help="Warning: This will delete all documents in the namespace",
+            )
+
+            # Changed button type from "danger" to "primary" and added warning color styling
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                confirm = st.checkbox("I understand this action cannot be undone")
+            with col2:
+                if st.button(
+                    "Delete Namespace", type="primary", use_container_width=True
+                ):
+                    if namespace_to_delete:
+                        if confirm:
                             try:
-                                with st.spinner("Searching documents..."):
-                                    # Perform semantic search
-                                    results = query_index(index, query, top_k=top_k)
-
-                                    # Display results
-                                    st.divider()
-                                    display_search_results(results)
-
+                                delete_namespace(selected_index, namespace_to_delete)
+                                st.success(
+                                    f"Namespace '{namespace_to_delete}' deleted successfully"
+                                )
+                                st.rerun()
                             except Exception as e:
-                                st.error("Error executing semantic search")
-                                st.exception(e)
+                                st.error(f"Error deleting namespace: {str(e)}")
                         else:
-                            st.warning("Please enter a question or search term first")
-
-                except Exception as e:
-                    st.error(f"Error retrieving stats for {index}")
-                    st.exception(e)
+                            st.warning("Please confirm that you understand this action")
+                    else:
+                        st.warning("Please enter a namespace name")
 
     except Exception as e:
-        st.error("Error connecting to Pinecone")
-        st.exception(e)
+        st.error(f"Error: {str(e)}")
 
 
 if __name__ == "__main__":

@@ -1,155 +1,146 @@
-import json
 import os
-from pathlib import Path
+import tempfile
+from datetime import datetime
+from typing import Dict, List
 
 from dotenv import load_dotenv
-from pinecone import Pinecone
-
-from openai import OpenAI
-
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-
-def generate_embedding(text: str, model: str = "text-embedding-3-small") -> list:
-    """Generate embeddings using OpenAI."""
-    response = client.embeddings.create(input=text, model=model)
-    return response.data[0].embedding
-
-
-def query_index(index_name: str, query_text: str, top_k: int = 5):
-    """
-    Query a Pinecone index using semantic search with OpenAI embeddings.
-
-    Args:
-        index_name (str): Name of the Pinecone index to query
-        query_text (str): The query text to search for
-        top_k (int): Number of results to return
-
-    Returns:
-        dict: Search results including matches and their metadata
-    """
-    try:
-        # Initialize Pinecone
-        pc = init_pinecone()
-        index = pc.Index(index_name)
-
-        # Generate query embedding using OpenAI
-        xq = generate_embedding(query_text)
-
-        # Query Pinecone index with the embedding
-        results = index.query(
-            vector=xq,
-            top_k=top_k,
-            include_values=True,
-            include_metadata=True,
-            namespace="",  # Use default namespace
-        )
-
-        # Format results for display
-        formatted_results = []
-        for match in results.matches:
-            # Extract and format the metadata
-            metadata = match.metadata or {}
-
-            # Format the result
-            formatted_match = {
-                "id": match.id,
-                "score": float(match.score),
-                "metadata": {
-                    "title": metadata.get("title", "Untitled"),
-                    "description": metadata.get(
-                        "description", "No description available"
-                    ),
-                    "category": metadata.get("category", "Uncategorized"),
-                    "tags": metadata.get("tags", []),
-                    "keywords": metadata.get("keywords", []),
-                    # Include other metadata fields
-                    "content_snippet": metadata.get("content_snippet", ""),
-                    "document_type": metadata.get("document_type", ""),
-                    "date_last_updated": metadata.get("date_last_updated", ""),
-                    "author": metadata.get("author", "Unknown"),
-                },
-            }
-            formatted_results.append(formatted_match)
-
-        return {
-            "query": query_text,
-            "matches": formatted_results,
-            "namespace": "",  # Include namespace info
-            "total_results": len(formatted_results),
-        }
-
-    except Exception as e:
-        raise Exception(f"Error querying index: {str(e)}")
+from langchain.document_loaders import (
+    PyPDFLoader,
+    TextLoader,
+    UnstructuredMarkdownLoader,
+)
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import Pinecone
+from pinecone import Pinecone as PineconeClient
 
 
 def init_pinecone():
+    """Initialize Pinecone client."""
     load_dotenv()
     api_key = os.getenv("PINECONE_API_KEY")
     if not api_key:
         raise ValueError("PINECONE_API_KEY not found in environment variables")
-    return Pinecone(api_key=api_key)
+    return PineconeClient(api_key=api_key)
 
 
 def get_active_indexes():
-    """Get a list of active Pinecone index names."""
+    """Get list of active Pinecone indexes."""
     pc = init_pinecone()
-    indexes = pc.list_indexes()
-    # Convert to list of strings (index names)
-    return [index.name for index in indexes]
+    return [index.name for index in pc.list_indexes()]
 
 
-def get_index_stats(index_name):
-    """Get statistics for a Pinecone index and convert to a dictionary."""
-    pc = init_pinecone()
-    index = pc.Index(index_name)
-    stats = index.describe_index_stats()
+def process_document(uploaded_file, metadata: Dict, namespace: str = ""):
+    """Process uploaded document based on file type."""
+    try:
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(
+            delete=False, suffix=uploaded_file.name
+        ) as tmp_file:
+            # Write uploaded file content to temp file
+            tmp_file.write(uploaded_file.getvalue())
+            temp_path = tmp_file.name
 
-    # Convert Pinecone response to dictionary
-    return {
-        "total_vector_count": stats.total_vector_count,
-        "dimension": stats.dimension,
-        "index_fullness": stats.index_fullness,
-        "namespaces": {
-            ns: {"vector_count": ns_stats.vector_count}
-            for ns, ns_stats in stats.namespaces.items()
-        },
-    }
+        # Select appropriate loader based on file type
+        file_extension = uploaded_file.name.split(".")[-1].lower()
+
+        if file_extension == "pdf":
+            loader = PyPDFLoader(temp_path)
+        elif file_extension == "md":
+            loader = UnstructuredMarkdownLoader(temp_path)
+        elif file_extension == "txt":
+            loader = TextLoader(temp_path)
+        else:
+            raise ValueError(f"Unsupported file type: {file_extension}")
+
+        # Load documents
+        documents = loader.load()
+
+        # Add metadata to documents
+        for doc in documents:
+            doc.metadata.update(metadata)
+            doc.metadata.update(
+                {
+                    "timestamp": datetime.now().isoformat(),
+                    "file_type": file_extension,
+                    "source": uploaded_file.name,
+                }
+            )
+
+        # Split documents
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200,
+            length_function=len,
+            separators=["\n\n", "\n", " ", ""],
+        )
+        chunks = text_splitter.split_documents(documents)
+
+        # Cleanup temporary file
+        os.remove(temp_path)
+        return chunks
+
+    except Exception as e:
+        if "temp_path" in locals() and os.path.exists(temp_path):
+            os.remove(temp_path)
+        raise Exception(f"Error processing document: {str(e)}")
 
 
-def upload_document(index_name, content, metadata, file_name):
-    pc = init_pinecone()
-    index = pc.Index(index_name)
-
-    # Generate embedding (implement with your preferred embedding method)
-    embedding = generate_embedding(content)
-
-    # Create unique document ID
-    doc_id = f"{file_name}_{metadata['date_last_updated']}"
-
-    # Upload to Pinecone
-    index.upsert([(doc_id, embedding, metadata)])
+def upload_to_pinecone(chunks: List, index_name: str, namespace: str = ""):
+    """Upload document chunks to Pinecone."""
+    try:
+        embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+        return Pinecone.from_documents(
+            chunks, embeddings, index_name=index_name, namespace=namespace
+        )
+    except Exception as e:
+        raise Exception(f"Error uploading to Pinecone: {str(e)}")
 
 
-def format_stats(stats):
-    """Format index statistics for display."""
-    if not stats:
-        return {}
+def delete_namespace(index_name: str, namespace: str):
+    """Delete all vectors in a namespace."""
+    try:
+        pc = init_pinecone()
+        index = pc.Index(index_name)
+        index.delete(delete_all=True, namespace=namespace)
+        return True
+    except Exception as e:
+        raise Exception(f"Error deleting namespace: {str(e)}")
 
-    # Stats should already be a dictionary from get_index_stats
-    formatted = {
-        "Total Vectors": stats.get("total_vector_count", 0),
-        "Dimension": stats.get("dimension", 0),
-        "Index Fullness": f"{stats.get('index_fullness', 0):.2%}",
-        "Namespaces": {},
-    }
 
-    # Format namespace information
-    namespaces = stats.get("namespaces", {})
-    for ns_name, ns_data in namespaces.items():
-        formatted["Namespaces"][ns_name] = {
-            "Vector Count": ns_data.get("vector_count", 0)
+def get_index_stats(index_name: str):
+    """Get statistics for a Pinecone index."""
+    try:
+        pc = init_pinecone()
+        index = pc.Index(index_name)
+        stats = index.describe_index_stats()
+        return stats
+    except Exception as e:
+        raise Exception(f"Error getting index stats: {str(e)}")
+
+
+def query_index(index_name: str, query: str, namespace: str = "", top_k: int = 5):
+    """Query Pinecone index."""
+    try:
+        embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+        vectorstore = Pinecone.from_existing_index(
+            index_name=index_name, embedding=embeddings, namespace=namespace
+        )
+
+        docs = vectorstore.similarity_search(query, k=top_k, namespace=namespace)
+
+        return {
+            "query": query,
+            "matches": [
+                {
+                    "content": doc.page_content,
+                    "metadata": doc.metadata,
+                    "score": getattr(doc, "score", None),
+                }
+                for doc in docs
+            ],
+            "namespace": namespace,
+            "total_results": len(docs),
         }
-
-    return formatted
+    except Exception as e:
+        raise Exception(f"Error querying index: {str(e)}")
