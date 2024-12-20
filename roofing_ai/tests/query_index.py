@@ -18,14 +18,12 @@ from llama_index.llms.openai import OpenAI
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
+# Load environment variables
+load_dotenv()
+
 
 def main():
     """Main function to demonstrate querying the Pinecone index."""
-    # Load environment variables from the root .env file
-    root_dir = Path(__file__).parent.parent
-    env_path = root_dir / ".env"
-    load_dotenv(dotenv_path=env_path)
-
     # Get API keys
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
     openai_api_key = os.getenv("OPENAI_API_KEY")

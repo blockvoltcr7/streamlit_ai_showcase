@@ -2,7 +2,6 @@ import os
 import re
 from datetime import datetime
 
-import langchain
 from dotenv import load_dotenv
 from langchain.chains.question_answering import load_qa_chain
 from langchain.document_loaders import (

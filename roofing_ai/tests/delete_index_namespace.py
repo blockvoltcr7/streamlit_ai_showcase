@@ -4,11 +4,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pinecone import Pinecone
 
+# Load environment variables
+load_dotenv()
+
 
 def init_pinecone():
-
-    # Load environment variables
-    load_dotenv()
 
     # Get Pinecone API key
     api_key = os.getenv("PINECONE_API_KEY")
