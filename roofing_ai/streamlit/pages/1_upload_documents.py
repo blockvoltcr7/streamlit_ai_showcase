@@ -1,10 +1,14 @@
 import streamlit as st
+from dotenv import load_dotenv
 from utils.pinecone_utils import (
     get_active_indexes,
     get_index_stats,
     process_document,
     upload_to_pinecone,
 )
+
+# Load environment variables
+load_dotenv()
 
 
 def reset_form():

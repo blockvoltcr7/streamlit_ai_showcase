@@ -1,10 +1,14 @@
 import streamlit as st
+from dotenv import load_dotenv
 from utils.pinecone_utils import (
     delete_namespace,
     get_active_indexes,
     get_index_stats,
     query_index,
 )
+
+# Load environment variables
+load_dotenv()
 
 
 def display_search_results(results):
@@ -105,6 +109,11 @@ def view_indexes_page():
 
             # Select index
             selected_index = st.selectbox("Select Index", indexes, key="manage_index")
+
+            # Add a refresh button to update index stats
+            if st.button("Refresh Index Stats"):
+                # Use st.rerun() to refresh the page
+                st.rerun()
 
             # Show index stats
             try:
