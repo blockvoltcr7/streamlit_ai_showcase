@@ -4,6 +4,9 @@
 import base64
 import os
 import time
+import requests
+import io
+import tempfile
 from google import genai
 from google.genai import types
 
@@ -12,53 +15,70 @@ def generate():
         api_key=os.environ.get("GEMINI_API_KEY"),
     )
 
-    # Upload the video file
-    print("Uploading video file...")
-    files = [
-        client.files.upload(file="rflkt-2348972.mp4"),
-    ]
+    video_url = "https://tpfitionfrabfzlcapum.supabase.co/storage/v1/object/public/json2videoassets//rflkt-2348972.mp4"
+    video_filename = video_url.split("/")[-1] # Extract filename from URL
+
+    # Download the video from the URL
+    print(f"Downloading video from {video_url}...")
+    response = requests.get(video_url, stream=True)
+    response.raise_for_status() # Raise an exception for bad status codes
+    video_bytes = response.content # Read the content into memory
+
+    temp_file = None
+    try:
+        # Create a temporary file and write the video content to it
+        temp_file = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
+        temp_file.write(video_bytes)
+        temp_file_path = temp_file.name
+        temp_file.close() # Close the file handle so the API can read it
+        print(f"Video saved temporarily to: {temp_file_path}")
+
+        # Upload the temporary video file
+        print(f"Uploading temporary video file {temp_file_path}...")
+        files = [
+            client.files.upload(file=temp_file_path), # Upload using the file path
+        ]
     
-    # Check the file's state and wait until it's ACTIVE
-    uploaded_file = files[0] # Get the uploaded file object
-    print(f"File uploaded with name: {uploaded_file.name}. Checking file state...")
+        # Check the file's state and wait until it's ACTIVE
+        uploaded_file = files[0] # Get the uploaded file object
+        print(f"File uploaded with name: {uploaded_file.name}. Checking file state...")
 
-    max_attempts = 30  # Maximum number of attempts to check (30 * 5s = 150s)
-    attempt = 1
-    while attempt <= max_attempts:
-        file_info = client.files.get(name=uploaded_file.name) # Use name= instead of file_id=
-        file_state = file_info.state
+        max_attempts = 30  # Maximum number of attempts to check (30 * 5s = 150s)
+        attempt = 1
+        while attempt <= max_attempts:
+            file_info = client.files.get(name=uploaded_file.name) # Use name= instead of file_id=
+            file_state = file_info.state
 
-        if file_state == "ACTIVE":
-            print("File is in ACTIVE state. Proceeding with analysis...")
-            break
-        elif file_state == "PROCESSING":
-            print(f"Attempt {attempt}/{max_attempts}: File is still PROCESSING. Waiting 5 seconds...")
-            time.sleep(5)  # Wait 5 seconds before checking again
-            attempt += 1
-        else:
-            # If the file is in a FAILED or other state, raise an error
-            raise Exception(f"File processing failed. State: {file_state}. Cannot proceed with analysis.")
+            if file_state == "ACTIVE":
+                print("File is in ACTIVE state. Proceeding with analysis...")
+                break
+            elif file_state == "PROCESSING":
+                print(f"Attempt {attempt}/{max_attempts}: File is still PROCESSING. Waiting 5 seconds...")
+                time.sleep(5)  # Wait 5 seconds before checking again
+                attempt += 1
+            else:
+                # If the file is in a FAILED or other state, raise an error
+                raise Exception(f"File processing failed. State: {file_state}. Cannot proceed with analysis.")
 
-    if attempt > max_attempts:
-        raise Exception("Timeout: File did not reach ACTIVE state within the allowed time.")
+        if attempt > max_attempts:
+            raise Exception("Timeout: File did not reach ACTIVE state within the allowed time.")
 
-    # Proceed with the analysis once the file is ACTIVE
-    # video_url = "https://tpfitionfrabfzlcapum.supabase.co/storage/v1/object/public/json2videoassets//rflkt-2348972.mp4"
-    model = "gemini-1.5-flash" # Using 1.5 Flash as it supports direct URL input for video
-    contents = [
-        types.Content(
-            role="user",
-            parts=[
-                types.Part.from_uri(
-                    file_uri=files[0].uri,
-                    mime_type=files[0].mime_type,
-                ),
-            ],
-        ),
-        types.Content(
-            role="user",
-            parts=[
-                types.Part.from_text(text="""Task:
+        # Proceed with the analysis once the file is ACTIVE
+        model = "gemini-1.5-flash" # Using 1.5 Flash as it supports direct URL input for video
+        contents = [
+            types.Content(
+                role="user",
+                parts=[
+                    types.Part.from_uri(
+                        file_uri=files[0].uri,
+                        mime_type=files[0].mime_type,
+                    ),
+                ],
+            ),
+            types.Content(
+                role="user",
+                parts=[
+                    types.Part.from_text(text="""Task:
 
 You are an advanced video scene analyst and expert AI visual prompt engineer. Analyze this video and return a structured JSON breakdown of distinct visual scenes for AI-powered video reproduction in a cinematic, high-contrast graphic-novel style.
 
@@ -116,23 +136,29 @@ When generating the ai_prompt, always apply these principles to stay true to the
 Final Note:
 
 Ensure the response starts and ends strictly with the JSON object. No introductory text, no explanations—pure data, ready for automation."""),
-            ],
-        ),
-    ]
-    generate_content_config = types.GenerateContentConfig(
-        thinking_config=types.ThinkingConfig(
-            thinking_budget=0,
-        ),
-        response_mime_type="text/plain",
-    )
+                ],
+            ),
+        ]
+        generate_content_config = types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(
+                thinking_budget=0,
+            ),
+            response_mime_type="text/plain",
+        )
 
-    print("Starting video analysis...")
-    for chunk in client.models.generate_content_stream(
-        model=model,
-        contents=contents,
-        config=generate_content_config,
-    ):
-        print(chunk.text, end="")
+        print("Starting video analysis...")
+        for chunk in client.models.generate_content_stream(
+            model=model,
+            contents=contents,
+            config=generate_content_config,
+        ):
+            print(chunk.text, end="")
+
+    finally:
+        # Clean up the temporary file
+        if temp_file and os.path.exists(temp_file_path):
+            print(f"Deleting temporary file: {temp_file_path}")
+            os.remove(temp_file_path)
 
 if __name__ == "__main__":
     generate()
