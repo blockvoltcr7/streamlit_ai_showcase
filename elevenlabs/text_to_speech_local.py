@@ -27,7 +27,7 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
         IO[bytes]: A BytesIO stream containing the audio data.
     """
     response = client.text_to_speech.convert(
-        voice_id="6FVMQT8QZi7fP00BUvK9",  # custom mental health voice
+        voice_id="a9ldg2iPgaBn4VcYMJ4x",  # custom mental health voice
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=text,
