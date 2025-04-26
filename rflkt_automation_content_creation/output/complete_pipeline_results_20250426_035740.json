@@ -1,0 +1,60 @@
+{
+  "video_url": "https://tpfitionfrabfzlcapum.supabase.co/storage/v1/object/public/videos/testing/2025-04-25-16246.mp4",
+  "analysis_file": "output/video_analysis_results_20250426_035647_12b6a34c.json",
+  "generated_results": {
+    "image_prompts": [
+      {
+        "scene": 1,
+        "prompt": "Create a high-contrast black and white monochrome illustration of a solitary, muscular figure sitting hunched in desolation before a towering, shattered mirror, symbolizing vulnerability and introspection in a dark, shadowy room. The figure's bare back is highlighted by a stark beam of light piercing through the mirror's fractures, reflecting distorted fragments of reality, suggesting a broken psyche. The ground is scattered with crumpled paper, hinting at discarded dreams or failed attempts, invoking deep melancholy and isolation. Use bold silhouettes with selective white highlights and controlled gray shading to emphasize the figure's muscle tone and the rough texture of the fractured mirror. Incorporate charcoal shading and cross-hatching to add depth and a handcrafted feel, ensuring the background remains predominantly pure black for dramatic contrast. Compose the scene with the shattered mirror and solitary figure centered for a dramatic focus, leaving negative space above for text overlay, creating a still moment reminiscent of a noir graphic novel. -no signature --no watermark --no text"
+      },
+      {
+        "scene": 2,
+        "prompt": "Create a high-contrast black and white monochrome illustration of a warrior's full samurai armor, complete with an intricately detailed helmet and twin katana blades, emerging from the fractured mirror. The armor's surface is marred with battle scars, while the eyes behind the helmet exude intense, unwavering resolve. Emphasize the cracks radiating outward as a symbol of inner conflict beneath the hardened exterior, capturing the dual essence of strength and discipline within a fractured self. Place the composition dramatically centered, allowing for a powerful focal point, and leave intentional negative space above for a motivational quote overlay. Though the scene is still, imbue it with a stoic and courageous aura, evoking the warrior spirit's resilience and internal struggle. Use bold silhouettes with selective white highlights for facial expressions and armor details, while charcoal shading and pencil sketching texture add depth and grit, maintaining a minimalist ink brush style. Avoid mid-tones to uphold a graphic-novel feel, drawing influence from noir comics and traditional woodcut techniques. -no signature --no watermark --no text"
+      },
+      {
+        "scene": 3,
+        "prompt": "Create a high-contrast black and white monochrome illustration depicting samurai armor standing firmly amidst a ghostly battlefield filled with blurred figures of warriors past. The armor represents the struggle with ancestral lineage, amidst spectral warriors whose ethereal forms echo the weight of history and duty. Light and shadow play dramatically to highlight the contrast between the solid armor and the vaporous ghosts, all overlaid with a fractured glass pattern binding past and present. Apply the rule-of-thirds for dynamic composition, ensuring calm motion throughout the scene to suggest the silent weight of legacy. Use bold silhouettes and selective white highlights, with charcoal shading and pencil sketch textures for depth and grit without losing dramatic contrast. Intentionally leave negative space above for a potential motivational quote overlay. Reflect emotions of reverence and responsibility through the composition and lighting. Style the illustration with a noir graphic novel aesthetic. -no signature --no watermark --no text"
+      },
+      {
+        "scene": 4,
+        "prompt": "Create a high-contrast black and white monochrome illustration of a bare-chested figure mid-swing, striking a charred log with a massive hammer, causing sparks and debris to erupt with intense energy. The powerful silhouette of this figure is witnessed by towering mythical beings\u2014angels, demons, and heroic figures\u2014symbolizing the struggle and triumph of self-improvement and conquering inner demons. Using a dynamic-diagonal composition, capture the raw resilience and determination, with negative space above reserved for a motivational quote. Emphasize the visceral power of the scene through bold silhouettes and finely applied white highlights to showcase muscle tone and the explosion of embers, with gray shading adding texture and depth. The ink brush minimalist style infuses the image with dramatic contrast, blending elements from noir comics and traditional woodcut illustrations, bringing out the primal atmosphere of transformation and power. -no signature --no watermark --no text"
+      }
+    ],
+    "image_urls": [
+      {
+        "scene": 1,
+        "url": "https://replicate.delivery/xezq/RJ3EFdScv8rcNt370CQSTKf4IugTexwYsUbeR19e4ymv8QaSB/tmp_or074aa.jpg"
+      },
+      {
+        "scene": 2,
+        "url": "https://replicate.delivery/xezq/HeWlqoWkPw18L6me4fIjzZPqHQKneCGZaxQCIF9zVc5m9QaSB/tmpkwd5w2jw.jpg"
+      },
+      {
+        "scene": 3,
+        "url": "https://replicate.delivery/xezq/nWXakQz9RrYIGl8tqcz7ZnXJ57xtP5Wbh8yw2193fvLzHSTKA/tmpa57khl0z.jpg"
+      },
+      {
+        "scene": 4,
+        "url": "https://replicate.delivery/xezq/VeqbFfrRcOsW1Ua0etQegiLODK07WCfup02IXYlfAD328DpJF/tmpzjetazp3.jpg"
+      }
+    ],
+    "downloaded_files": [
+      {
+        "scene": 1,
+        "file": "output_images/scene_1_20250426_035659.jpg"
+      },
+      {
+        "scene": 2,
+        "file": "output_images/scene_2_20250426_035713.jpg"
+      },
+      {
+        "scene": 3,
+        "file": "output_images/scene_3_20250426_035727.jpg"
+      },
+      {
+        "scene": 4,
+        "file": "output_images/scene_4_20250426_035739.jpg"
+      }
+    ]
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "scenes": [
+    {
+      "scene_number": 1,
+      "visual_description": "A solitary figure, cloaked in shadow, sits hunched before a towering, shattered mirror. The room is stark, illuminated by a single, piercing beam of light that fractures across the broken glass, revealing only fragmented reflections of the man's despair. Cracks spiderweb across the mirror's surface, mirroring the inner turmoil of the subject.",
+      "category_tags": [
+        "Despair",
+        "Reflection",
+        "Isolation"
+      ],
+      "scene_context": "Symbolizes the broken self-image and the fragmented identity the character is grappling with.",
+      "core_emotions": [
+        "Desolation",
+        "Introspection",
+        "Anxiety"
+      ],
+      "recommended_style": "noir_graphic_novel",
+      "negative_space_position": "above",
+      "composition_focus": "centered-dramatic",
+      "environment_elements": [
+        "shattered mirror",
+        "dark room",
+        "single light source",
+        "fragmented reflections"
+      ],
+      "action_intensity": "still"
+    },
+    {
+      "scene_number": 2,
+      "visual_description": "The shards of the shattered mirror coalesce to form the imposing figure of a samurai warrior, clad in full battle armor. His face is hidden behind a menacing mask, eyes gleaming with fierce determination. The armor is intricate and detailed, conveying a sense of strength and resilience.",
+      "category_tags": [
+        "Warrior",
+        "Strength",
+        "Resilience"
+      ],
+      "scene_context": "Represents the warrior spirit and inner strength the character is striving to embody.",
+      "core_emotions": [
+        "Determination",
+        "Power",
+        "Discipline"
+      ],
+      "recommended_style": "ink_brush_minimalist",
+      "negative_space_position": "center",
+      "composition_focus": "rule-of-thirds",
+      "environment_elements": [
+        "samurai armor",
+        "menacing mask",
+        "katana swords",
+        "intricate details"
+      ],
+      "action_intensity": "still"
+    },
+    {
+      "scene_number": 3,
+      "visual_description": "An epic silhouette of a muscular figure wielding a massive hammer against a glowing forge. The air crackles with sparks and the shadows of spectral warriors stand in the background as witnesses to his strength. His muscles are tense, conveying immense power and determination.",
+      "category_tags": [
+        "Courage",
+        "Power",
+        "Transformation"
+      ],
+      "scene_context": "Illustrates the forging of inner strength and the overcoming of inner demons through relentless effort.",
+      "core_emotions": [
+        "Resilience",
+        "Courage",
+        "Strength"
+      ],
+      "recommended_style": "high_contrast_silhouette",
+      "negative_space_position": "side",
+      "composition_focus": "dynamic-action",
+      "environment_elements": [
+        "forge",
+        "hammer",
+        "sparks",
+        "spectral warriors",
+        "embers"
+      ],
+      "action_intensity": "dynamic action"
+    }
+  ],
+  "full_transcription": "Every dawn begins with a question who truly stares back at you? In the fracture of doubt the wisdom of warriors past steps forward. Steel is forged in motion, swing until fear itself shatters.",
+  "word_timestamps": {
+    "Every": 0.0,
+    "dawn": 0.42,
+    "begins": 0.85,
+    "with": 1.05,
+    "a": 1.1,
+    "question": 1.71,
+    "who": 2.39,
+    "truly": 2.87,
+    "stares": 3.35,
+    "back": 3.67,
+    "at": 3.81,
+    "you?": 4.16,
+    "In": 5.4,
+    "the": 7.09,
+    "fracture": 5.97,
+    "of": 7.64,
+    "doubt": 6.68,
+    "wisdom": 7.52,
+    "warriors": 8.15,
+    "past": 8.53,
+    "steps": 9.01,
+    "forward.": 9.53,
+    "Steel": 10.57,
+    "is": 10.7,
+    "forged": 11.06,
+    "in": 11.21,
+    "motion,": 11.73,
+    "swing": 12.45,
+    "until": 12.77,
+    "fear": 13.18,
+    "itself": 13.65,
+    "shatters.": 14.21
+  }
+}

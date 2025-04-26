@@ -4,12 +4,37 @@ import os
 import json
 import time
 
+try:
+    from mutagen.mp3 import MP3
+    mutagen_available = True
+except ImportError:
+    print("Warning: mutagen library not found. Audio duration calculation will be skipped.")
+    print("Install with: pip install mutagen")
+    mutagen_available = False
+
 load_dotenv()
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 client = ElevenLabs(
   api_key=ELEVENLABS_API_KEY,
 )
+
+# Get available models to use a valid model ID
+print("Fetching available models...")
+try:
+    models = client.models.get_all()
+    print("Available models:")
+    for model in models:
+        print(f"- {model.model_id}: {model.name}")
+    
+    # Use the first available model if exists
+    model_id = models[0].model_id if models else "eleven_multilingual_v2"
+    print(f"Using model: {model_id}")
+except Exception as e:
+    print(f"Error fetching models: {e}")
+    # Fallback to a known model
+    model_id = "eleven_multilingual_v2"
+    print(f"Falling back to default model: {model_id}")
 
 # Scene plan data
 scene_plan = {
@@ -229,6 +254,18 @@ audio_dir = os.path.join(os.getcwd(), 'audio')
 if not os.path.exists(audio_dir):
     os.makedirs(audio_dir)
 
+# Function to calculate audio duration in seconds
+def get_audio_duration(file_path):
+    if not mutagen_available:
+        return None
+    
+    try:
+        audio = MP3(file_path)
+        return audio.info.length
+    except Exception as e:
+        print(f"Error calculating duration for {file_path}: {e}")
+        return None
+
 # Function to generate and save audio for a caption
 def generate_audio_for_caption(scene_index, caption_index, caption_text):
     print(f"Generating audio for scene {scene_index}, caption {caption_index}: '{caption_text}'")
@@ -237,7 +274,7 @@ def generate_audio_for_caption(scene_index, caption_index, caption_text):
     audio = client.text_to_speech.convert(
         text=caption_text,
         voice_id="a9ldg2iPgaBn4VcYMJ4x",  # You can change this to another voice ID if you prefer
-        model_id="eleven_multilingual_v2",
+        model_id=model_id,  # Use the dynamically selected model ID
         output_format="mp3_44100_128",
     )
     
@@ -249,13 +286,17 @@ def generate_audio_for_caption(scene_index, caption_index, caption_text):
     audio_bytes = b''.join(chunk for chunk in audio)
     with open(save_file_path, "wb") as f:
         f.write(audio_bytes)
-        
-    print(f"Audio saved to: {save_file_path}")
+    
+    # Calculate the audio duration
+    duration = get_audio_duration(save_file_path)
+    duration_str = f"{duration:.2f} seconds" if duration is not None else "unknown"
+    
+    print(f"Audio saved to: {save_file_path} (Duration: {duration_str})")
     
     # Add a small delay to avoid rate limiting
     time.sleep(0.5)
     
-    return save_file_path
+    return save_file_path, duration
 
 # Create a list to store the paths to all generated audio files
 generated_files = []
@@ -271,15 +312,22 @@ for scene in scene_plan["scenePlan"]:
         caption_text = text_item["caption"]
         
         # Generate and save audio for this caption
-        audio_path = generate_audio_for_caption(scene_index, caption_index, caption_text)
+        audio_path, duration = generate_audio_for_caption(scene_index, caption_index, caption_text)
         generated_files.append({
             "scene_index": scene_index,
             "caption_index": caption_index,
             "caption_text": caption_text,
-            "audio_path": audio_path
+            "audio_path": audio_path,
+            "planned_duration": text_item["textEnd"] - text_item["textStart"],
+            "actual_duration": duration if duration is not None else None
         })
 
 print(f"\nGenerated {len(generated_files)} audio files.")
+
+# Calculate total duration of all caption audio files
+if mutagen_available:
+    total_actual_duration = sum(item["actual_duration"] for item in generated_files if item["actual_duration"] is not None)
+    print(f"Total actual duration of all caption audio files: {total_actual_duration:.2f} seconds")
 
 # Optionally, create a combined text of all captions for a single audio file
 full_script = " ".join([text_item["caption"] for scene in scene_plan["scenePlan"] for text_item in scene["texts"]])
@@ -288,7 +336,7 @@ print("\nGenerating audio for full script...")
 audio = client.text_to_speech.convert(
     text=full_script,
     voice_id="a9ldg2iPgaBn4VcYMJ4x",
-    model_id="eleven_flash_v2.5",
+    model_id=model_id,  # Use the dynamically selected model ID
     output_format="mp3_44100_128",
 )
 
@@ -298,11 +346,33 @@ audio_bytes = b''.join(chunk for chunk in audio)
 with open(full_script_file_path, "wb") as f:
     f.write(audio_bytes)
 
-print(f"Full script audio saved to: {full_script_file_path}")
+# Calculate duration of the full script
+full_script_duration = get_audio_duration(full_script_file_path)
+full_script_duration_str = f"{full_script_duration:.2f} seconds" if full_script_duration is not None else "unknown"
+print(f"Full script audio saved to: {full_script_file_path} (Duration: {full_script_duration_str})")
 
 # Save a summary of generated files
 summary_path = os.path.join(audio_dir, "audio_summary.json")
 with open(summary_path, "w") as f:
-    json.dump(generated_files, f, indent=2)
+    json.dump({
+        "individual_files": generated_files,
+        "full_script": {
+            "path": full_script_file_path,
+            "duration": full_script_duration
+        },
+        "total_individual_duration": total_actual_duration if mutagen_available else None
+    }, f, indent=2)
 
 print(f"Audio summary saved to: {summary_path}")
+
+# Compare the planned vs actual durations
+if mutagen_available:
+    print("\nPlanned vs Actual Durations:")
+    print("---------------------------")
+    for item in generated_files:
+        planned = item["planned_duration"]
+        actual = item["actual_duration"]
+        if actual is not None:
+            difference = actual - planned
+            percent_diff = (difference / planned) * 100 if planned > 0 else 0
+            print(f"Scene {item['scene_index']}, Caption {item['caption_index']}: Planned={planned:.2f}s, Actual={actual:.2f}s, Diff={difference:.2f}s ({percent_diff:.1f}%)")

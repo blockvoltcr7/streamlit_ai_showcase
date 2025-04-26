@@ -1,0 +1,216 @@
+```json
+{
+  "scenes": [
+    {
+      "scene_number": 1,
+      "visual_description": "A solitary figure sits hunched on a bed in the dead of night, back turned. He is silhouetted against a star-filled sky, the only light source being a stark, almost clinical, UFO-like glow from above. The scene exudes loneliness and introspection, with the deep black background adding to the sense of isolation.",
+      "category_tags": [
+        "Isolation",
+        "Introspection",
+        "Night",
+        "Despair"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a solitary figure hunched on a bed under a starry sky, with a circular light above him, on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures on the bed. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize loneliness through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 2,
+      "visual_description": "A weak figure is attempting a push-up, struggling with the effort. The image is starkly lit from above, casting dramatic shadows. The environment is featureless black, focusing attention entirely on the man's struggle.",
+      "category_tags": [
+        "Struggle",
+        "Weakness",
+        "Effort",
+        "Determination"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a weak figure struggling to do a push up on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures or rough ground where applicable for added grit. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize struggle through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 3,
+      "visual_description": "A man runs with labored effort up a rocky hill. The lighting is stark, creating a sharp contrast between the black background and the man's silhouette. His face is obscured, emphasizing the universal experience of physical exertion.",
+      "category_tags": [
+        "Running",
+        "Exertion",
+        "Fitness",
+        "Challenge"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a man running up a rocky hill on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures or rough ground where applicable for added grit. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize challenge through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 4,
+      "visual_description": "A figure hunches over a laptop, his face cast in shadow. The screen emits a faint light, highlighting his focused expression. The background is a complete void, amplifying the sense of concentrated attention.",
+      "category_tags": [
+        "Focus",
+        "Technology",
+        "Concentration",
+        "Study"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a figure hunched over a laptop on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize focus through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 5,
+      "visual_description": "A lone man stands at the beginning of a winding path, stretching into the dark distance. The path is illuminated, contrasting sharply with the surrounding darkness. The image suggests a long and uncertain journey ahead.",
+      "category_tags": [
+        "Journey",
+        "Path",
+        "Uncertainty",
+        "Hope"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a lone man standing at the start of a winding path on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures on the path. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize uncertainty and hope through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 6,
+      "visual_description": "A figure is attempting a push-up, still struggling. The image is starkly lit from above, casting dramatic shadows. The environment is featureless black, focusing attention entirely on the man's struggle.",
+      "category_tags": [
+        "Struggle",
+        "Weakness",
+        "Effort",
+        "Determination"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a figure struggling to do a push up on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures or rough ground where applicable for added grit. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize struggle through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 7,
+      "visual_description": "A man runs with labored effort up a rocky hill. The lighting is stark, creating a sharp contrast between the black background and the man's silhouette. His face is obscured, emphasizing the universal experience of physical exertion.",
+      "category_tags": [
+        "Running",
+        "Exertion",
+        "Fitness",
+        "Challenge"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a man running up a rocky hill on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures or rough ground where applicable for added grit. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize challenge through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 8,
+      "visual_description": "A figure is sitting and reading a book, his face is illuminated by a faint light source. The background is a complete void, amplifying the sense of focus.",
+      "category_tags": [
+        "Focus",
+        "Reading",
+        "Concentration",
+        "Study"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a figure reading a book on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize focus through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 9,
+      "visual_description": "A figure is attempting a push-up, still struggling in the rain. The image is starkly lit from above, casting dramatic shadows. The environment is featureless black, focusing attention entirely on the man's struggle.",
+      "category_tags": [
+        "Struggle",
+        "Weakness",
+        "Effort",
+        "Determination"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a figure struggling to do a push up in the rain on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures or rough ground where applicable for added grit. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize struggle through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 10,
+      "visual_description": "A figure runs across an arched stone bridge. The bridge crosses a river. Trees on either side surround the bridge.",
+      "category_tags": [
+        "Running",
+        "Exertion",
+        "Fitness",
+        "Challenge"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a man running across an arched stone bridge on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures or rough ground where applicable for added grit. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize challenge through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 11,
+      "visual_description": "A figure is sitting in a grand library, surrounded by shelves full of books. He is focused on his reading.",
+      "category_tags": [
+        "Knowledge",
+        "Intelligence",
+        "Focus",
+        "Study"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a figure reading in a grand library on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize focus through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 12,
+      "visual_description": "A muscular figure flexes in the rain. He is in good shape and shows off a great physique.",
+      "category_tags": [
+        "Strength",
+        "Fitness",
+        "Determination",
+        "Bodybuilding"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a muscular man flexing in the rain on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize strength through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 13,
+      "visual_description": "A man is seen in profile, deep in thought.",
+      "category_tags": [
+        "Intelligence",
+        "Thought",
+        "Concentration",
+        "Focus"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a man in profile, deep in thought on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize intelligence through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 14,
+      "visual_description": "A lone figure stands on a mountaintop, facing a stormy sky.",
+      "category_tags": [
+        "Challenge",
+        "Strength",
+        "Determination",
+        "Storm"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a lone figure standing on a mountaintop, facing a stormy sky, on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize strength through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 15,
+      "visual_description": "A muscular figure stands shirtless, with a determined look.",
+      "category_tags": [
+        "Strength",
+        "Fitness",
+        "Determination",
+        "Bodybuilding"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a muscular shirtless man with a determined look, on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize strength through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 16,
+      "visual_description": "A figure is attempting a push-up, still struggling in the rain. The image is starkly lit from above, casting dramatic shadows. The environment is featureless black, focusing attention entirely on the man's struggle.",
+      "category_tags": [
+        "Struggle",
+        "Weakness",
+        "Effort",
+        "Determination"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a figure struggling to do a push up in the rain on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures or rough ground where applicable for added grit. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize struggle through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 17,
+      "visual_description": "A lone figure stands in front of an open door, with light shining through.",
+      "category_tags": [
+        "Hope",
+        "Opportunity",
+        "Strength",
+        "Door"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a lone figure standing in front of an open door, with light shining through, on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize strength through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 18,
+      "visual_description": "A figure strains to lift a large cracked stone on his shoulders.",
+      "category_tags": [
+        "Strength",
+        "Effort",
+        "Determination",
+        "Challenge"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a figure straining to lift a large cracked stone on his shoulders, on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize challenge through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    },
+    {
+      "scene_number": 19,
+      "visual_description": "A muscular figure stands on a mountaintop, facing the sky. There is snow around him.",
+      "category_tags": [
+        "Strength",
+        "Power",
+        "Determination",
+        "Bodybuilding"
+      ],
+      "ai_prompt": "Create a high-contrast black and white monochrome illustration of a muscular man on top of a snowy mountaintop, on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct film grain overlay and scattered dust particles across the entire image to evoke a vintage, analog atmosphere. Use cracked textures where applicable. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize strength through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
+    }
+  ],
+  "full_transcription": "He was weak. Couldn't do one push up. Couldn't run a mile. Couldn't focus for five minutes. But he started small. One push up, one minute of running, one page of a book. Day after day he showed up. The push ups turned into ten, then twenty, then fifty. The one mile jog became five. The pages stacked into libraries. His body got stronger. His mind got sharper. His will became unbreakable. Now? He's an absolute machine. It started with one habit. Start small. Go hard. Finish as a legend."
+}
+```

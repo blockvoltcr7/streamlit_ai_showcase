@@ -1,0 +1,136 @@
+{
+  "scenes": [
+    {
+      "scene_number": 1,
+      "visual_description": "A lone, muscular figure sits hunched, shoulders bowed in anguish, amidst tattered remnants of cloth or paper. Dominating the backdrop, a large, shattered mirror reflects fragmented light. The scene is bathed in stark monochrome, emphasizing the subject's vulnerability against the distorted reflection.",
+      "category_tags": [
+        "Despair",
+        "Isolation",
+        "Introspection"
+      ],
+      "scene_context": "Represents the protagonist's internal struggle and fragmented sense of self.",
+      "core_emotions": [
+        "Sorrow",
+        "Desolation",
+        "Reflection"
+      ],
+      "recommended_style": "noir_graphic_novel",
+      "negative_space_position": "above",
+      "composition_focus": "centered-dramatic",
+      "environment_elements": [
+        "shattered mirror",
+        "tattered cloth",
+        "darkness"
+      ],
+      "action_intensity": "still"
+    },
+    {
+      "scene_number": 2,
+      "visual_description": "The fractured mirror now reveals the visage of a formidable samurai warrior, clad in full battle armor. Cracks of light splinter outwards from the warrior's intense gaze. The image is rendered in stark blacks and whites, highlighting the intricate details of the armor and the warrior's resolve.",
+      "category_tags": [
+        "Strength",
+        "Warrior",
+        "Discipline"
+      ],
+      "scene_context": "Symbolizes the inner strength and warrior spirit emerging from the fractured self.",
+      "core_emotions": [
+        "Determination",
+        "Resilience",
+        "Courage"
+      ],
+      "recommended_style": "ink_brush_minimalist",
+      "negative_space_position": "center",
+      "composition_focus": "centered-dramatic",
+      "environment_elements": [
+        "samurai armor",
+        "shattered mirror",
+        "cracks of light"
+      ],
+      "action_intensity": "still"
+    },
+    {
+      "scene_number": 3,
+      "visual_description": "The samurai figure is superimposed over a shadowy, silhouetted army of warriors, creating a layered effect of depth. The monochrome palette enhances the sense of historical weight and the collective strength of generations past.",
+      "category_tags": [
+        "Legacy",
+        "Ancestry",
+        "Collective Strength"
+      ],
+      "scene_context": "Represents the influence and support of past warriors, providing strength in the face of adversity.",
+      "core_emotions": [
+        "Inspiration",
+        "Empowerment",
+        "Unity"
+      ],
+      "recommended_style": "ink_wash_painting",
+      "negative_space_position": "side",
+      "composition_focus": "rule-of-thirds",
+      "environment_elements": [
+        "samurai armor",
+        "warrior silhouettes",
+        "darkness"
+      ],
+      "action_intensity": "calm motion"
+    },
+    {
+      "scene_number": 4,
+      "visual_description": "A powerful, muscular figure, stripped to the waist, slams a massive hammer against a large, dark object. Sparks fly, illuminating the intensity of the action. Behind him, ghostly silhouettes of mythological beings\u2014warriors, demons, and gods\u2014stand as silent witnesses.",
+      "category_tags": [
+        "Transformation",
+        "Power",
+        "Confrontation"
+      ],
+      "scene_context": "Represents the active forging of strength and character through relentless effort and overcoming inner demons.",
+      "core_emotions": [
+        "Aggression",
+        "Exertion",
+        "Triumph"
+      ],
+      "recommended_style": "noir_graphic_novel",
+      "negative_space_position": "center",
+      "composition_focus": "centered-dramatic",
+      "environment_elements": [
+        "hammer",
+        "dark object",
+        "silhouetted figures",
+        "sparks"
+      ],
+      "action_intensity": "dynamic action"
+    }
+  ],
+  "full_transcription": "Every dawn begins with a question. Who truly stares back at you? In the fracture of doubt, the wisdom of warriors past steps forward. Steel is forged in motion, swing until fear itself shatters.",
+  "word_timestamps": {
+    "Every": 0.0,
+    "dawn": 0.41,
+    "begins": 0.85,
+    "with": 1.09,
+    "a": 1.14,
+    "question.": 1.72,
+    "Who": 2.47,
+    "truly": 2.87,
+    "stares": 3.34,
+    "back": 3.63,
+    "at": 3.73,
+    "you?": 4.05,
+    "In": 4.87,
+    "the": 6.61,
+    "fracture": 5.5,
+    "of": 7.2,
+    "doubt,": 6.14,
+    "wisdom": 7.07,
+    "warriors": 7.73,
+    "past": 8.14,
+    "steps": 8.6,
+    "forward.": 9.22,
+    "Steel": 10.13,
+    "is": 10.29,
+    "forged": 10.74,
+    "in": 10.86,
+    "motion,": 11.42,
+    "swing": 12.27,
+    "until": 12.63,
+    "fear": 12.98,
+    "itself": 13.35,
+    "shatters.": 13.94
+  }
+}
