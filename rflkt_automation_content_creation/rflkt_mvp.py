@@ -7,6 +7,7 @@ import tempfile
 import json
 import uuid
 import datetime
+import argparse
 from dotenv import load_dotenv
 from openai import OpenAI
 import replicate
@@ -532,7 +533,7 @@ def generate_voiceover(transcript, scenes=None, voice_id="a9ldg2iPgaBn4VcYMJ4x",
             print(f"Using model: {model_id}")
         except Exception as e:
             print(f"Error fetching models: {e}")
-            model_id = "eleven_flash_v2.5"
+            model_id = "eleven_flash_v2_5"
             print(f"Falling back to default model: {model_id}")
         print(f"Generating audio with ElevenLabs...")
         
@@ -625,11 +626,20 @@ def process_scenes(json_data):
 # Main execution function
 def main():
     try:
+        # Set up command line arguments
+        parser = argparse.ArgumentParser(description='RFLKT Automation Content Creation Pipeline')
+        parser.add_argument('--video_url', type=str, 
+                            default="https://tpfitionfrabfzlcapum.supabase.co/storage/v1/object/public/videos/testing/2025-04-25-16246.mp4",
+                            help='URL of the video to process')
+        parser.add_argument('--enhance_transcript', action='store_true', 
+                            help='Enable transcript enhancement with OpenAI (default: False)')
+        parser.add_argument('--generate_voiceover', action='store_true',
+                            help='Generate voiceover from transcript (default: False)')
+        
+        args = parser.parse_args()
+        
         # Step 1: Analyze the video with Gemini
-        video_url = "https://tpfitionfrabfzlcapum.supabase.co/storage/v1/object/public/videos/testing/2025-04-25-16246.mp4"
-        # You can also accept the URL as a command-line argument:
-        # import sys
-        # video_url = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_VIDEO_URL
+        video_url = args.video_url
         
         print(f"Starting end-to-end pipeline for video: {video_url}")
         json_data, analysis_file = analyze_video(video_url)
@@ -642,24 +652,26 @@ def main():
         print("\nStarting image generation process for all scenes...")
         results = process_scenes(json_data)
         
-        # Step 3: Generate voiceover from transcript
-        if "full_transcription" in json_data:
+        # Step 3: Generate voiceover from transcript only if flag is enabled
+        if args.generate_voiceover and "full_transcription" in json_data:
             print("\nStarting voiceover generation process...")
             transcript = json_data["full_transcription"]
             
-            # Generate the audio with enhanced transcript
+            # Generate the audio with enhanced transcript if enabled
             audio_file = generate_voiceover(
                 transcript=transcript,
                 scenes=json_data["scenes"],
                 voice_id="a9ldg2iPgaBn4VcYMJ4x",  # You can change to your preferred voice
-                enhance=True  # Enable transcript enhancement with OpenAI
+                enhance=args.enhance_transcript  # Use command line arg for enhancement
             )
             
             if audio_file:
                 # Add audio file to results
                 results["audio_file"] = audio_file
+        elif args.generate_voiceover:
+            print("\nNo transcript found in the video analysis data. Cannot generate voiceover.")
         else:
-            print("\nNo transcript found in the video analysis data. Skipping voiceover generation.")
+            print("\nVoiceover generation skipped (use --generate_voiceover to enable).")
         
         # Step 4: Save the complete results
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
