@@ -15,7 +15,7 @@ def generate():
         api_key=os.environ.get("GEMINI_API_KEY"),
     )
 
-    video_url = "https://tpfitionfrabfzlcapum.supabase.co/storage/v1/object/public/json2videoassets//rflkt-2348972.mp4"
+    video_url = "https://tpfitionfrabfzlcapum.supabase.co/storage/v1/object/public/videos/mindset-rflkt/mindset_mavens_RPReplay_Final1745643177.mov"
     video_filename = video_url.split("/")[-1] # Extract filename from URL
 
     # Download the video from the URL
@@ -63,8 +63,13 @@ def generate():
         if attempt > max_attempts:
             raise Exception("Timeout: File did not reach ACTIVE state within the allowed time.")
 
+
+        # paramaterize the prompt read the file in gemini_google_basics/prompts/prompt_default_v1.txt
+        with open("../gemini_google_basics/prompts/prompt_v2.txt", "r") as file:
+            prompt = file.read()
+
         # Proceed with the analysis once the file is ACTIVE
-        model = "gemini-1.5-flash" # Using 1.5 Flash as it supports direct URL input for video
+        model = "gemini-2.0-flash" 
         contents = [
             types.Content(
                 role="user",
@@ -78,64 +83,7 @@ def generate():
             types.Content(
                 role="user",
                 parts=[
-                    types.Part.from_text(text="""Task:
-
-You are an advanced video scene analyst and expert AI visual prompt engineer. Analyze this video and return a structured JSON breakdown of distinct visual scenes for AI-powered video reproduction in a cinematic, high-contrast graphic-novel style.
-
-Instructions:
-
-Detect Unique Scenes:
-
-Identify each visual change as a new scene (ignore timing/duration).
-
-For Each Scene, Return:
-
-A rich, detailed visual_description (describe subjects, environment, mood, textures).
-
-2-4 relevant category_tags reflecting core themes/emotions.
-
-A dynamic ai_prompt following the Artistic Style Guide below.
-
-Strict Rules:
-
-🚫 Do NOT mention any on-screen text.
-
-🚫 Do NOT describe audio or background music.
-
-Use cinematic, graphic, and emotionally charged language optimized for AI image generation.
-
-Ensure response is pure JSON — no comments, no extra explanations.
-
-🖌️ AI Prompt Style Guide (For ai_prompt Field):
-
-When generating the ai_prompt, always apply these principles to stay true to the RFLKT visual identity:
-
-"Create a high-contrast black and white monochrome illustration of [subject/action] on a solid black background. Depict bold silhouettes with selective white highlights and controlled gray shading. Apply a distinct **film grain overlay** and scattered **dust particles** across the entire image to evoke a vintage, analog atmosphere. Use cracked textures or rough ground where applicable for added grit. Ensure sharp contrasts dominate, avoiding mid-tones. Emphasize [emotion/theme] through dramatic shadows and negative space for text overlay. The style merges noir comics, sumi-e ink art, and distressed print aesthetics. Cinematic, raw, and timeless. -no signature, --no watermark, --no text"
-
-⚡ JSON Output Format:
-{
-"scenes": [
-{
-"scene_number": 1,
-"visual_description": "A lone warrior walking along a windswept ridge under a vast starry sky, viewed from behind. His cape flows dramatically in the wind, and a sword hangs at his side. Sharp white highlights trace the edges of his silhouette, while subtle gray shading defines the rocky terrain beneath his feet. The expansive black sky emphasizes solitude and purpose.",
-"category_tags": ["Solitude", "Purpose", "Journey", "Resilience"],
-"scene_context": "A symbolic journey toward an unknown destiny, embracing solitude and inner strength.",
-"core_emotions": ["Determination", "Isolation", "Hope"],
-"recommended_style": "ink_brush_minimalist",
-"negative_space_position": "above",
-"composition_focus": "rule-of-thirds",
-"environment_elements": ["starry sky", "rocky ridge", "flowing cape", "sword"],
-"action_intensity": "calm motion",
-"voiceover_tone": "reflective"
-}
-// Additional scenes follow this structure
-],
-"full_transcription": "Insert the complete spoken narration of the video here, as one continuous block of text."
-}
-
-Final Note:
-
-Ensure the response starts and ends strictly with the JSON object. No introductory text, no explanations—pure data, ready for automation."""),
+                    types.Part.from_text(text=prompt),
                 ],
             ),
         ]
@@ -147,12 +95,59 @@ Ensure the response starts and ends strictly with the JSON object. No introducto
         )
 
         print("Starting video analysis...")
+        response_text = ""
         for chunk in client.models.generate_content_stream(
             model=model,
             contents=contents,
             config=generate_content_config,
         ):
+            response_text += chunk.text
             print(chunk.text, end="")
+        
+        # Write the JSON response to a file with a unique filename
+        import json
+        import uuid
+        import datetime
+        
+        # Generate a unique filename with timestamp and UUID
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        unique_id = str(uuid.uuid4())[:8]  # Use first 8 chars of UUID for brevity
+        
+        # Ensure output directory exists
+        output_dir = "output"
+        os.makedirs(output_dir, exist_ok=True)
+        
+        output_file = os.path.join(output_dir, f"video_analysis_results_{timestamp}_{unique_id}.json")
+        
+        try:
+            # Clean the response text by removing any markdown code block syntax if present
+            cleaned_text = response_text.strip()
+            if cleaned_text.startswith("```json"):
+                cleaned_text = cleaned_text[7:]  # Remove ```json
+            if cleaned_text.startswith("```"):
+                cleaned_text = cleaned_text[3:]  # Remove ```
+            if cleaned_text.endswith("```"):
+                cleaned_text = cleaned_text[:-3]  # Remove trailing ```
+            
+            cleaned_text = cleaned_text.strip()  # Remove any extra whitespace
+            
+            json_data = json.loads(cleaned_text)
+            with open(output_file, "w") as f:
+                json.dump(json_data, f, indent=2)
+            print(f"\nAnalysis saved to {output_file}")
+        except json.JSONDecodeError:
+            print("\nWarning: Could not parse response as valid JSON")
+            with open(output_file, "w") as f:
+                # Also clean the text before writing as raw
+                cleaned_text = response_text.strip()
+                if cleaned_text.startswith("```json"):
+                    cleaned_text = cleaned_text[7:]
+                if cleaned_text.startswith("```"):
+                    cleaned_text = cleaned_text[3:]
+                if cleaned_text.endswith("```"):
+                    cleaned_text = cleaned_text[:-3]
+                f.write(cleaned_text.strip())
+            print(f"Raw response saved to {output_file}")
 
     finally:
         # Clean up the temporary file
