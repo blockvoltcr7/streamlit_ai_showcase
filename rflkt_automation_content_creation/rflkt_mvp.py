@@ -26,8 +26,30 @@ load_dotenv()
 class ImagePromptResponse(BaseModel):
     image_prompt: str
 
+# Function to create a unique output directory for this execution
+def create_unique_output_directory():
+    """
+    Creates a unique output directory based on the current timestamp and a UUID.
+    Returns the path to the created directory.
+    """
+    # Generate timestamp and UUID for unique folder name
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_id = str(uuid.uuid4())[:8]
+    output_dir = os.path.join(os.getcwd(), f"output_{timestamp}_{unique_id}")
+    
+    # Create main output directory
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Create subdirectories for different output types
+    os.makedirs(os.path.join(output_dir, "analysis"), exist_ok=True)
+    os.makedirs(os.path.join(output_dir, "images"), exist_ok=True)
+    os.makedirs(os.path.join(output_dir, "audio"), exist_ok=True)
+    
+    print(f"Created unique output directory: {output_dir}")
+    return output_dir
+
 # Function to analyze video using Gemini API
-def analyze_video(video_url):
+def analyze_video(video_url, output_dir):
     print(f"Starting video analysis process...")
     
     # Initialize Gemini client
@@ -158,10 +180,9 @@ def analyze_video(video_url):
         unique_id = str(uuid.uuid4())[:8]
         
         # Ensure output directory exists
-        output_dir = "output"
-        os.makedirs(output_dir, exist_ok=True)
+        analysis_dir = os.path.join(output_dir, "analysis")
         
-        output_file = os.path.join(output_dir, f"video_analysis_results_{timestamp}_{unique_id}.json")
+        output_file = os.path.join(analysis_dir, f"video_analysis_results_{timestamp}_{unique_id}.json")
         
         try:
             # Clean the response text (remove markdown code blocks if present)
@@ -202,7 +223,7 @@ def analyze_video(video_url):
                 # Common fixes for JSON issues
                 fixed_text = cleaned_text.replace("'", "\"")  # Replace single quotes
                 json_data = json.loads(fixed_text)
-                fixed_output_file = os.path.join(output_dir, f"fixed_video_analysis_{timestamp}_{unique_id}.json")
+                fixed_output_file = os.path.join(analysis_dir, f"fixed_video_analysis_{timestamp}_{unique_id}.json")
                 with open(fixed_output_file, "w") as f:
                     json.dump(json_data, f, indent=2)
                 print(f"Fixed JSON saved to {fixed_output_file}")
@@ -247,7 +268,7 @@ Use minimal white strokes or gradients to subtly suggest [environment context: e
 Avoid excessive mid-tones—focus on sharp, deliberate contrasts for a graphic-novel or classic woodcut appearance.
 Emphasize [core emotions/themes: e.g., resilience, determination, solitude, intensity] through dynamic composition, lighting, and shadow play.
 Leave intentional negative space [above/beside] the subject for a motivational quote overlay.
-The style merges influences from noir comics, sumi-e ink art, pencil-on-black-canvas realism, and traditional woodcut illustrations. Cinematic, raw, powerful, and timeless. -no signature, --no watermark, --no text"
+The style merges influences from noir comics, sumi-e ink art, pencil-on-black-canvas realism, and traditional woodcut illustrations. Cinematic, raw, powerful, and timeless. -no signature, --no watermark, --no text. ENSURE THE PROMPT MENTIONS THAT IT MUST NOT INCLUDE TEXT OR WORDS"
 ---
 ### 🛠️ TASKS
 1. **Scene Fusion**:
@@ -285,7 +306,7 @@ The style merges influences from noir comics, sumi-e ink art, pencil-on-black-ca
             model="gpt-4o-2024-08-06",  # Adjust model as needed
             messages=[
                 {"role": "system", "content": prompt},
-                {"role": "user", "content": "Generate the optimized image prompt based on the provided scene."}
+                {"role": "user", "content": "Generate the optimized image prompt based on the provided scene. ENSURE THE PROMPT MENTIONS THAT IT MUST NOT INCLUDE TEXT OR WORDS"}
             ],
             response_format=ImagePromptResponse,
         )
@@ -335,11 +356,10 @@ def generate_image(image_prompt, scene_number):
         return None
 
 # Function to download and save an image
-def download_image(url, scene_number):
+def download_image(url, scene_number, output_dir):
     try:
-        # Create output directory if it doesn't exist
-        output_dir = "output_images"
-        os.makedirs(output_dir, exist_ok=True)
+        # Use the images subdirectory in the unique output directory
+        images_dir = os.path.join(output_dir, "images")
         
         # Download the image
         response = requests.get(url, stream=True)
@@ -347,7 +367,7 @@ def download_image(url, scene_number):
         
         # Generate a unique filename
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        filename = os.path.join(output_dir, f"scene_{scene_number}_{timestamp}.jpg")
+        filename = os.path.join(images_dir, f"scene_{scene_number}_{timestamp}.jpg")
         
         # Save the image
         with open(filename, 'wb') as f:
@@ -360,7 +380,7 @@ def download_image(url, scene_number):
         print(f"Error downloading image for scene {scene_number}: {e}")
         return None
 
-def enhance_transcript_with_openai(transcript, scenes, openai_client=None):
+def enhance_transcript_with_openai(transcript, scenes, openai_client=None, reword=True):
     """
     Use OpenAI to enhance a transcript with ElevenLabs voice controls based on scene information.
     
@@ -368,6 +388,7 @@ def enhance_transcript_with_openai(transcript, scenes, openai_client=None):
         transcript (str): The original transcript
         scenes (list): List of scene dictionaries containing emotional and visual context
         openai_client: Optional OpenAI client instance, will create one if not provided
+        reword (bool): Whether to reword the transcript while preserving meaning and length
         
     Returns:
         str: Enhanced transcript with ElevenLabs control tags
@@ -377,7 +398,78 @@ def enhance_transcript_with_openai(transcript, scenes, openai_client=None):
         openai_client = get_openai_client()
     
     # Create the prompt template with the controls documentation
-    prompt = """
+    if reword:
+        # Add instruction for rewording while preserving length
+        prompt = """
+# Task: Reword and Enhance Voice Transcript with ElevenLabs Controls
+
+You will be provided with a transcript and scene descriptions. Your task is to:
+1. Subtly reword the transcript to make it unique while preserving the exact same meaning
+2. Maintain the SAME CHARACTER COUNT (±5%) as the original transcript
+3. Enhance the revised transcript with ElevenLabs voice controls to create a more emotionally resonant voiceover
+
+## IMPORTANT CONSTRAINTS:
+- The reworded transcript MUST have approximately the same number of characters as the original
+- The reworded transcript MUST maintain the same pacing, tone, and information content
+- Focus on synonym substitution, restructuring sentences, and varying expressions
+- Do NOT add new content or remove significant information
+- Character count of the text content (excluding control tags) should match the original
+
+## Original Transcript Character Count: {transcript_length}
+## Original Transcript:
+{transcript}
+
+## Scene Information
+{scenes_json}
+
+## ElevenLabs Voice Controls Documentation
+
+### Pause Controls
+- Use <break time="Xs" /> syntax for natural pauses (where X is seconds, max 3s)
+- Examples:
+  * <break time="0.5s" /> (short pause)
+  * <break time="1s" /> (medium pause)
+  * <break time="2s" /> (long pause)
+- Limit to 2-3 break tags per paragraph to avoid instability
+- Alternative pause methods: use dashes (-) for short pauses or ellipses (...) for hesitation
+
+### Emphasis Controls
+- Use CAPITAL LETTERS for strongly emphasized words
+- Use partial CAPitalization for specific syllable emphasis
+- Place "quotation marks" around phrases for moderate emphasis
+- For specific words that need precise pronunciation:
+  * <phoneme alphabet="ipa" ph="pronunciation">word</phoneme> (for IPA phonetic alphabet)
+  * <phoneme alphabet="cmu-arpabet" ph="pronunciation">word</phoneme> (for CMU Arpabet)
+
+### Pacing and Delivery
+- Write in narrative style to naturally control pacing
+- Use punctuation strategically (commas, periods) to control rhythm
+- Multiple dashes (-- --) can create extended pauses
+- Use question marks for rising intonation
+- Use exclamation marks sparingly for excitement
+
+### Limitations
+- Avoid excessive break tags in a single passage
+- Each voice responds differently to controls
+- Only Eleven English V1 and Turbo V2 models fully support all SSML tags
+- Break tags may cause some voices to add filler sounds ("uh", "ah")
+
+## Guidelines for Enhancement
+1. Start with a short break (0.5-1s)
+2. Match emphasis to the emotional context of each scene
+3. Use pauses between scenes or major transitions
+4. Add emphasis to key words that match the core emotions of each scene
+5. Consider the action_intensity when deciding on pacing
+6. Keep the same words and meaning as the original transcript
+7. Format the enhanced transcript as a single text block with appropriate controls
+8. Ensure the enhanced transcript flows naturally when read aloud
+
+## Your Task
+Create an enhanced version of the transcript using appropriate ElevenLabs controls.
+"""
+    else:
+        # Use the original prompt if not rewording
+        prompt = """
 # Task: Enhance Voice Transcript with ElevenLabs Controls
 
 You will be provided with a transcript and scene descriptions. Your task is to enhance the transcript with ElevenLabs voice controls to create a more emotionally resonant and natural-sounding voiceover.
@@ -437,17 +529,18 @@ Create an enhanced version of the transcript using appropriate ElevenLabs contro
     # Format the prompt with scenes and transcript
     formatted_prompt = prompt.format(
         scenes_json=json.dumps(scenes, indent=2),
-        transcript=transcript
+        transcript=transcript,
+        transcript_length=len(transcript)
     )
     
-    print(f"Enhancing transcript with OpenAI: {formatted_prompt}")
+    print(f"Enhancing transcript with OpenAI: {'rewording and ' if reword else ''}adding voice controls")
     
     try:
         # Call OpenAI API to enhance the transcript
         completion = openai_client.chat.completions.create(
             model="gpt-4o-2024-08-06",  # Use the most capable model
             messages=[
-                {"role": "system", "content": "You are an expert in voice scripting and ElevenLabs text-to-speech controls."},
+                {"role": "system", "content": "You are an expert in voice scripting and ElevenLabs text-to-speech controls. You can subtly reword content while preserving its meaning and character count."},
                 {"role": "user", "content": formatted_prompt}
             ],
             temperature=0.7  # Adjust for creativity vs determinism
@@ -464,6 +557,22 @@ Create an enhanced version of the transcript using appropriate ElevenLabs contro
             # Use the first code block as the enhanced transcript
             enhanced_transcript = code_blocks[0].strip()
         
+        # Validate the length (strip control tags for comparison)
+        if reword:
+            # This regex removes common ElevenLabs control tags for character count comparison
+            control_tags_pattern = r'<break.*?/>|<phoneme.*?>.*?</phoneme>|<emphasis.*?>.*?</emphasis>'
+            plain_text = re.sub(control_tags_pattern, '', enhanced_transcript)
+            
+            original_length = len(transcript)
+            new_length = len(plain_text)
+            
+            print(f"Original transcript length: {original_length} characters")
+            print(f"New transcript length: {new_length} characters (difference: {new_length - original_length} characters, {(new_length/original_length-1)*100:.1f}%)")
+            
+            # If the length difference is too great, we could add a fallback or warning here
+            if abs(new_length - original_length) > 0.1 * original_length:  # 10% threshold
+                print("WARNING: Reworded transcript length differs significantly from original")
+        
         return enhanced_transcript
     
     except Exception as e:
@@ -473,41 +582,252 @@ Create an enhanced version of the transcript using appropriate ElevenLabs contro
         # Return the original transcript if enhancement fails
         return transcript
 
-def generate_voiceover(transcript, scenes=None, voice_id="a9ldg2iPgaBn4VcYMJ4x", output_filename=None, enhance=False):
+def reword_transcript_with_openai(transcript, openai_client=None):
+    """
+    Use OpenAI to reword a transcript while preserving the exact same meaning and length.
+    
+    Args:
+        transcript (str): The original transcript
+        openai_client: Optional OpenAI client instance, will create one if not provided
+        
+    Returns:
+        str: Reworded transcript
+    """
+    # Create OpenAI client if not provided
+    if openai_client is None:
+        openai_client = get_openai_client()
+    
+    # Define a Pydantic model for structured output
+    class RewordedTranscriptResponse(BaseModel):
+        reworded_transcript: str
+    
+    # Create the prompt template
+    prompt = """
+# Task: Reword Transcript
+
+You will be provided with a transcript. Your task is to subtly reword it to make it unique while preserving the exact same meaning and approximate length.
+
+## Original Transcript Character Count: {transcript_length}
+## Original Transcript:
+{transcript}
+
+## IMPORTANT CONSTRAINTS:
+- The reworded transcript MUST have approximately the same number of characters (±5%) as the original
+- The reworded transcript MUST maintain the same pacing, tone, and information content
+- Focus on synonym substitution, restructuring sentences, and varying expressions
+- Do NOT add new content or remove significant information
+- Maintain similar sentence structure and rhythm (for voiceover timing)
+- Create a completely new wording that conveys the exact same message
+- Each time this function is called, generate a DIFFERENT reworded version
+
+## Your Task
+Create a reworded version of the transcript that sounds natural and could be used for a motivational voiceover.
+    """
+    
+    # Format the prompt with transcript
+    formatted_prompt = prompt.format(
+        transcript=transcript,
+        transcript_length=len(transcript)
+    )
+    
+    print(f"Rewording transcript with OpenAI...")
+    
+    try:
+        # Call OpenAI API with structured output format
+        completion = openai_client.beta.chat.completions.parse(
+            model="gpt-4o-2024-08-06",
+            messages=[
+                {"role": "system", "content": "You are an expert in rephrasing content while preserving its meaning and character count."},
+                {"role": "user", "content": formatted_prompt}
+            ],
+            temperature=0.8,  # Higher temperature for more variation
+            response_format=RewordedTranscriptResponse,
+        )
+        
+        # Extract the reworded transcript from the structured response
+        reworded_transcript = completion.choices[0].message.parsed.reworded_transcript
+        
+        # Validate the length
+        original_length = len(transcript)
+        new_length = len(reworded_transcript)
+        
+        print(f"Original transcript length: {original_length} characters")
+        print(f"Reworded transcript length: {new_length} characters (difference: {new_length - original_length} characters, {(new_length/original_length-1)*100:.1f}%)")
+        
+        # If the length difference is too great, we could add a fallback or warning here
+        if abs(new_length - original_length) > 0.1 * original_length:  # 10% threshold
+            print("WARNING: Reworded transcript length differs significantly from original")
+        
+        return reworded_transcript
+    
+    except Exception as e:
+        print(f"Error rewording transcript with OpenAI: {e}")
+        import traceback
+        traceback.print_exc()
+        # Return the original transcript if rewording fails
+        return transcript
+
+def add_voice_controls_with_openai(transcript, scenes, openai_client=None):
+    """
+    Use OpenAI to add ElevenLabs voice controls to a transcript based on scene information.
+    
+    Args:
+        transcript (str): The transcript to enhance (already reworded if desired)
+        scenes (list): List of scene dictionaries containing emotional and visual context
+        openai_client: Optional OpenAI client instance, will create one if not provided
+        
+    Returns:
+        str: Enhanced transcript with ElevenLabs control tags
+    """
+    # Create OpenAI client if not provided
+    if openai_client is None:
+        openai_client = get_openai_client()
+    
+    # Define a Pydantic model for structured output
+    class EnhancedTranscriptResponse(BaseModel):
+        enhanced_transcript: str
+    
+    # Create the prompt template with the controls documentation
+    prompt = """
+# Task: Enhance Voice Transcript with ElevenLabs Controls
+
+You will be provided with a transcript and scene descriptions. Your task is to enhance the transcript with ElevenLabs voice controls to create a more emotionally resonant and natural-sounding voiceover.
+
+## Transcript to Enhance:
+{transcript}
+
+## Scene Information
+{scenes_json}
+
+## ElevenLabs Voice Controls Documentation
+
+### Pause Controls
+- Use <break time="Xs" /> syntax for natural pauses (where X is seconds, max 3s)
+- Examples:
+  * <break time="0.5s" /> (short pause)
+  * <break time="1s" /> (medium pause)
+  * <break time="2s" /> (long pause)
+- Limit to 2-3 break tags per paragraph to avoid instability
+- Alternative pause methods: use dashes (-) for short pauses or ellipses (...) for hesitation
+
+### Emphasis Controls
+- Use CAPITAL LETTERS for strongly emphasized words
+- Use partial CAPitalization for specific syllable emphasis
+- Place "quotation marks" around phrases for moderate emphasis
+- For specific words that need precise pronunciation:
+  * <emphasis level="strong">word</emphasis> for strong emphasis
+  * <emphasis level="moderate">word</emphasis> for moderate emphasis
+  * <emphasis level="reduced">word</emphasis> for reduced emphasis
+
+### Pacing and Delivery
+- Write in narrative style to naturally control pacing
+- Use punctuation strategically (commas, periods) to control rhythm
+- Multiple dashes (-- --) can create extended pauses
+- Use question marks for rising intonation
+- Use exclamation marks sparingly for excitement
+
+### Limitations
+- Avoid excessive break tags in a single passage
+- Each voice responds differently to controls
+- Only Eleven English V1 and Turbo V2 models fully support all SSML tags
+- Break tags may cause some voices to add filler sounds ("uh", "ah")
+
+## Guidelines for Enhancement
+1. Start with a short break (0.5-1s)
+2. Match emphasis to the emotional context of each scene
+3. Use pauses between scenes or major transitions
+4. Add emphasis to key words that match the core emotions of each scene
+5. Consider the action_intensity when deciding on pacing
+6. Format the enhanced transcript as a single text block with appropriate controls
+7. Ensure the enhanced transcript flows naturally when read aloud
+8. DO NOT modify the actual words - only add control tags and formatting
+
+## Your Task
+Create an enhanced version of the transcript using appropriate ElevenLabs controls.
+    """
+    
+    # Format the prompt with scenes and transcript
+    formatted_prompt = prompt.format(
+        scenes_json=json.dumps(scenes, indent=2),
+        transcript=transcript
+    )
+    
+    print(f"Adding voice controls to transcript with OpenAI...")
+    
+    try:
+        # Call OpenAI API with structured output format
+        completion = openai_client.beta.chat.completions.parse(
+            model="gpt-4o-2024-08-06",
+            messages=[
+                {"role": "system", "content": "You are an expert in voice scripting and ElevenLabs text-to-speech controls."},
+                {"role": "user", "content": formatted_prompt}
+            ],
+            temperature=0.7,
+            response_format=EnhancedTranscriptResponse,
+        )
+        
+        # Extract the enhanced transcript from the structured response
+        enhanced_transcript = completion.choices[0].message.parsed.enhanced_transcript
+        
+        return enhanced_transcript
+    
+    except Exception as e:
+        print(f"Error adding voice controls with OpenAI: {e}")
+        import traceback
+        traceback.print_exc()
+        # Return the unenhanced transcript if enhancement fails
+        return transcript
+
+def generate_voiceover(transcript, output_dir, scenes=None, voice_id="a9ldg2iPgaBn4VcYMJ4x", output_filename=None, enhance=False, reword=True):
     """
     Generate a voiceover using ElevenLabs API.
     
     Args:
         transcript (str): The transcript to convert to speech
+        output_dir (str): Path to the unique output directory for this run
         scenes (list): Optional list of scene dictionaries for enhancement
         voice_id (str): ElevenLabs voice ID
         output_filename (str): Optional filename for the output audio file
-        enhance (bool): Whether to enhance the transcript with OpenAI
+        enhance (bool): Whether to enhance the transcript with ElevenLabs controls
+        reword (bool): Whether to reword the transcript while preserving meaning and length
         
     Returns:
         str: Path to the saved audio file
     """
     try:
-        # Enhance the transcript with OpenAI if requested and scenes are provided
+        openai_client = get_openai_client()
+        
+        # Step 1: Reword the transcript if requested
+        if reword:
+            print("Rewording transcript with OpenAI...")
+            reworded_transcript = reword_transcript_with_openai(transcript, openai_client)
+            # Save reworded transcript for reference
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            reworded_file = os.path.join(output_dir, "analysis", f"reworded_transcript_{timestamp}.txt")
+            with open(reworded_file, "w") as f:
+                f.write(reworded_transcript)
+            print(f"Reworded transcript saved to: {reworded_file}")
+        else:
+            reworded_transcript = transcript
+            print("Using original transcript without rewording")
+        
+        # Step 2: Enhance the transcript with ElevenLabs controls if requested
         if enhance and scenes:
-            print("Enhancing transcript with OpenAI...")
-            openai_client = get_openai_client()
-            text_to_process = enhance_transcript_with_openai(transcript, scenes, openai_client)
+            print("Adding voice controls to transcript with OpenAI...")
+            text_to_process = add_voice_controls_with_openai(reworded_transcript, scenes, openai_client)
             print("Transcript enhanced with ElevenLabs controls")
             # Save enhanced transcript for reference
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            enhanced_file = os.path.join("output", f"enhanced_transcript_{timestamp}.txt")
+            enhanced_file = os.path.join(output_dir, "analysis", f"enhanced_transcript_{timestamp}.txt")
             with open(enhanced_file, "w") as f:
                 f.write(text_to_process)
             print(f"Enhanced transcript saved to: {enhanced_file}")
         else:
-            text_to_process = transcript
-            print("Using original transcript without enhancement")
+            text_to_process = reworded_transcript
+            print("Using transcript without voice control enhancement")
         
-        # Create output directory if it doesn't exist
-        audio_dir = os.path.join(os.getcwd(), 'audio')
-        if not os.path.exists(audio_dir):
-            os.makedirs(audio_dir)
+        # Use the audio subdirectory in the unique output directory
+        audio_dir = os.path.join(output_dir, "audio")
         
         # Generate a default filename if not provided
         if not output_filename:
@@ -570,7 +890,7 @@ def generate_voiceover(transcript, scenes=None, voice_id="a9ldg2iPgaBn4VcYMJ4x",
         return None
 
 # Function to process all scenes
-def process_scenes(json_data):
+def process_scenes(json_data, output_dir):
     # Store all generated image URLs
     image_urls = []
     downloaded_files = []
@@ -609,7 +929,7 @@ def process_scenes(json_data):
                 
                 # Step 3: Download the image
                 print("Downloading image...")
-                filename = download_image(image_url, scene_number)
+                filename = download_image(image_url, scene_number, output_dir)
                 if filename:
                     downloaded_files.append({"scene": scene_number, "file": filename})
         
@@ -626,15 +946,19 @@ def process_scenes(json_data):
 # Main execution function
 def main():
     try:
+        # Create a unique output directory for this run
+        output_dir = create_unique_output_directory()
+        
         # Set up command line arguments
         parser = argparse.ArgumentParser(description='RFLKT Automation Content Creation Pipeline')
-        parser.add_argument('--video_url', type=str, 
-                            default="https://tpfitionfrabfzlcapum.supabase.co/storage/v1/object/public/videos/testing/2025-04-25-16246.mp4",
-                            help='URL of the video to process')
+        parser.add_argument('--video_url', type=str, required=True,
+                            help='URL of the video to process (required)')
         parser.add_argument('--enhance_transcript', action='store_true', 
                             help='Enable transcript enhancement with OpenAI (default: False)')
         parser.add_argument('--generate_voiceover', action='store_true',
                             help='Generate voiceover from transcript (default: False)')
+        parser.add_argument('--no_reword', action='store_true',
+                            help='Disable transcript rewording (enabled by default)')
         
         args = parser.parse_args()
         
@@ -642,7 +966,7 @@ def main():
         video_url = args.video_url
         
         print(f"Starting end-to-end pipeline for video: {video_url}")
-        json_data, analysis_file = analyze_video(video_url)
+        json_data, analysis_file = analyze_video(video_url, output_dir)
         
         if not json_data:
             print("Video analysis failed. Exiting.")
@@ -650,7 +974,7 @@ def main():
         
         # Step 2: Process all scenes to generate images
         print("\nStarting image generation process for all scenes...")
-        results = process_scenes(json_data)
+        results = process_scenes(json_data, output_dir)
         
         # Step 3: Generate voiceover from transcript only if flag is enabled
         if args.generate_voiceover and "full_transcription" in json_data:
@@ -660,9 +984,11 @@ def main():
             # Generate the audio with enhanced transcript if enabled
             audio_file = generate_voiceover(
                 transcript=transcript,
+                output_dir=output_dir,
                 scenes=json_data["scenes"],
                 voice_id="a9ldg2iPgaBn4VcYMJ4x",  # You can change to your preferred voice
-                enhance=args.enhance_transcript  # Use command line arg for enhancement
+                enhance=args.enhance_transcript,  # Use command line arg for enhancement
+                reword=not args.no_reword  # Invert the flag - reword by default
             )
             
             if audio_file:
@@ -673,9 +999,8 @@ def main():
         else:
             print("\nVoiceover generation skipped (use --generate_voiceover to enable).")
         
-        # Step 4: Save the complete results
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        results_file = os.path.join("output", f"complete_pipeline_results_{timestamp}.json")
+        # Step 4: Save the complete results to the unique output directory
+        results_file = os.path.join(output_dir, f"complete_pipeline_results.json")
         
         # Deep copy the results to ensure we don't modify the original objects
         import copy
@@ -690,7 +1015,8 @@ def main():
         full_results = {
             "video_url": video_url,
             "analysis_file": str(analysis_file),  # Convert to string to ensure JSON serialization
-            "generated_results": serializable_results
+            "generated_results": serializable_results,
+            "output_directory": output_dir
         }
         
         # Custom JSON encoder to handle any non-serializable objects
@@ -705,7 +1031,8 @@ def main():
             json.dump(full_results, f, indent=2, cls=CustomJSONEncoder)
             
         print(f"\nProcess completed. Generated {len(results['image_urls'])} images.")
-        print(f"Complete results saved to {results_file}")
+        print(f"All results saved to unique directory: {output_dir}")
+        print(f"Complete results summary saved to {results_file}")
             
     except Exception as e:
         print(f"Error in main process: {e}")
