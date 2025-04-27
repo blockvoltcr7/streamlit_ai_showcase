@@ -47,7 +47,6 @@ To generate a voiceover with ElevenLabs voice controls (for better quality with 
 
 This will both reword the transcript (by default) and add voice controls.
 
-
 ```bash
 python rflkt_mvp.py --video_url https://example.com/path/to/your/video.mp4 --generate_voiceover --enhance_transcript
 ```

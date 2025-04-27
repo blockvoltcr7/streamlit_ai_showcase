@@ -15,10 +15,6 @@ from pydantic import BaseModel
 from typing import List, Optional
 from elevenlabs.client import ElevenLabs
 
-# Import Google Gemini libraries
-from google import genai
-from google.genai import types
-
 # Load environment variables
 load_dotenv()
 
@@ -48,198 +44,43 @@ def create_unique_output_directory():
     print(f"Created unique output directory: {output_dir}")
     return output_dir
 
-# Function to analyze video using Gemini API
-def analyze_video(video_url, output_dir):
-    print(f"Starting video analysis process...")
-    
-    # Initialize Gemini client
-    client = genai.Client(
-        api_key=os.environ.get("GEMINI_API_KEY"),
-    )
-    
-    # Extract filename from URL
-    video_filename = video_url.split("/")[-1]
-    
-    # Download the video from the URL
-    print(f"Downloading video from {video_url}...")
-    response = requests.get(video_url, stream=True)
-    response.raise_for_status()
-    video_bytes = response.content
-    
-    temp_file = None
-    temp_file_path = None
-    
-    try:
-        # Create a temporary file and write the video content to it
-        temp_file = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
-        temp_file.write(video_bytes)
-        temp_file_path = temp_file.name
-        temp_file.close()
-        print(f"Video saved temporarily to: {temp_file_path}")
-        
-        # Upload the temporary video file
-        print(f"Uploading temporary video file to Gemini...")
-        files = [
-            client.files.upload(file=temp_file_path),
-        ]
-        
-        # Check the file's state and wait until it's ACTIVE
-        uploaded_file = files[0]
-        # Store only the name and URI as strings
-        file_name = uploaded_file.name
-        file_uri = uploaded_file.uri
-        
-        print(f"File uploaded with name: {file_name}. Checking file state...")
-        
-        max_attempts = 30
-        attempt = 1
-        while attempt <= max_attempts:
-            file_info = client.files.get(name=file_name)
-            file_state = file_info.state
-            
-            if file_state == "ACTIVE":
-                print("File is in ACTIVE state. Proceeding with analysis...")
-                break
-            elif file_state == "PROCESSING":
-                print(f"Attempt {attempt}/{max_attempts}: File is still PROCESSING. Waiting 5 seconds...")
-                time.sleep(5)
-                attempt += 1
-            else:
-                raise Exception(f"File processing failed. State: {file_state}. Cannot proceed with analysis.")
-        
-        if attempt > max_attempts:
-            raise Exception("Timeout: File did not reach ACTIVE state within the allowed time.")
-        
-        # Read the prompt from file
-        # Note: In production, you might want to include this prompt directly in the code
-        # or provide a fallback if the file doesn't exist
-        try:
-            with open("prompts/prompt_v2.txt", "r") as file:
-                prompt = file.read()
-        except FileNotFoundError as exc:
-            # Capture the original exception and chain it
-            raise Exception("Prompt file not found. Please ensure 'prompts/prompt_v2.txt' exists in the project directory.") from exc
-        
-        # Proceed with the analysis once the file is ACTIVE
-        model = "gemini-2.0-flash"
-        contents = [
-            types.Content(
-                role="user",
-                parts=[
-                    types.Part.from_uri(
-                        file_uri=file_uri,
-                        mime_type=files[0].mime_type,
-                    ),
-                ],
-            ),
-            types.Content(
-                role="user",
-                parts=[
-                    types.Part.from_text(text=prompt),
-                ],
-            ),
-        ]
-        generate_content_config = types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(
-                thinking_budget=0,
-            ),
-            response_mime_type="text/plain",
-        )
-        
-        print("Starting Gemini video analysis...")
-        response_text = ""
-        for chunk in client.models.generate_content_stream(
-            model=model,
-            contents=contents,
-            config=generate_content_config,
-        ):
-            response_text += chunk.text
-            # Optionally print each chunk as it comes in
-            # print(chunk.text, end="")
-        
-        # Generate a unique filename with timestamp and UUID
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        unique_id = str(uuid.uuid4())[:8]
-        
-        # Ensure output directory exists
-        analysis_dir = os.path.join(output_dir, "analysis")
-        
-        output_file = os.path.join(analysis_dir, f"video_analysis_results_{timestamp}_{unique_id}.json")
-        
-        try:
-            # Clean the response text (remove markdown code blocks if present)
-            cleaned_text = response_text.strip()
-            if cleaned_text.startswith("```json"):
-                cleaned_text = cleaned_text[7:]
-            if cleaned_text.startswith("```"):
-                cleaned_text = cleaned_text[3:]
-            if cleaned_text.endswith("```"):
-                cleaned_text = cleaned_text[:-3]
-            
-            cleaned_text = cleaned_text.strip()
-            
-            # Parse the JSON and save it
-            json_data = json.loads(cleaned_text)
-            with open(output_file, "w") as f:
-                json.dump(json_data, f, indent=2)
-            print(f"\nGemini analysis saved to {output_file}")
-            
-            return json_data, output_file
-            
-        except json.JSONDecodeError:
-            print("\nWarning: Could not parse response as valid JSON")
-            with open(output_file, "w") as f:
-                # Clean the text before writing
-                cleaned_text = response_text.strip()
-                if cleaned_text.startswith("```json"):
-                    cleaned_text = cleaned_text[7:]
-                if cleaned_text.startswith("```"):
-                    cleaned_text = cleaned_text[3:]
-                if cleaned_text.endswith("```"):
-                    cleaned_text = cleaned_text[:-3]
-                f.write(cleaned_text.strip())
-            print(f"Raw response saved to {output_file}")
-            
-            # Try to manually fix common JSON issues and parse again
-            try:
-                # Common fixes for JSON issues
-                fixed_text = cleaned_text.replace("'", "\"")  # Replace single quotes
-                json_data = json.loads(fixed_text)
-                fixed_output_file = os.path.join(analysis_dir, f"fixed_video_analysis_{timestamp}_{unique_id}.json")
-                with open(fixed_output_file, "w") as f:
-                    json.dump(json_data, f, indent=2)
-                print(f"Fixed JSON saved to {fixed_output_file}")
-                return json_data, fixed_output_file
-            except:
-                print("Could not fix JSON issues. Please check the raw output file.")
-                return None, output_file
-                
-    finally:
-        # Clean up the temporary file
-        if temp_file and os.path.exists(temp_file_path):
-            print(f"Deleting temporary file: {temp_file_path}")
-            os.remove(temp_file_path)
-
 # OpenAI client setup
 def get_openai_client():
     return OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-# Function to generate an image prompt from a scene
-def generate_image_prompt(scene, client):
-    # Build the prompt based on the template
+# Function to generate an image prompt from scene image data
+def generate_image_prompt(image_data, client):
+    """
+    Generate an image prompt based on image data from the JSON input.
+    
+    Args:
+        image_data (dict): The image data from the JSON input
+        client: OpenAI client instance
+        
+    Returns:
+        str: The generated image prompt
+    """
+    # Prepare values for prompt template, with safe defaults if fields are missing
+    visual_description = image_data.get('visual_description', '')
+    scene_context = image_data.get('scene_context', '')
+    core_emotions = image_data.get('core_emotions', [])
+    environment_elements = image_data.get('environment_elements', [])
+    scene_narrative = image_data.get('scene_narrative', '')
+    emotional_atmosphere = image_data.get('emotional_atmosphere', '')
+    technical_directives = image_data.get('technical_directives', '')
+    
+    
+    # Extract composition focus and negative space position from technical_directives    # Build the prompt template
     prompt = f"""You are a world-class visual prompt engineer
 ---
 ### 🎬 INPUT DATA
-- **visual_description:** {scene['visual_description']}
-- **scene_context:** {scene['scene_context']}
-- **core_emotions:** {scene['core_emotions']}
-- **category_tags:** {scene['category_tags']}
-- **recommended_style:** {scene['recommended_style']}
-- **negative_space_position:** {scene['negative_space_position']}
-- **composition_focus:** {scene['composition_focus']}
-- **environment_elements:** {scene['environment_elements']}
-- **action_intensity:** {scene['action_intensity']}
-> ⚡ *Note:* Fields like `symbolic_motifs`, `tone_keywords`, `camera_angle`, etc., are removed to align with your current input structure.
+- **visual_description:** {visual_description}
+- **scene_context:** {scene_context}
+- **core_emotions:** {core_emotions}
+- **scene_narrative:** {scene_narrative}
+- **emotional_atmosphere:** {emotional_atmosphere}
+- **technical_directives:** {technical_directives}
+- **environment_elements:** {environment_elements}
 ---
 ### 🎨 BASE STYLE GUIDE PROMPT TEMPLATE YOU MUST USE
 Always **embed** this core artistic direction into every prompt:
@@ -257,18 +98,19 @@ The style merges influences from noir comics, sumi-e ink art, pencil-on-black-ca
    - Seamlessly merge:
      - `visual_description`
      - `scene_context`
+     - `scene_narrative`
      - Key `environment_elements`
    - Ensure it forms a vivid, cinematic narrative in **2-3 sentences**.
 2. **Evoke Atmosphere**:
    - Subtly **weave in emotional tone** by referencing:
-     - 2 emotions from `core_emotions` or `category_tags`.
+     - Key elements from `emotional_atmosphere` and `core_emotions`.
      - Reflect mood without listing tags—focus on **feeling**.
 3. **Technical Detailing**:
    - Apply:
      - `composition_focus` (e.g., "use rule-of-thirds for dynamic framing")
      - `negative_space_position` (e.g., "leave space above for text overlay")
      - Mention **action_intensity** to define motion or stillness.
-     - Reference `recommended_style` subtly to guide visual flair.
+     - Incorporate the `technical_directives` guidance.
 4. **Wording Optimization**:
    - Limit prompt to **minimum of 150 WORDS OR MORE**.
    - Ensure cinematic flow, descriptive power, and technical clarity.
@@ -300,7 +142,7 @@ The style merges influences from noir comics, sumi-e ink art, pencil-on-black-ca
         return None
 
 # Function to generate an image using Replicate
-def generate_image(image_prompt, scene_number):
+def generate_image(image_prompt, scene_identifier):
     try:
         # Call Replicate to generate the image
         output = replicate.run(
@@ -334,11 +176,11 @@ def generate_image(image_prompt, scene_number):
         
         return image_url
     except Exception as e:
-        print(f"Error generating image for scene {scene_number}: {e}")
+        print(f"Error generating image for scene {scene_identifier}: {e}")
         return None
 
 # Function to download and save an image
-def download_image(url, scene_number, output_dir):
+def download_image(url, scene_identifier, output_dir):
     try:
         # Use the images subdirectory in the unique output directory
         images_dir = os.path.join(output_dir, "images")
@@ -349,7 +191,7 @@ def download_image(url, scene_number, output_dir):
         
         # Generate a unique filename
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        filename = os.path.join(images_dir, f"scene_{scene_number}_{timestamp}.jpg")
+        filename = os.path.join(images_dir, f"scene_{scene_identifier}_{timestamp}.jpg")
         
         # Save the image
         with open(filename, 'wb') as f:
@@ -359,8 +201,106 @@ def download_image(url, scene_number, output_dir):
         print(f"Image saved to {filename}")
         return filename
     except Exception as e:
-        print(f"Error downloading image for scene {scene_number}: {e}")
+        print(f"Error downloading image for scene {scene_identifier}: {e}")
         return None
+
+def process_json_input(json_data, output_dir):
+    """
+    Process a JSON input file instead of analyzing a video.
+    
+    Args:
+        json_data (dict): The parsed JSON data
+        output_dir (str): Path to output directory
+        
+    Returns:
+        tuple: A tuple containing (processed results, output file path)
+    """
+    print(f"Processing JSON input with {len(json_data['scenes'])} scenes...")
+    
+    # Save the input JSON for reference
+    analysis_dir = os.path.join(output_dir, "analysis")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    input_file = os.path.join(analysis_dir, f"input_json_{timestamp}.json")
+    with open(input_file, "w") as f:
+        json.dump(json_data, f, indent=2)
+    
+    # Initialize OpenAI client
+    openai_client = get_openai_client()
+    
+    # Prepare results containers
+    image_urls = []
+    downloaded_files = []
+    image_prompts = []
+    
+    # Process each scene
+    for scene in json_data["scenes"]:
+        scene_number = scene["scene_number"]
+        print(f"\nProcessing Scene {scene_number}...")
+        
+        # Each scene can have multiple images
+        for image_data in scene.get("images", []):
+            image_number = image_data.get("image_number", 1)
+            print(f"  Processing Image {image_number}...")
+            
+            # Step 1: Generate the image prompt
+            print("  Generating image prompt...")
+            image_prompt = generate_image_prompt(image_data, openai_client)
+            
+            if image_prompt:
+                print(f"  Generated image prompt ({len(image_prompt)} chars)")
+                image_prompts.append({
+                    "scene": scene_number, 
+                    "image": image_number, 
+                    "prompt": image_prompt
+                })
+                
+                # Step 2: Generate the image
+                print("  Generating image with Replicate...")
+                image_url = generate_image(image_prompt, f"{scene_number}_{image_number}")
+                
+                if image_url:
+                    # Ensure URL is a string
+                    if not isinstance(image_url, str):
+                        if hasattr(image_url, 'url'):
+                            image_url = image_url.url
+                        else:
+                            image_url = str(image_url)
+                    
+                    print(f"  Image generated: {image_url}")
+                    image_urls.append({
+                        "scene": scene_number, 
+                        "image": image_number, 
+                        "url": image_url
+                    })
+                    
+                    # Step 3: Download the image
+                    print("  Downloading image...")
+                    filename = download_image(image_url, f"{scene_number}_{image_number}", output_dir)
+                    if filename:
+                        downloaded_files.append({
+                            "scene": scene_number, 
+                            "image": image_number, 
+                            "file": filename
+                        })
+            
+            # Add some delay to avoid rate limiting
+            time.sleep(1)
+    
+    # Save the processed results
+    results = {
+        "image_prompts": image_prompts,
+        "image_urls": image_urls,
+        "downloaded_files": downloaded_files
+    }
+    
+    # Save results to file
+    results_file = os.path.join(analysis_dir, f"json_processing_results_{timestamp}.json")
+    
+    with open(results_file, "w") as f:
+        json.dump(results, f, indent=2)
+    
+    print(f"\nResults saved to {results_file}")
+    return results, input_file
 
 def enhance_transcript_with_openai(transcript, scenes, openai_client=None, reword=True):
     """
@@ -766,6 +706,7 @@ def generate_voiceover(transcript, output_dir, scenes=None, voice_id="a9ldg2iPga
         transcript (str): The transcript to convert to speech
         output_dir (str): Path to the unique output directory for this run
         scenes (list): Optional list of scene dictionaries for enhancement
+        voice_id (str):
         voice_id (str): ElevenLabs voice ID
         output_filename (str): Optional filename for the output audio file
         enhance (bool): Whether to enhance the transcript with ElevenLabs controls
@@ -869,60 +810,6 @@ def generate_voiceover(transcript, output_dir, scenes=None, voice_id="a9ldg2iPga
         traceback.print_exc()
         return None
 
-# Function to process all scenes
-def process_scenes(json_data, output_dir):
-    # Store all generated image URLs
-    image_urls = []
-    downloaded_files = []
-    image_prompts = []
-    
-    # Initialize OpenAI client
-    openai_client = get_openai_client()
-    
-    # Process each scene
-    for i, scene in enumerate(json_data["scenes"]):
-        scene_number = scene["scene_number"]
-        print(f"\nProcessing Scene {scene_number}...")
-        
-        # Step 1: Generate the image prompt
-        print("Generating image prompt...")
-        image_prompt = generate_image_prompt(scene, openai_client)
-        
-        if image_prompt:
-            print(f"Generated image prompt ({len(image_prompt)} chars)")
-            image_prompts.append({"scene": scene_number, "prompt": image_prompt})
-            
-            # Step 2: Generate the image
-            print("Generating image with Replicate...")
-            image_url = generate_image(image_prompt, scene_number)
-            
-            if image_url:
-                # Ensure URL is a string before adding to the results
-                if not isinstance(image_url, str):
-                    if hasattr(image_url, 'url'):
-                        image_url = image_url.url
-                    else:
-                        image_url = str(image_url)
-                
-                print(f"Image generated: {image_url}")
-                image_urls.append({"scene": scene_number, "url": image_url})
-                
-                # Step 3: Download the image
-                print("Downloading image...")
-                filename = download_image(image_url, scene_number, output_dir)
-                if filename:
-                    downloaded_files.append({"scene": scene_number, "file": filename})
-        
-        # Add some delay to avoid rate limiting
-        time.sleep(1)
-    
-    return {
-        "image_prompts": image_prompts,
-        "image_urls": image_urls,
-        "downloaded_files": downloaded_files
-    }
-    
-
 # Main execution function
 def main():
     try:
@@ -931,42 +818,77 @@ def main():
         
         # Set up command line arguments
         parser = argparse.ArgumentParser(description='RFLKT Automation Content Creation Pipeline')
-        parser.add_argument('--video_url', type=str, required=True,
-                            help='URL of the video to process (required)')
+        parser.add_argument('--json_file', type=str, required=False,
+                            help='Path to JSON file with scene data')
+        parser.add_argument('--json_string', type=str, required=False,
+                            help='JSON string with scene data')
         parser.add_argument('--enhance_transcript', action='store_true', 
                             help='Enable transcript enhancement with OpenAI (default: False)')
         parser.add_argument('--generate_voiceover', action='store_true',
                             help='Generate voiceover from transcript (default: False)')
         parser.add_argument('--no_reword', action='store_true',
                             help='Disable transcript rewording (enabled by default)')
+        parser.add_argument('--voice_id', type=str, default="a9ldg2iPgaBn4VcYMJ4x",
+                            help='ElevenLabs voice ID to use (default: a9ldg2iPgaBn4VcYMJ4x)')
         
         args = parser.parse_args()
         
-        # Step 1: Analyze the video with Gemini
-        video_url = args.video_url
-        
-        print(f"Starting end-to-end pipeline for video: {video_url}")
-        json_data, analysis_file = analyze_video(video_url, output_dir)
-        
-        if not json_data:
-            print("Video analysis failed. Exiting.")
+        # Validate input arguments
+        if not args.json_file and not args.json_string:
+            print("Error: Either --json_file or --json_string must be provided.")
             return
         
-        # Step 2: Process all scenes to generate images
-        print("\nStarting image generation process for all scenes...")
-        results = process_scenes(json_data, output_dir)
+        if args.json_file and args.json_string:
+            print("Error: Please provide only one of --json_file or --json_string, not both.")
+            return
         
-        # Step 3: Generate voiceover from transcript only if flag is enabled
-        if args.generate_voiceover and "full_transcription" in json_data:
+        # Process based on input type
+        json_data = None
+        
+        if args.json_file:
+            # JSON file input path
+            print(f"Processing JSON file: {args.json_file}")
+            try:
+                with open(args.json_file, 'r') as f:
+                    json_data = json.load(f)
+                
+                # Process the JSON data
+                results, input_file = process_json_input(json_data, output_dir)
+                
+            except Exception as e:
+                print(f"Error processing JSON file: {e}")
+                import traceback
+                traceback.print_exc()
+                return
+                
+        elif args.json_string:
+            # JSON string input path
+            print("Processing JSON string input")
+            try:
+                json_data = json.loads(args.json_string)
+                
+                # Process the JSON data
+                results, input_file = process_json_input(json_data, output_dir)
+                
+            except Exception as e:
+                print(f"Error processing JSON string: {e}")
+                import traceback
+                traceback.print_exc()
+                return
+        
+        # Generate voiceover from transcript only if flag is enabled and we have a transcript
+        transcript_field = next((field for field in ['full_transcript', 'full_transcription'] if field in json_data), None)
+        
+        if args.generate_voiceover and transcript_field:
             print("\nStarting voiceover generation process...")
-            transcript = json_data["full_transcription"]
+            transcript = json_data[transcript_field]
             
             # Generate the audio with enhanced transcript if enabled
             audio_file = generate_voiceover(
                 transcript=transcript,
                 output_dir=output_dir,
-                scenes=json_data["scenes"],
-                voice_id="a9ldg2iPgaBn4VcYMJ4x",  # You can change to your preferred voice
+                scenes=json_data.get("scenes", []),
+                voice_id=args.voice_id,  # Use command line argument for voice ID
                 enhance=args.enhance_transcript,  # Use command line arg for enhancement
                 reword=not args.no_reword  # Invert the flag - reword by default
             )
@@ -975,11 +897,11 @@ def main():
                 # Add audio file to results
                 results["audio_file"] = audio_file
         elif args.generate_voiceover:
-            print("\nNo transcript found in the video analysis data. Cannot generate voiceover.")
+            print("\nNo transcript found in the JSON data. Cannot generate voiceover.")
         else:
             print("\nVoiceover generation skipped (use --generate_voiceover to enable).")
         
-        # Step 4: Save the complete results to the unique output directory
+        # Save the complete results to the unique output directory
         results_file = os.path.join(output_dir, f"complete_pipeline_results.json")
         
         # Deep copy the results to ensure we don't modify the original objects
@@ -991,10 +913,11 @@ def main():
             if 'url' in url_obj and not isinstance(url_obj['url'], str):
                 url_obj['url'] = str(url_obj['url'])
         
-        # Add the analysis file to the results
+        # Add the input file to the results
         full_results = {
-            "video_url": video_url,
-            "analysis_file": str(analysis_file),  # Convert to string to ensure JSON serialization
+            "input_type": "json_file" if args.json_file else "json_string",
+            "input_source": args.json_file if args.json_file else "Direct JSON input",
+            "input_file": str(input_file) if input_file else None,
             "generated_results": serializable_results,
             "output_directory": output_dir
         }
@@ -1010,7 +933,9 @@ def main():
         with open(results_file, 'w') as f:
             json.dump(full_results, f, indent=2, cls=CustomJSONEncoder)
             
-        print(f"\nProcess completed. Generated {len(results['image_urls'])} images.")
+        print(f"\nProcess completed.")
+        if 'image_urls' in results:
+            print(f"Generated {len(results['image_urls'])} images.")
         print(f"All results saved to unique directory: {output_dir}")
         print(f"Complete results summary saved to {results_file}")
             
