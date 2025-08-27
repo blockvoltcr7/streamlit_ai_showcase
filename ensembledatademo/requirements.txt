@@ -1,0 +1,10 @@
+anyio==4.10.0
+certifi==2025.8.3
+ensembledata==0.2.6
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.10
+python-dotenv==1.1.1
+sniffio==1.3.1
+typing-extensions==4.15.0
