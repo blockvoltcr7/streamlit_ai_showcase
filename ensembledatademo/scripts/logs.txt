@@ -1,0 +1,201 @@
+(ensembledatademo) samisabir-idrissi@samis-MacBook-Pro ensembledatademo % cd /Users/samisabir-idrissi/dev/personal/strea
+mlit_ai_showcase/ensembledatademo/scripts && python test_analyzer.py
+🧪 Testing Instagram Post Analyzer
+==================================================
+📊 Sample data contains 3 posts
+👤 User: @kimkardashian
+📈 Total posts available: 6,255
+
+🤖 Testing 7 analysis scenarios...
+==================================================
+⚠️  Note: To run the actual AI analysis, you need to:
+1. Add your OpenAI API key to the .env file
+2. Replace 'your_openai_api_key_here' with your actual key
+
+For now, showing the structured data that would be analyzed:
+
+📋 Available Data Structure:
+
+Post 1:
+  • Type: GraphSidecar (Image/Carousel)
+  • Shortcode: C-6WRvdS75Q
+  • Likes: 642,848
+  • Comments: 4,653
+  • Caption: 🧁 Sweet treats for a sweet day! #cupcakes #dessert
+  • Carousel with 2 images
+
+Post 2:
+  • Type: GraphVideo (Video)
+  • Shortcode: C-6WRvdS76R
+  • Likes: 890,234
+  • Comments: 12,456
+  • Caption: Behind the scenes magic ✨ #BTS #filming
+
+Post 3:
+  • Type: GraphImage (Image/Carousel)
+  • Shortcode: C-6WRvdS77S
+  • Likes: 1,234,567
+  • Comments: 8,901
+  • Caption: Golden hour vibes 🌅 #sunset #photography
+
+==================================================
+📝 Example Questions the AI Agent Can Answer:
+1. How many posts are in this dataset and what's the total engagement?
+2. Which post has the most likes and what is it about?
+3. What types of content are posted (videos vs images vs carousels)?
+4. What are the main themes in the captions?
+5. Compare the engagement rates across different post types
+6. When were these posts created?
+7. What's the average number of likes and comments per post?
+(ensembledatademo) samisabir-idrissi@samis-MacBook-Pro scripts % cd /Users/samisabir-idrissi/dev/personal/streamlit_ai_s
+howcase/ensembledatademo/scripts && python -c "
+cmdand dquote> from instagram_post_analyzer import analyze_instagram_posts, test_agent_with_sample_data
+cmdand dquote> test_agent_with_sample_data()
+cmdand dquote> "
+
+Question: What's the engagement rate of these posts?
+
+Answer: The engagement rate for the posts is calculated based on the total number of engagements (likes and comments) divided by the total number of posts. 
+In this case, there is 1 post with 642,848 likes and 4,653 comments, leading to a very high engagement rate per post. 
+
+Specific Engagement Rate (for the only post): 
+Likes: 642,848
+Comments: 4,653
+
+This results in a combined engagement of 647,501 for the single post.
+Confidence: high
+--------------------------------------------------
+
+Question: How many likes does the most popular post have?
+Answer: The most popular post has 642,848 likes.
+Confidence: high
+--------------------------------------------------
+
+Question: What type of content performs best?
+Answer: The best-performing content type in terms of engagement is carousel posts, as all posts are identified as carousels with an average of 642,848 likes and
+ 4,653 comments per post. Additionally, 100% of the analyzed posts are carousels, indicating their popularity and potential effectiveness.
+Confidence: high
+--------------------------------------------------
+
+Question: When was this post created?
+Answer: The post was created on September 20, 2024.
+Confidence: high
+--------------------------------------------------
+
+Question: Who is the author of these posts?
+Answer: The author of the post is Kim Kardashian.
+Confidence: high
+--------------------------------------------------
+(ensembledatademo) samisabir-idrissi@samis-MacBook-Pro scripts % 
+(ensembledatademo) samisabir-idrissi@samis-MacBook-Pro scripts % python instagram_analysis_demo.py --auto
+🔍 Running Predefined Instagram Analysis
+==================================================
+📱 Fetching Instagram posts...
+✅ Fetched 10 posts
+
+🤖 Running 7 analysis questions...
+==================================================
+
+1. What's the overall engagement performance of these posts?
+------------------------------
+Answer: The overall engagement performance of the posts is quite impressive, with a total of 8,082,431 likes and 48,065 comments across 10 posts. 
+This averages to 808,243.1 likes and 4,806.5 comments per post. The most liked post is 'DNugk_6WnLm' with 1,393,139 likes, 
+and the most commented post is 'DMbw388xJ9V' with 11,355 comments.
+
+
+2. Which post has the highest engagement and what's it about?
+------------------------------
+Answer: The post with the highest engagement is by Kim Kardashian, with the post ID 3706042823386755814 and shortcode DNugk_6WnLm. 
+It has gathered 1,393,139 likes and 5,786 comments. The post's caption is "Cabo forever!" and it features multiple images from a trip to Cabo.
+
+
+3. What types of content are being posted (videos, images, carousels)?
+------------------------------
+Answer: The posts are predominantly images and carousels, with no videos. Out of a total of 10 posts, 7 are carousel posts (70% of total content), and 3 are single images (30% of total content).
+
+
+4. What are the posting patterns and optimal times?
+------------------------------
+Answer: The most frequent posting time is at 12:00, with 3 posts made during this hour. Additionally, Tuesday is the most common day for posting, with a total of 3 posts.
+
+
+5. Show me the top 3 most liked posts with their details
+------------------------------
+Answer: Here are the top 3 most liked Instagram posts:
+
+1. **Post ID:** 3706042823386755814
+   - **Username:** kimkardashian
+   - **Caption:** Cabo forever!
+   - **Likes:** 1,393,139
+   - **Comments:** 5,786
+   - **Images:** ![Image 1](https://scontent-fra3-2.cdninstagram.com/v/t51.2885-15/539416450_18710353159060659_5756843828345832815_n.jpg?stp=dst-jpg_e35_p1080x1080_sh0.08_tt6&_nc_ht=scontent-fra3-2.cdninstagram.com&_nc_cat=1&_nc_oc=Q6cZ2QEGZ7yJkV2etICnWDWGiHTI7xw_yT9UW_5_twEmcM22QTJ_aZ4hE3wVkkn1gOasEfQ&_nc_ohc=8OWZHcNt9WoQ7kNvwFpx-jr&_nc_gid=euENxGh_Og6Ax9VAcOcQ2A&edm=APU89FABAAAA&ccb=7-5&ig_cache_key=MzcwNjA0MjgwNjE5MDExMzM0OA%3D%3D.3-ccb7-5&oh=00_AfUjHfwta77emhBroY1rpK66H1Wgq0DYC6quiLiRAUkTrw&oe=68B4754E&_nc_sid=bc0c2c)
+
+2. **Post ID:** 3696311044676427314
+   - **Username:** kimkardashian
+   - **Caption:** Kylie’s day! Happy Birthday to the goat!
+   - **Likes:** 1,392,961
+   - **Comments:** 5,623
+   - **Images:** ![Image 1](https://scontent-fra3-2.cdninstagram.com/v/t51.2885-15/530232960_18707969659060659_8213423675400379158_n.jpg?stp=dst-jpg_e15_fr_p1080x1080_tt6&_nc_ht=scontent-fra3-2.cdninstagram.com&_nc_cat=1&_nc_oc=Q6cZ2QEGZ7yJkV2etICnWDWGiHTI7xw_yT9UW_5_twEmcM22QTJ_aZ4hE3wVkkn1gOasEfQ&_nc_ohc=J77DDoBcWFIQ7kNvwEU3qKW&_nc_gid=euENxGh_Og6Ax9VAcOcQ2A&edm=APU89FABAAAA&ccb=7-5&ig_cache_key=MzY5NjMxMTAzOTE1Njc4NjU2NA%3D%3D.3-ccb7-5&oh=00_AfX0oi3MNlEN0O2no4YQChaZ-ZhMGsMcgji6MqLAV5jHYQ&oe=68B48F6F&_nc_sid=bc0c2c)
+
+3. **Post ID:** 3694750358862841689
+   - **Username:** kimkardashian
+   - **Caption:** I'm so excited to share with you guys my stem cell journey...
+   - **Likes:** 1,039,014
+   - **Comments:** 6,902
+   - **Images:** ![Image 1](https://scontent-fra3-2.cdninstagram.com/v/t51.2885-15/529766155_18707552584060659_6499549281707360707_n.jpg?stp=dst-jpg_e35_p1080x1080_sh0.08_tt6&_nc_ht=scontent-fra3-2.cdninstagram.com&_nc_cat=1&_nc_oc=Q6cZ2QEGZ7yJkV2etICnWDWGiHTI7xw_yT9UW_5_twEmcM22QTJ_aZ4hE3wVkkn1gOasEfQ&_nc_ohc=qSvDqAzW8OAQ7kNvwHfggQy&_nc_gid=euENxGh_Og6Ax9VAcOcQ2A&edm=APU89FABAAAA&ccb=7-5&ig_cache_key=MzY5NDc1MDM1MDgwOTk2NTczMQ%3D%3D.3-ccb7-5&oh=00_AfXx3RmF4QOjFmENwcmVBPJ8y_isnMl-AuDnbZMdmWuZhQ&oe=68B46F7B&_nc_sid=bc0c2c)
+
+
+6. What can you tell me about the captions and content themes?
+------------------------------
+Answer: The Instagram posts from Kim Kardashian focus on several thematic elements visible in the captions and content types:
+
+1. **Travel and Lifestyle**: Posts capture destinations, such as the "Cabo forever!" caption, highlighting vacation or travel-related content, which usually showcases a luxurious lifestyle.
+
+2. **Brand Promotion**: Captions like "POST MALONE FOR SKIMS MEN" and "POST MALONE X SKIMS MEN" indicate promotional content for her business ventures, specifically the SKIMS brand.
+
+3. **Family and Personal Life**: A more personal theme is reflected in captions such as "Dad, Mom and Me" and "Kylie’s day! Happy Birthday to the goat!", indicating family ties and personal milestones.
+
+4. **Health and Wellness**: A reflective tone is apparent in captions about her personal health journey, e.g., stem cell therapy for shoulder recovery, captured in detail, promoting awareness and dialogue about health treatments.
+
+5. **Nostalgic and Inspirational Content**: Posts with captions like "2000’s" and "Mugler Magic" often delve into fashion retrospectives or celebratory moments, touching on inspiration and evoking nostalgia or creativity.
+ 
+Regarding content types, the posts predominantly feature image carousels (70% of the posts) and include no videos. This signifies a preference for multiple images to portray diverse aspects of the themes, often using multiple photos in a single post to enhance engagement and storytelling.
+
+
+7. How does the comment-to-like ratio look across posts?
+------------------------------
+Answer: The overall comment-to-like ratio across the posts is approximately 0.59%, which indicates that for every 1000 likes, there are roughly 5.9 comments.
+
+(ensembledatademo) samisabir-idrissi@samis-MacBook-Pro scripts % echo "Which post type gets the most engagement?\nquit" 
+| python instagram_analysis_demo.py
+🔍 Instagram Post Analyzer
+==================================================
+✅ API keys found
+
+📱 Fetching Instagram posts...
+✅ Successfully fetched 5 posts (out of 6464 total)
+📊 Analyzing posts from @kimkardashian
+
+==================================================
+🤖 AI Analysis Ready - Ask questions about the posts!
+==================================================
+
+Example questions you can ask:
+• What's the average engagement rate?
+• Which post has the most likes?
+• What types of content are posted?
+• When do they post most often?
+• Show me posts with more than 500k likes
+• What's in the captions?
+
+Type 'quit' to exit
+--------------------------------------------------
+
+💭 Your question: 🤔 Analyzing...
+
+🎯 Answer: Carousel posts receive the most engagement with an average of 751,275 likes per post, compared to single image posts which also have similar engagement levels on average. However, a specific carousel post received the highest engagement with 1,393,174 likes and 5,786 comments.
+
+🎚️ Confidence: high
+--------------------------------------------------
+
+💭 Your question: 👋 Thanks for using Instagram Post Analyzer!
