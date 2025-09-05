@@ -1,0 +1,34 @@
+[
+  {
+    "video_filename": "RPReplay_Final1756907238.mov",
+    "likes": 1264,
+    "saves": null,
+    "number_of_comments": 13,
+    "shares": 151,
+    "hook_analysis": "The video starts with a direct and slightly confrontational statement, \"You are way too defensive,\" which immediately grabs attention and challenges the viewer, setting a strong hook for the self-improvement topic.",
+    "visual_style": "The video features a man speaking directly to the camera while walking outdoors. The setting appears to be an urban environment with buildings and cars in the background. The lighting is natural and bright.",
+    "call_to_action": "The call to action is explicitly stated at the end: \"So stop being so defensive and follow me for more content.\"",
+    "key_insights": "The key insight is that defensiveness hinders personal growth and that it's more important to be open to being wrong than to be confidently right. The speaker emphasizes that the flaws of the person giving feedback do not invalidate the feedback itself, and that consistent feedback from multiple sources likely indicates an area for personal improvement. He states that people are not a \"perfect finished product\" and that both being confidently right and being open to being wrong have value, but only one allows for growth. He also implies that people often prioritize ego-stroking over growth, leading to a \"flipped\" ratio of these values.",
+    "format_type": "The video is a short-form, direct-address piece of content where the speaker offers advice or a perspective on a specific topic. It uses on-screen text to highlight key phrases as he speaks.",
+    "estimated_topic": "Personal growth and self-improvement, specifically focusing on overcoming defensiveness and accepting feedback.",
+    "detected_language": "en",
+    "posting_time_if_visible": null,
+    "views_if_visible": null
+  },
+  {
+    "video_filename": "RPReplay_Final1756907384.mov",
+    "likes": 2887,
+    "saves": null,
+    "number_of_comments": 40,
+    "shares": 267,
+    "hook_analysis": "The video opens with the creator stating he is 25 years old and financially responsible, immediately piquing interest. He then references a previous video about his salary and how he spent it, creating a sense of continuity and encouraging viewers to watch the current video for updated information.",
+    "visual_style": "The video features a man speaking directly to the camera while walking outdoors. The setting appears to be an urban or suburban street with buildings in the background. The camera is held at eye level, giving a personal and conversational feel.",
+    "call_to_action": "The call to action is implicit through the creator's closing statement, \"Now follow me for more.\" This encourages viewers to engage with his content further by following his account.",
+    "key_insights": "The creator, at 25, is financially responsible and deliberately avoids 'lifestyle creep' despite increased earnings. Two years prior, he made $157,000. He quit that job to join Brev as the first hire, where he made half the amount. Brev was later acquired by Nvidia, which he describes as a 'life-changing outcome.' Despite making more money now, he maintains the same roommates, doesn't own a car (as he doesn't need one in San Francisco), and doesn't buy designer clothing, nice watches, or jewelry. He states these material possessions don't make him happy. He spends an average of $5,000 a month, which allows him to travel, eat out frequently, and give gifts to his girlfriend, friends, and family. He also invests 'multiple 5 figures' a month. He believes in avoiding the 'hedonic treadmill' and is focused on growing his money to retire early, buy a nicer house in the future, allow his partner not to work if she chooses, and enable his future children to go to college debt-free. The 'hedonic treadmill' is a concept where people quickly return to a stable level of happiness despite major positive or negative events, often by adjusting their expectations upwards with increased income. [1, 2, 3, 4, 7] Brev.dev is an AI and machine learning development platform that helps developers build, train, and deploy AI models on the cloud, providing access to NVIDIA GPUs. [8, 9, 11, 12] NVIDIA acquired Brev.dev in July 2024. [6, 9, 11, 14, 15]",
+    "format_type": "The video is a short-form, direct-to-camera monologue, characteristic of a vlog or a TikTok/Reels style video, where the creator shares personal financial philosophy and experiences.",
+    "estimated_topic": "Personal finance, financial responsibility, career progression, anti-lifestyle creep, investment, and financial independence.",
+    "detected_language": "en",
+    "posting_time_if_visible": null,
+    "views_if_visible": null
+  }
+]

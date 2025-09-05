@@ -1,3 +1,0 @@
-[server]
-# Add the root directory to Python path
-pythonPath = "../" 

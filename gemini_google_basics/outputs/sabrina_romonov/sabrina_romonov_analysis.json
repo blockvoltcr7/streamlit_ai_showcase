@@ -1,0 +1,34 @@
+[
+  {
+    "video_filename": "RPReplay_Final1756918027.mov",
+    "likes": 87000,
+    "saves": null,
+    "number_of_comments": 572,
+    "shares": 48600,
+    "hook_analysis": "The video opens by directly addressing a common pain point: the broken US healthcare system, immediately capturing the audience's attention with a bold statement about AI helping to fight back. This creates intrigue and relevance for a broad audience. It highlights the problem and offers an innovative solution early on.",
+    "visual_style": "The video uses a talking-head style with text overlays, specifically an article from \"The San Francisco Standard.\" The speaker, Sabrina Ramanov, is engaging and expressive, pointing to key parts of the article to emphasize her points.",
+    "call_to_action": "The video encourages viewers to use the Fight Health Insurance AI platform to appeal their health insurance denials, emphasizing that it's an open-source platform that simplifies the process.",
+    "key_insights": "The US healthcare system is often seen as 'broken' due to frequent health insurance claim denials. Insurers reject approximately one in seven claims for treatment, and while appeals are possible, doctors often lack the time to help patients, and the process can be complex for individuals. [2, 8] The Fight Health Insurance platform is an open-source AI tool designed to help users generate health insurance appeals, making the process faster and easier. [1, 2, 3, 8] The platform's slogan is \"Make your health insurance company cry, too.\" [2, 5] Many denials can be successfully appealed if the patient knows what to write and how to navigate the process. [2, 8] The platform allows users to scan their denial letters, and the AI drafts appeal letters based on the information. [1, 5] The creator of Fight Health Insurance, Holden Karau, developed the tool after personal experience with claim denials. [4]",
+    "format_type": "Educational/Informative short-form video (Reel)",
+    "estimated_topic": "AI in healthcare, health insurance appeals, consumer advocacy",
+    "detected_language": "en",
+    "posting_time_if_visible": null,
+    "views_if_visible": null
+  },
+  {
+    "video_filename": "RPReplay_Final1756918136.mov",
+    "likes": 74200,
+    "saves": 115000,
+    "number_of_comments": 605,
+    "shares": 11,
+    "hook_analysis": "The hook immediately presents a solution to a common parental concern: how to introduce kids to AI and coding. It uses a slightly provocative statement that kids learn faster than adults to grab attention. The speaker then quickly states the video will provide 8 websites for this purpose.",
+    "visual_style": "The video features a woman speaking directly to the camera in a casual indoor setting. Text overlays highlight key information such as website names and specific points.",
+    "call_to_action": "The video has two clear calls to action: to save/bookmark the video for later and to subscribe to the creator's free newsletter at Sabrina.DEV for more free AI tips and tutorials.",
+    "key_insights": "The video provides a list of 8 websites and platforms for kids to learn AI and coding. It emphasizes the importance of preparing children for a future with AI and building with AI. The platforms range from visual programming languages (Scratch, CodeMonkey) to tools for training AI models (Teachable Machine) and interactive learning environments (Tynker, Code.org). It also suggests using ChatGPT as a learning tool.",
+    "format_type": "Educational listicle/tutorial delivered by a presenter.",
+    "estimated_topic": "Kids learning AI and coding",
+    "detected_language": "en",
+    "posting_time_if_visible": null,
+    "views_if_visible": null
+  }
+]
